@@ -1,4 +1,4 @@
-package com.hoodie.hoodie_otti;
+package com.hoodie.otti;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
