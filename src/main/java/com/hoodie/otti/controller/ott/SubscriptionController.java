@@ -2,6 +2,7 @@ package com.hoodie.otti.controller.ott;
 
 import com.hoodie.otti.dto.ott.SubscriptionResponseDto;
 import com.hoodie.otti.dto.ott.SubscriptionSaveRequestDto;
+import com.hoodie.otti.dto.ott.SubscriptionUpdateRequestDto;
 import com.hoodie.otti.service.ott.SubscriptionService;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,5 +38,10 @@ public class SubscriptionController {
     @GetMapping("/{id}")
     public SubscriptionResponseDto findById(@PathVariable Long id) {
         return new SubscriptionResponseDto(subscriptionService.findById(id));
+    }
+
+    @PutMapping("/{id}")
+    public Long update(@PathVariable Long id, @RequestBody SubscriptionUpdateRequestDto requestDto) {
+        return subscriptionService.update(id, requestDto);
     }
 }

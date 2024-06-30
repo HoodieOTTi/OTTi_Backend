@@ -1,6 +1,7 @@
 package com.hoodie.otti.service.ott;
 
 import com.hoodie.otti.dto.ott.SubscriptionSaveRequestDto;
+import com.hoodie.otti.dto.ott.SubscriptionUpdateRequestDto;
 import com.hoodie.otti.model.Ott;
 import com.hoodie.otti.model.Subscription;
 import com.hoodie.otti.model.User;
@@ -27,7 +28,7 @@ public class SubscriptionService {
         Ott ott = ottRepository.findById(requestDto.getOttId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid ott ID"));
 
-        Subscription subscription = Subscription.builder()
+        Subscription subscription = Subscription.builder().name(requestDto.getName())
                 .payment(requestDto.getPayment())
                 .memo(requestDto.getMemo())
                 .paymentDate(requestDto.getPaymentDate())
@@ -45,5 +46,23 @@ public class SubscriptionService {
     public Subscription findById(Long id) {
         return subscriptionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 구독 정보가 없습니다. id=" + id));
+    }
+
+    @Transactional
+    public Long update(Long id, SubscriptionUpdateRequestDto requestDto) {
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구독 정보가 없습니다. id=" + id));
+
+        Ott replaceOtt = ottRepository.findById(requestDto.getOttId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid ott ID"));
+
+        subscription.update(
+                requestDto.getName(),
+                requestDto.getPayment(),
+                requestDto.getMemo(),
+                requestDto.getPaymentDate(),
+                replaceOtt);
+
+        return id;
     }
 }

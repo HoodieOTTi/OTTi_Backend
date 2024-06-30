@@ -7,23 +7,20 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SubscriptionSaveRequestDto {
+public class SubscriptionUpdateRequestDto {
 
     private String name;
     private Integer payment;
     private String memo;
     private Date paymentDate;
-    private Long userId;
     private Long ottId;
 
     @Builder
-    public SubscriptionSaveRequestDto(String name, Integer payment, String memo, Date paymentDate,
-                                      Long userId, Long ottId) {
+    public SubscriptionUpdateRequestDto(String name, Integer payment, String memo, Date paymentDate, Long ottId) {
         this.name = name;
         this.payment = payment;
         this.memo = memo;
         this.paymentDate = paymentDate;
-        this.userId = userId;
         this.ottId = ottId;
     }
 }

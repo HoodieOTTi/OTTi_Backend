@@ -9,6 +9,7 @@ import lombok.Getter;
 public class SubscriptionResponseDto {
 
     private Long id;
+    private final String name;
     private Integer payment;
     private String memo;
     private Date paymentDate;
@@ -20,6 +21,7 @@ public class SubscriptionResponseDto {
     @Builder
     public SubscriptionResponseDto(Subscription subscription) {
         this.id = subscription.getId();
+        this.name = subscription.getName();
         this.payment = subscription.getPayment();
         this.memo = subscription.getMemo();
         this.paymentDate = subscription.getPaymentDate();
