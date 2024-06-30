@@ -7,11 +7,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.util.Date;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -45,7 +46,23 @@ public class Subscription {
     @LastModifiedDate
     private Date modifiedDate;
 
-    @OneToOne
-    @JoinColumn(name = "OTT_ID", unique = true, nullable = false)
-    private Ott ottId; // 여기 매핑 시키는 것부터 시작 일대일 매핑임
+    @ManyToOne
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User userId;
+
+    @ManyToOne
+    @JoinColumn(name = "OTT_ID", nullable = false)
+    private Ott ottId;
+
+    @Builder
+    public Subscription(Integer payment, String memo, Date paymentDate, Date createdDate, Date modifiedDate,
+                        User userId, Ott ottId) {
+        this.payment = payment;
+        this.memo = memo;
+        this.paymentDate = paymentDate;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+        this.userId = userId;
+        this.ottId = ottId;
+    }
 }

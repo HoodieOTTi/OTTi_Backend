@@ -9,21 +9,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubscriptionSaveRequestDto {
 
-    private String name;
     private Integer payment;
     private String memo;
     private Date paymentDate;
-    private Long userProfileId;
+    private Long userId;
     private Long ottId;
 
     @Builder
-    public SubscriptionSaveRequestDto(String name, Integer payment, String memo, Date paymentDate,
-                                      Long userProfileId, Long ottId) {
-        this.name = name;
+    public SubscriptionSaveRequestDto(Integer payment, String memo, Date paymentDate,Long userId, Long ottId) {
         this.payment = payment;
         this.memo = memo;
         this.paymentDate = paymentDate;
-        this.userProfileId = userProfileId;
+        this.userId = userId;
         this.ottId = ottId;
     }
 }
