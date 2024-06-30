@@ -7,6 +7,7 @@ import com.hoodie.otti.service.ott.SubscriptionService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,5 +44,11 @@ public class SubscriptionController {
     @PutMapping("/{id}")
     public Long update(@PathVariable Long id, @RequestBody SubscriptionUpdateRequestDto requestDto) {
         return subscriptionService.update(id, requestDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public Long delete(@PathVariable Long id) {
+        subscriptionService.delete(id);
+        return id;
     }
 }

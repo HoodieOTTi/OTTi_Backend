@@ -65,4 +65,11 @@ public class SubscriptionService {
 
         return id;
     }
+
+    @Transactional
+    public void delete(Long id) {
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구독 정보가 없습니다. id" + id));
+        subscriptionRepository.delete(subscription);
+    }
 }
