@@ -34,7 +34,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// 데이터베이스 연결 및 런타임 도구
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'mysql:mysql-connector-java:8.0.28'
 
 	// 개발 도구
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -43,9 +43,6 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	// 데이터베이스 연결 및 런타임 도구
-	runtimeOnly 'mysql:mysql-connector-java:8.0.28'
 
 	// 개발 도구
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -83,7 +80,7 @@ dependencies {
 	implementation 'mysql:mysql-connector-java:8.0.28'
 
 	// Google Gson을 통한 JSON 처리
-	implementation 'com.google.code.gson:gson:2.8.8'
+	implementation 'com.google.code.gson:gson:2.8.9'
 
 	// Swagger API 문서화를 위한 의존성
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
@@ -91,7 +88,7 @@ dependencies {
 
 	// Java Persistence API (JPA) 및 Hibernate
 	implementation 'javax.persistence:javax.persistence-api:2.2'
-	implementation 'org.hibernate:hibernate-core:5.6.4.Final'
+	implementation 'org.hibernate:hibernate-core:6.0.1.Final'
 }
 
 tasks.named('test') {

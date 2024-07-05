@@ -25,8 +25,8 @@ import java.util.Optional;
 @Service
 public class LoginService {
 
-    private final String clientId = "여기에_클라이언트_ID_입력";
-    private final String redirectUri = "여기에_리다이렉트_URI_입력";
+    private final String clientId = "clientId";
+    private final String redirectUri = "redirectUri";
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
