@@ -31,7 +31,7 @@ public class LoginController {
      * @return 카카오 로그인 응답을 포함하는 ResponseEntity
      */
     @ApiOperation(value = "카카오 로그인", notes = "카카오 로그인")
-    @GetMapping("login/kakaologin") // localhost:8080/comm/login/kakaologin
+    @GetMapping("login/kakaologin") // http://localhost:8080/comm/login/kakaologin
     public ResponseEntity<BaseResponse<UserKakaoLoginResponseDto>> kakaoCallback(
             @ApiParam(value = "kakao auth code", required = true) @RequestParam String code) {
 

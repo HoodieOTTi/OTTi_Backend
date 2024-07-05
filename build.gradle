@@ -39,11 +39,6 @@ dependencies {
 	// 개발 도구
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	// 테스트 의존성
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
 	// JSON Web Token (JWT) 라이브러리
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
@@ -60,6 +55,7 @@ dependencies {
 	implementation 'javax.persistence:javax.persistence-api:2.2'
 	implementation 'org.hibernate:hibernate-core:6.0.1.Final'
 	implementation 'org.hibernate.validator:hibernate-validator:7.0.2.Final'
+	implementation 'javax.persistence:javax.persistence-api:2.2'
 
 	// JUnit 5 사용
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
