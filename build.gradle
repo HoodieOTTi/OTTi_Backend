@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.1'
+	id 'org.springframework.boot' version '2.7.2'
 	id 'io.spring.dependency-management' version '1.1.5'
 }
 
@@ -13,33 +13,56 @@ java {
 	}
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
-
 repositories {
 	mavenCentral()
 }
 
 dependencies {
+	// Spring Boot 관련 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	// Lombok을 통한 코드 간소화
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// 데이터베이스 연결 및 런타임 도구
+	runtimeOnly 'mysql:mysql-connector-java:8.0.28'
+
+	// 개발 도구
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// JSON Web Token (JWT) 라이브러리
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 
-	implementation 'com.google.code.gson:gson:2.10.1'
+	// Google Gson을 통한 JSON 처리
+	implementation 'com.google.code.gson:gson:2.8.9'
+
+	// Swagger API 문서화를 위한 의존성
+	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+
+	// Java Persistence API (JPA) 및 Hibernate
+	implementation 'javax.persistence:javax.persistence-api:2.2'
+	implementation 'org.hibernate:hibernate-core:6.0.1.Final'
+	implementation 'org.hibernate.validator:hibernate-validator:7.0.2.Final'
+
+	// JUnit 5 사용
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+	// Spring Boot Test 의존성
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// 기타 테스트 관련 의존성 (필요에 따라 정리)
+	testImplementation 'org.springframework.security:spring-security-test'
+
+	// Mockito 의존성
+	testImplementation 'org.mockito:mockito-core:4.3.1'
+
 }
 
 tasks.named('test') {
