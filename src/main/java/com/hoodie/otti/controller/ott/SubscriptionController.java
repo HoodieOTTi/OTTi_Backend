@@ -4,9 +4,11 @@ import com.hoodie.otti.dto.ott.SubscriptionResponseDto;
 import com.hoodie.otti.dto.ott.SubscriptionSaveRequestDto;
 import com.hoodie.otti.dto.ott.SubscriptionUpdateRequestDto;
 import com.hoodie.otti.service.ott.SubscriptionService;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,31 +26,35 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @PostMapping
-    public Long save(@RequestBody SubscriptionSaveRequestDto requestDto) {
-        return subscriptionService.save(requestDto);
+    public ResponseEntity<Void> save(@RequestBody SubscriptionSaveRequestDto requestDto) {
+        Long id = subscriptionService.save(requestDto);
+        return ResponseEntity.created(URI.create("/api/subscription/" + id)).build();
     }
 
     @GetMapping
-    public List<SubscriptionResponseDto> findAllSubscription() {
-        return subscriptionService.findAll()
+    public ResponseEntity<List<SubscriptionResponseDto>> findAllSubscription() {
+        List<SubscriptionResponseDto> subscriptionResponseDtos = subscriptionService.findAll()
                 .stream()
                 .map(SubscriptionResponseDto::new)
                 .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(subscriptionResponseDtos);
     }
 
     @GetMapping("/{id}")
-    public SubscriptionResponseDto findById(@PathVariable Long id) {
-        return new SubscriptionResponseDto(subscriptionService.findById(id));
+    public ResponseEntity<SubscriptionResponseDto> findById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(new SubscriptionResponseDto(subscriptionService.findById(id)));
     }
 
     @PutMapping("/{id}")
-    public Long update(@PathVariable Long id, @RequestBody SubscriptionUpdateRequestDto requestDto) {
-        return subscriptionService.update(id, requestDto);
+    public ResponseEntity<Long> update(@PathVariable Long id, @RequestBody SubscriptionUpdateRequestDto requestDto) {
+        subscriptionService.update(id, requestDto);
+        return ResponseEntity.ok().body(id);
     }
 
     @DeleteMapping("/{id}")
-    public Long delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         subscriptionService.delete(id);
-        return id;
+        return ResponseEntity.noContent().build();
     }
 }
