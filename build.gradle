@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.1'
+	id 'org.springframework.boot' version '2.7.2'
 	id 'io.spring.dependency-management' version '1.1.5'
 }
 
@@ -39,14 +39,6 @@ dependencies {
 	// 개발 도구
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	// 테스트 의존성
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	// 개발 도구
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
 	// JSON Web Token (JWT) 라이브러리
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
@@ -60,6 +52,7 @@ dependencies {
 	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 
 	// Java Persistence API (JPA) 및 Hibernate
+	implementation 'javax.persistence:javax.persistence-api:2.2'
 	implementation 'org.hibernate:hibernate-core:6.0.1.Final'
 	implementation 'org.hibernate.validator:hibernate-validator:7.0.2.Final'
 
@@ -76,21 +69,16 @@ dependencies {
 	// Mockito 의존성
 	testImplementation 'org.mockito:mockito-core:4.3.1'
 
-	// MySQL
-	implementation 'mysql:mysql-connector-java:8.0.28'
-
-	// Google Gson을 통한 JSON 처리
-	implementation 'com.google.code.gson:gson:2.8.9'
-
-	// Swagger API 문서화를 위한 의존성
-	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
-
-	// Java Persistence API (JPA) 및 Hibernate
-	implementation 'javax.persistence:javax.persistence-api:2.2'
-	implementation 'org.hibernate:hibernate-core:6.0.1.Final'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+configurations.all {
+	resolutionStrategy {
+		failOnVersionConflict() // 버전 충돌이 발생하면 실패
+		force 'org.hibernate:hibernate-core:6.0.1.Final' // 특정 버전을 강제로 사용
+	}
+}
+
