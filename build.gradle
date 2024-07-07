@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.1.1'
+	id 'org.springframework.boot' version '3.3.1'
 	id 'io.spring.dependency-management' version '1.1.5'
 }
 
@@ -26,11 +26,13 @@ repositories {
 dependencies {
 	// Spring Boot 관련 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	// Lombok을 통한 코드 간소화
 	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// 데이터베이스 연결 및 런타임 도구
@@ -78,11 +80,3 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
-configurations.all {
-	resolutionStrategy {
-		failOnVersionConflict() // 버전 충돌이 발생하면 실패
-		force 'org.hibernate:hibernate-core:6.0.1.Final' // 특정 버전을 강제로 사용
-	}
-}
-
