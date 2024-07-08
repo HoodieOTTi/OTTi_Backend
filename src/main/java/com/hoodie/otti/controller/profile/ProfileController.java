@@ -6,6 +6,8 @@ import com.hoodie.otti.exception.profile.ProfileControllerException;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
 import com.hoodie.otti.model.profile.UserProfile;
 import com.hoodie.otti.service.profile.UserProfileService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -17,8 +19,6 @@ import org.springframework.http.HttpStatus;
 import com.hoodie.otti.exception.profile.ErrorResponse;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/api/users/{userId}/profile")

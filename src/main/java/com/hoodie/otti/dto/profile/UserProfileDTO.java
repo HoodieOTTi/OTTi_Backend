@@ -1,6 +1,6 @@
 package com.hoodie.otti.dto.profile;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class UserProfileDTO {
 
