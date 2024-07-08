@@ -14,5 +14,4 @@ public class HoodieOttiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(HoodieOttiApplication.class, args);
 	}
-
 }

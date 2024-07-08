@@ -1,5 +1,6 @@
 package com.hoodie.otti.model;
 
+import com.hoodie.otti.model.profile.UserProfile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -30,6 +31,9 @@ public class Subscription {
     @Column(name = "subscription_id")
     private Long id;
 
+    @Column(length = 40, nullable = false)
+    private String name;
+
     private Integer payment;
 
     @Column(columnDefinition = "TEXT")
@@ -47,22 +51,49 @@ public class Subscription {
     private Date modifiedDate;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID", nullable = false)
-    private User userId;
+    @JoinColumn(name = "USER_PROFILE_ID", nullable = false)
+    private UserProfile userProfileId;
 
     @ManyToOne
     @JoinColumn(name = "OTT_ID", nullable = false)
     private Ott ottId;
 
     @Builder
-    public Subscription(Integer payment, String memo, Date paymentDate, Date createdDate, Date modifiedDate,
-                        User userId, Ott ottId) {
+    public Subscription(String name, Integer payment, String memo, Date paymentDate, Date createdDate,
+                        Date modifiedDate, UserProfile userProfileId, Ott ottId) {
+        this.name = name;
         this.payment = payment;
         this.memo = memo;
         this.paymentDate = paymentDate;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.userId = userId;
+        this.userProfileId = userProfileId;
         this.ottId = ottId;
+    }
+
+    public void update(String name, Integer payment, String memo, Date paymentDate, Ott ottId) {
+        if (!isNullAndBlank(name)) {
+            this.name = name;
+        }
+        if (!isNullAndBlank(payment)) {
+            this.payment = payment;
+        }
+        if (!isNullAndBlank(memo)) {
+            this.memo = memo;
+        }
+        if (!isNullAndBlank(paymentDate)) {
+            this.paymentDate = paymentDate;
+        }
+        if (!isNullAndBlank(ottId)) {
+            this.ottId = ottId;
+        }
+    }
+
+    private <T> boolean isNullAndBlank(T argument) {
+        if (argument instanceof String) {
+            return argument == null || ((String) argument).trim().isEmpty();
+        }
+
+        return argument == null;
     }
 }
