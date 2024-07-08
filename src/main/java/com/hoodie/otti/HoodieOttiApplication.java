@@ -8,11 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@ComponentScan(basePackages = {"com.hoodie.otti.repository.profile"})
+//@ComponentScan(basePackages = {"com.hoodie.otti.repository.profile"})
 public class HoodieOttiApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(HoodieOttiApplication.class, args);
 	}
-
 }
