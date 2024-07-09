@@ -2,6 +2,7 @@ package com.hoodie.otti.util.login;
 
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
@@ -32,6 +33,15 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.getSubject();
+    }
+
+    // 특정 토큰을 무효화하는 메서드
+    public void invalidateToken(String token) {
+        // 만료 시각을 현재 시각 이전으로 설정하여 토큰을 무효화합니다.
+        Jwts.builder()
+                .setClaims(Jwts.claims())
+                .setExpiration(new Date()) // 현재 시각 이전으로 설정하여 토큰을 무효화
+                .compact();
     }
 }
 
