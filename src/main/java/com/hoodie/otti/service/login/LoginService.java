@@ -42,6 +42,7 @@ public class LoginService {
      *
      * @param access_Token 카카오 Access Token
      * @return UserKakaoLoginResponseDto 객체
+     * @throws BaseException 사용자 저장에 실패할 경우 예외 처리
      */
     public UserKakaoLoginResponseDto kakaoLogin(String access_Token) throws BaseException {
         try {
@@ -191,6 +192,7 @@ public class LoginService {
      *
      * @param userKakaoSignupRequestDto Kakao 회원가입 요청 DTO
      * @return 저장된 회원의 ID
+     * @throws BaseException 사용자 저장에 실패할 경우 예외 처리
      */
     @Transactional
     public Long signUp(UserKakaoSignupRequestDto userKakaoSignupRequestDto) throws BaseException {

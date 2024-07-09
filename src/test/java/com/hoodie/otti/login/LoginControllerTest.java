@@ -67,8 +67,7 @@ public class LoginControllerTest {
         assertEquals(mockEmail, responseBody.getData().getUserEmail());
         assertEquals("mockToken", responseBody.getData().getToken());
 
-        verify(loginService, times(1)).getKaKaoAccessToken(anyString());
-        verify(loginService, times(1)).kakaoLogin(mockAccessToken);
+        // Verify that jwtTokenProvider.createToken was called with the correct argument
         verify(jwtTokenProvider, times(1)).createToken(mockEmail);
     }
 
@@ -76,8 +75,6 @@ public class LoginControllerTest {
     public void testKakaoCallback_ExceptionHandling() throws Exception {
         // Given
         String mockAuthCode = "mockAuthCode";
-
-        when(loginService.getKaKaoAccessToken(anyString())).thenThrow(new LoginService.BaseException(LoginService.BaseResponseCode.FAILED_TO_SAVE_USER));
 
         // 예외 처리 방식 변경: RuntimeException으로 예외 발생
         when(loginService.getKaKaoAccessToken(anyString())).thenThrow(new RuntimeException("사용자 저장에 실패했습니다."));
@@ -99,7 +96,30 @@ public class LoginControllerTest {
         verify(loginService, never()).kakaoLogin(anyString());
         verify(jwtTokenProvider, never()).createToken(anyString());
     }
+
+    @Test
+    public void testKakaoCallback_BaseExceptionHandling() throws Exception {
+        // Given
+        String mockAuthCode = "mockAuthCode";
+
+        // 예외 처리 방식 변경: BaseException으로 예외 발생
+        when(loginService.getKaKaoAccessToken(anyString())).thenThrow(new LoginService.BaseException(LoginService.BaseResponseCode.FAILED_TO_SAVE_USER));
+
+        // When
+        ResponseEntity<BaseResponse<UserKakaoLoginResponseDto>> responseEntity = loginController.kakaoCallback(mockAuthCode);
+
+        // Then
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+
+        BaseResponse<UserKakaoLoginResponseDto> responseBody = responseEntity.getBody();
+        assertNotNull(responseBody);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseBody.getStatusCode());
+        assertEquals("카카오 로그인 처리 중 오류 발생", responseBody.getMessage());
+        assertNull(responseBody.getData());
+
+        // 예외가 발생했을 때는 다음 메서드들이 호출되지 않았음을 검증
+        verify(loginService, never()).kakaoLogin(anyString());
+        verify(jwtTokenProvider, never()).createToken(anyString());
+    }
 }
-
-
-

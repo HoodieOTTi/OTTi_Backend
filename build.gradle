@@ -73,6 +73,10 @@ dependencies {
 	// MySQL
 	implementation 'mysql:mysql-connector-java:8.0.28'
 
+
+	implementation 'javax.persistence:javax.persistence-api:2.2'
+
+
 }
 
 tasks.named('test') {
