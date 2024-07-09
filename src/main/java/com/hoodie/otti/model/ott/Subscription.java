@@ -1,4 +1,4 @@
-package com.hoodie.otti.model;
+package com.hoodie.otti.model.ott;
 
 import com.hoodie.otti.model.profile.UserProfile;
 import jakarta.persistence.Column;
@@ -39,8 +39,7 @@ public class Subscription {
     @Column(columnDefinition = "TEXT")
     private String memo;
 
-    @Temporal(TemporalType.DATE)
-    private Date paymentDate;
+    private Integer paymentDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
@@ -59,7 +58,7 @@ public class Subscription {
     private Ott ottId;
 
     @Builder
-    public Subscription(String name, Integer payment, String memo, Date paymentDate, Date createdDate,
+    public Subscription(String name, Integer payment, String memo, Integer paymentDate, Date createdDate,
                         Date modifiedDate, UserProfile userProfileId, Ott ottId) {
         this.name = name;
         this.payment = payment;
@@ -71,7 +70,7 @@ public class Subscription {
         this.ottId = ottId;
     }
 
-    public void update(String name, Integer payment, String memo, Date paymentDate, Ott ottId) {
+    public void update(String name, Integer payment, String memo, Integer paymentDate, Ott ottId) {
         if (!isNullAndBlank(name)) {
             this.name = name;
         }

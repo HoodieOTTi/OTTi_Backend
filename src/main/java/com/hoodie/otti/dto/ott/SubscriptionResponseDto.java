@@ -1,6 +1,6 @@
 package com.hoodie.otti.dto.ott;
 
-import com.hoodie.otti.model.Subscription;
+import com.hoodie.otti.model.ott.Subscription;
 import java.util.Date;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +12,7 @@ public class SubscriptionResponseDto {
     private String name;
     private Integer payment;
     private String memo;
-    private Date paymentDate;
+    private Integer paymentDate;
     private Long userId;
     private OttResponseDto ott;
     private Date createdDate;

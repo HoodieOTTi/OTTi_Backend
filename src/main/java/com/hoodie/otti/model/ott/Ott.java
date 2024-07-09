@@ -1,4 +1,4 @@
-package com.hoodie.otti.model;
+package com.hoodie.otti.model.ott;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

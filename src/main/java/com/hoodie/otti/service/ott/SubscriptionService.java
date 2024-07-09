@@ -2,8 +2,8 @@ package com.hoodie.otti.service.ott;
 
 import com.hoodie.otti.dto.ott.SubscriptionSaveRequestDto;
 import com.hoodie.otti.dto.ott.SubscriptionUpdateRequestDto;
-import com.hoodie.otti.model.Ott;
-import com.hoodie.otti.model.Subscription;
+import com.hoodie.otti.model.ott.Ott;
+import com.hoodie.otti.model.ott.Subscription;
 import com.hoodie.otti.model.profile.UserProfile;
 import com.hoodie.otti.repository.ott.OttRepository;
 import com.hoodie.otti.repository.ott.SubscriptionRepository;

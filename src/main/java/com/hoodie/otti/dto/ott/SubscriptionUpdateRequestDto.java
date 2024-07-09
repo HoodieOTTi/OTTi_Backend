@@ -12,11 +12,11 @@ public class SubscriptionUpdateRequestDto {
     private String name;
     private Integer payment;
     private String memo;
-    private Date paymentDate;
+    private Integer paymentDate;
     private Long ottId;
 
     @Builder
-    public SubscriptionUpdateRequestDto(String name, Integer payment, String memo, Date paymentDate, Long ottId) {
+    public SubscriptionUpdateRequestDto(String name, Integer payment, String memo, Integer paymentDate, Long ottId) {
         this.name = name;
         this.payment = payment;
         this.memo = memo;
