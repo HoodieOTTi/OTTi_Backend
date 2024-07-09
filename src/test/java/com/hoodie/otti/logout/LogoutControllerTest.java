@@ -1,11 +1,8 @@
 package com.hoodie.otti.logout;
 
-import com.hoodie.otti.controller.login.LoginController;
 import com.hoodie.otti.controller.logout.LogoutController;
 import com.hoodie.otti.service.logout.LogoutService;
 import com.hoodie.otti.dto.login.BaseResponse;
-import com.hoodie.otti.dto.login.UserKakaoLoginResponseDto;
-import com.hoodie.otti.service.login.LoginService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
