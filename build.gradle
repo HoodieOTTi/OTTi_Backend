@@ -62,6 +62,9 @@ dependencies {
 	// Mockito 의존성
 	testImplementation 'org.mockito:mockito-core:4.3.1'
 
+	// MySQL
+	implementation 'mysql:mysql-connector-java:8.0.28'
+
 }
 
 tasks.named('test') {
