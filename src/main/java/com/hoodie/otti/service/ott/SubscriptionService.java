@@ -8,6 +8,8 @@ import com.hoodie.otti.model.profile.UserProfile;
 import com.hoodie.otti.repository.ott.OttRepository;
 import com.hoodie.otti.repository.ott.SubscriptionRepository;
 import com.hoodie.otti.repository.profile.UserProfileRepository;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,7 +34,7 @@ public class SubscriptionService {
                 .payment(requestDto.getPayment())
                 .memo(requestDto.getMemo())
                 .paymentDate(requestDto.getPaymentDate())
-                .userProfileId(user)
+                .userProfile(user)
                 .ottId(ott)
                 .build();
 
@@ -46,6 +48,27 @@ public class SubscriptionService {
     public Subscription findById(Long id) throws IllegalArgumentException {
         return subscriptionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 구독 정보가 없습니다. id=" + id));
+    }
+
+    public List<Subscription> findAllByUserId(Long userId) {
+        return subscriptionRepository.findByUserProfile_Id(userId);
+    }
+
+    public Integer calculateDDay(Long id) {
+        Subscription subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구독 정보가 없습니다. id=" + id));
+
+        Integer paymentDate = subscription.getPaymentDate();
+
+        LocalDate now = LocalDate.now();
+        int currentDayOfMonth = now.getDayOfMonth();
+
+        if (paymentDate >= currentDayOfMonth) {
+            return paymentDate - currentDayOfMonth;
+        }
+
+        LocalDate nextPaymentDate = now.withDayOfMonth(paymentDate).plusMonths(1);
+        return (int) ChronoUnit.DAYS.between(now, nextPaymentDate);
     }
 
     @Transactional

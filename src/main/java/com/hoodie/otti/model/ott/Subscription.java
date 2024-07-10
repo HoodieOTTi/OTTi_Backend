@@ -51,7 +51,7 @@ public class Subscription {
 
     @ManyToOne
     @JoinColumn(name = "USER_PROFILE_ID", nullable = false)
-    private UserProfile userProfileId;
+    private UserProfile userProfile;
 
     @ManyToOne
     @JoinColumn(name = "OTT_ID", nullable = false)
@@ -59,14 +59,14 @@ public class Subscription {
 
     @Builder
     public Subscription(String name, Integer payment, String memo, Integer paymentDate, Date createdDate,
-                        Date modifiedDate, UserProfile userProfileId, Ott ottId) {
+                        Date modifiedDate, UserProfile userProfile, Ott ottId) {
         this.name = name;
         this.payment = payment;
         this.memo = memo;
         this.paymentDate = paymentDate;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.userProfileId = userProfileId;
+        this.userProfile = userProfile;
         this.ottId = ottId;
     }
 

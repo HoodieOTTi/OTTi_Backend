@@ -1,5 +1,7 @@
 package com.hoodie.otti.controller.ott;
 
+import com.hoodie.otti.dto.ott.SubscriptionByUserResponseDto;
+import com.hoodie.otti.dto.ott.SubscriptionDDayResponseDto;
 import com.hoodie.otti.dto.ott.SubscriptionResponseDto;
 import com.hoodie.otti.dto.ott.SubscriptionSaveRequestDto;
 import com.hoodie.otti.dto.ott.SubscriptionUpdateRequestDto;
@@ -44,6 +46,19 @@ public class SubscriptionController {
     @GetMapping("/{id}")
     public ResponseEntity<SubscriptionResponseDto> findById(@PathVariable Long id) {
         return ResponseEntity.ok().body(new SubscriptionResponseDto(subscriptionService.findById(id)));
+    }
+
+    @GetMapping("/user/{userid}")
+    public ResponseEntity<List<SubscriptionByUserResponseDto>> findByUserId(@PathVariable Long userid) {
+        return ResponseEntity.ok().body(subscriptionService.findAllByUserId(userid)
+                .stream()
+                .map(SubscriptionByUserResponseDto::new)
+                .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/d-day/{id}")
+    public ResponseEntity<SubscriptionDDayResponseDto> getDDay(@PathVariable Long id) {
+        return ResponseEntity.ok().body(new SubscriptionDDayResponseDto(subscriptionService.calculateDDay(id)));
     }
 
     @PutMapping("/{id}")
