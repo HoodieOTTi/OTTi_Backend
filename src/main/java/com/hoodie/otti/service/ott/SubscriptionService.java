@@ -8,6 +8,7 @@ import com.hoodie.otti.model.profile.UserProfile;
 import com.hoodie.otti.repository.ott.OttRepository;
 import com.hoodie.otti.repository.ott.SubscriptionRepository;
 import com.hoodie.otti.repository.profile.UserProfileRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -27,8 +28,9 @@ public class SubscriptionService {
     public Long save(SubscriptionSaveRequestDto requestDto) {
         UserProfile user = userProfileRepository.findById(requestDto.getUserProfileId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
-        Ott ott = ottRepository.findById(requestDto.getOttId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid ott ID"));
+
+        Ott ott = ottRepository.findOttByNameAndAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
+                .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
 
         Subscription subscription = Subscription.builder().name(requestDto.getName())
                 .payment(requestDto.getPayment())
@@ -73,11 +75,15 @@ public class SubscriptionService {
 
     @Transactional
     public Long update(Long id, SubscriptionUpdateRequestDto requestDto) {
+        Ott replaceOtt = null;
+
         Subscription subscription = subscriptionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 구독 정보가 없습니다. id=" + id));
 
-        Ott replaceOtt = ottRepository.findById(requestDto.getOttId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid ott ID"));
+        if (requestDto.getOttName() != null && requestDto.getOttRatePlan() != null) {
+            replaceOtt = ottRepository.findOttByNameAndAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
+                    .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
+        }
 
         subscription.update(
                 requestDto.getName(),

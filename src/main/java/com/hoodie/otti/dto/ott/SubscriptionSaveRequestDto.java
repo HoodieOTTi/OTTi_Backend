@@ -1,6 +1,5 @@
 package com.hoodie.otti.dto.ott;
 
-import java.util.Date;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,16 +13,18 @@ public class SubscriptionSaveRequestDto {
     private String memo;
     private Integer paymentDate;
     private Long userProfileId;
-    private Long ottId;
+    private String ottName;
+    private String ottRatePlan;
 
     @Builder
     public SubscriptionSaveRequestDto(String name, Integer payment, String memo, Integer paymentDate,
-                                      Long userProfileId, Long ottId) {
+                                      Long userProfileId, String ottName, String ottRatePlan) {
         this.name = name;
         this.payment = payment;
         this.memo = memo;
         this.paymentDate = paymentDate;
         this.userProfileId = userProfileId;
-        this.ottId = ottId;
+        this.ottName = ottName;
+        this.ottRatePlan = ottRatePlan;
     }
 }
