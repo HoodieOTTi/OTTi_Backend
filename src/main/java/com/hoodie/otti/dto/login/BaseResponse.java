@@ -76,4 +76,49 @@ public class BaseResponse<T> {
     public void setData(T data) {
         this.data = data;
     }
+
+    /**
+     * 객체 정보를 문자열로 반환합니다.
+     *
+     * @return 객체 정보 문자열
+     */
+    @Override
+    public String toString() {
+        return "BaseResponse{" +
+                "statusCode=" + statusCode +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
+    }
+
+    /**
+     * 객체 동등성 비교를 위한 equals 메서드입니다.
+     *
+     * @param o 비교할 객체
+     * @return 동등성 여부
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BaseResponse<?> that = (BaseResponse<?>) o;
+
+        if (statusCode != that.statusCode) return false;
+        if (!message.equals(that.message)) return false;
+        return data != null ? data.equals(that.data) : that.data == null;
+    }
+
+    /**
+     * 객체 해시코드를 생성합니다.
+     *
+     * @return 해시코드
+     */
+    @Override
+    public int hashCode() {
+        int result = statusCode;
+        result = 31 * result + message.hashCode();
+        result = 31 * result + (data != null ? data.hashCode() : 0);
+        return result;
+    }
 }

@@ -33,6 +33,11 @@ public class UserResponseDto {
         return userEmail;
     }
 
+    // userEmail 필드의 setter 메서드
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
     // kakaoUserId 필드의 getter 메서드
     public String getKakaoUserId() {
         return kakaoUserId;

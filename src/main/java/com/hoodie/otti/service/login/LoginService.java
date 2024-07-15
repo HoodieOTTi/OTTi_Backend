@@ -6,35 +6,38 @@ import com.hoodie.otti.dto.login.UserKakaoSignupRequestDto;
 import com.hoodie.otti.util.login.JwtTokenProvider;
 import com.hoodie.otti.repository.login.UserRepository;
 import com.hoodie.otti.entity.login.User;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Optional;
 
 @Service
 public class LoginService {
 
-    private final String clientId = "clientId";
-    private final String redirectUri = "redirectUri";
+    @Value("${kakao.client_id}")
+    private String kakaoClientId;
+
+    @Value("${kakao.redirect_uri}")
+    private String kakaoRedirectUri;
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RestTemplate restTemplate;
 
-    @Autowired
-    public LoginService(UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
+    public LoginService(UserRepository userRepository, JwtTokenProvider jwtTokenProvider, RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.restTemplate = restTemplate;
     }
 
     /**
@@ -44,9 +47,9 @@ public class LoginService {
      * @return UserKakaoLoginResponseDto 객체
      * @throws BaseException 사용자 저장에 실패할 경우 예외 처리
      */
+    @Transactional
     public UserKakaoLoginResponseDto kakaoLogin(String access_Token) throws BaseException {
         try {
-            // 카카오 로그인 로직 구현
             HashMap<String, String> userInfo = getUserKaKaoAccessInfo(access_Token);
             UserResponseDto userResponseDto = findByUserKakaoIdentifier(userInfo.get("id"));
 
@@ -67,12 +70,10 @@ public class LoginService {
         }
     }
 
-
-
     /**
-     * Kakao Access Token을 얻는 메서드
+     * Kakao OAuth 인증 코드를 사용하여 Kakao Access Token을 얻는 메서드
      *
-     * @param code Kakao 인증 코드
+     * @param code Kakao OAuth 인증 코드
      * @return Kakao Access Token
      */
     public String getKaKaoAccessToken(String code) {
@@ -80,46 +81,24 @@ public class LoginService {
         String reqURL = "https://kauth.kakao.com/oauth/token";
 
         try {
-            URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            // POST 요청 설정 및 출력 사용 가능하도록 설정
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("grant_type", "authorization_code");
+            params.add("client_id", kakaoClientId);
+            params.add("redirect_uri", kakaoRedirectUri);
+            params.add("code", code);
 
-            // POST 파라미터 작성
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
-            StringBuilder sb = new StringBuilder();
-            sb.append("grant_type=authorization_code");
-            sb.append("&client_id=").append(clientId);
-            sb.append("&redirect_uri=").append(redirectUri);
-            sb.append("&code=").append(code);
-            bw.write(sb.toString());
-            bw.flush();
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+            ResponseEntity<String> response = restTemplate.postForEntity(reqURL, request, String.class);
 
-            // 응답 코드가 200인 경우 (성공)
-            int responseCode = conn.getResponseCode();
-            System.out.println("응답 코드 : " + responseCode);
-
-            // JSON 응답 읽기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line;
-            StringBuilder result = new StringBuilder();
-
-            while ((line = br.readLine()) != null) {
-                result.append(line);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                JsonElement element = JsonParser.parseString(response.getBody());
+                accessToken = element.getAsJsonObject().get("access_token").getAsString();
             }
-            System.out.println("응답 본문 : " + result);
 
-            // Gson 라이브러리의 JsonParser 클래스로 JSON 파싱
-            JsonElement element = JsonParser.parseString(result.toString());
-
-            // JSON에서 access_token 추출
-            accessToken = element.getAsJsonObject().get("access_token").getAsString();
-
-            System.out.println("access_token : " + accessToken);
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -127,7 +106,7 @@ public class LoginService {
     }
 
     /**
-     * Kakao에서 사용자 정보를 얻는 메서드
+     * Kakao API를 사용하여 사용자 정보를 가져오는 메서드
      *
      * @param accessToken Kakao Access Token
      * @return 사용자 정보를 담은 HashMap
@@ -137,50 +116,29 @@ public class LoginService {
         String reqURL = "https://kapi.kakao.com/v2/user/me";
 
         try {
-            URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + accessToken);
+            HttpEntity<String> request = new HttpEntity<>(headers);
 
-            // GET 요청 설정
-            conn.setRequestMethod("GET");
+            ResponseEntity<String> response = restTemplate.exchange(reqURL, HttpMethod.GET, request, String.class);
 
-            // 요청에 필요한 헤더 설정
-            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                JsonElement element = JsonParser.parseString(response.getBody());
+                String id = element.getAsJsonObject().get("id").getAsString();
+                JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
+                String nickname = properties.getAsJsonObject().get("nickname").getAsString();
 
-            // 응답 코드 확인
-            int responseCode = conn.getResponseCode();
-            System.out.println("응답 코드 : " + responseCode);
+                JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
+                if (kakaoAccount.has("email")) {
+                    String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
+                    userInfo.put("email", email);
+                }
 
-            // 응답 본문 읽기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line;
-            StringBuilder result = new StringBuilder();
-
-            while ((line = br.readLine()) != null) {
-                result.append(line);
-            }
-            System.out.println("응답 본문 : " + result);
-
-            // Gson 라이브러리의 JsonParser 클래스로 JSON 파싱
-            JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(result.toString());
-
-            // JSON에서 필요한 사용자 정보 추출
-            String id = element.getAsJsonObject().get("id").getAsString();
-            JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
-            String nickname = properties.getAsJsonObject().get("nickname").getAsString();
-
-            // kakao_account JSON에서 이메일 유무 확인
-            JsonObject kakaoAccount = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
-            if (kakaoAccount.has("email")) {
-                String email = kakaoAccount.getAsJsonObject().get("email").getAsString();
-                userInfo.put("email", email);
+                userInfo.put("nickname", nickname);
+                userInfo.put("id", id);
             }
 
-            // 추출한 정보를 userInfo HashMap에 저장
-            userInfo.put("nickname", nickname);
-            userInfo.put("id", id);
-
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -188,7 +146,18 @@ public class LoginService {
     }
 
     /**
-     * 회원가입 메서드
+     * Kakao 사용자 식별자로 사용자 조회하는 메서드
+     *
+     * @param kakaoUserId Kakao 사용자 식별자
+     * @return 사용자 정보를 담은 UserResponseDto 객체
+     */
+    public UserResponseDto findByUserKakaoIdentifier(String kakaoUserId) {
+        Optional<User> userOptional = userRepository.findByKakaoUserId(kakaoUserId);
+        return userOptional.map(UserResponseDto::new).orElse(null);
+    }
+
+    /**
+     * Kakao 회원가입 처리하는 메서드
      *
      * @param userKakaoSignupRequestDto Kakao 회원가입 요청 DTO
      * @return 저장된 회원의 ID
@@ -201,28 +170,6 @@ public class LoginService {
         } catch (Exception e) {
             throw new BaseException(BaseResponseCode.FAILED_TO_SAVE_USER);
         }
-    }
-
-
-    /**
-     * 사용자 식별자로 사용자 조회하는 메서드
-     *
-     * @param kakaoUserId Kakao 사용자 식별자
-     * @return 사용자 정보를 담은 UserResponseDto 객체
-     */
-    public UserResponseDto findByUserKakaoIdentifier(String kakaoUserId) {
-        Optional<User> userOptional = userRepository.findByKakaoUserId(kakaoUserId);
-        return userOptional.map(UserResponseDto::new).orElse(null);
-    }
-
-    /**
-     * JWT 토큰 생성하는 메서드
-     *
-     * @param userEmail 사용자 이메일
-     * @return 생성된 JWT 토큰
-     */
-    public String generateToken(String userEmail) {
-        return jwtTokenProvider.createToken(userEmail);
     }
 
     // 예외 처리를 위한 BaseException 클래스
@@ -253,24 +200,5 @@ public class LoginService {
         public String getMessage() {
             return message;
         }
-    }
-
-    // 개인 정보를 기반으로 Kakao 회원 가입 요청 DTO 반환하는 메서드
-    private UserKakaoSignupRequestDto getUserKakaoSignupRequestDto(HashMap<String, Object> userInfo) {
-        String userPassword = "-1";
-        String kakaoUserId = userInfo.get("id") != null ? userInfo.get("id").toString() : null;
-        String nickname = userInfo.get("nickname") != null ? userInfo.get("nickname").toString() : null;
-        String userEmail = userInfo.get("email") != null ? userInfo.get("email").toString() : null;
-
-        return new UserKakaoSignupRequestDto(userEmail, nickname, userPassword, kakaoUserId);
-    }
-
-    // 응답 DTO 생성하는 메서드
-    private UserKakaoLoginResponseDto createUserKakaoLoginResponseDto(HashMap<String, String> userInfo) {
-        String userEmail = userInfo.get("email"); // 사용자 이메일을 가져옵니다. userInfo에 이메일이 있다고 가정합니다.
-        String token = generateToken(userEmail); // 토큰을 생성합니다. 이 부분은 토큰을 생성하는 방법에 맞게 구현되어야 합니다.
-        HttpStatus status = HttpStatus.OK; // 상태는 OK로 가정합니다.
-
-        return new UserKakaoLoginResponseDto(status, token, userEmail);
     }
 }

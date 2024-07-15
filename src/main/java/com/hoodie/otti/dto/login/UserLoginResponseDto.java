@@ -2,6 +2,8 @@ package com.hoodie.otti.dto.login;
 
 import org.springframework.http.HttpStatus;
 
+import java.util.Objects;
+
 /**
  * 사용자 로그인 응답 DTO 클래스
  */
@@ -53,5 +55,30 @@ public class UserLoginResponseDto {
 
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
+    }
+
+    // toString, equals, hashCode 메서드 추가
+    @Override
+    public String toString() {
+        return "UserLoginResponseDto{" +
+                "status=" + status +
+                ", token='" + token + '\'' +
+                ", userEmail='" + userEmail + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserLoginResponseDto that = (UserLoginResponseDto) o;
+        return status == that.status &&
+                token.equals(that.token) &&
+                userEmail.equals(that.userEmail);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status, token, userEmail);
     }
 }
