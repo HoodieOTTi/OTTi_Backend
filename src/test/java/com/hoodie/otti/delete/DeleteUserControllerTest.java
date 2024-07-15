@@ -1,20 +1,19 @@
 package com.hoodie.otti.delete;
 
 import com.hoodie.otti.controller.delete.DeleteUserController;
+import com.hoodie.otti.exception.delete.DeleteUserException;
 import com.hoodie.otti.service.delete.DeleteUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 public class DeleteUserControllerTest {
 
@@ -24,42 +23,46 @@ public class DeleteUserControllerTest {
     @InjectMocks
     private DeleteUserController deleteUserController;
 
-    private MockMvc mockMvc;
-
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(deleteUserController).build();
     }
 
     @Test
-    public void testDeleteUserSuccess() throws Exception {
-        String userEmail = "test@example.com";
-        String token = "valid.jwt.token";
+    public void testDeleteUser_Success() {
+        // Mocking service method return value
+        when(deleteUserService.deleteUser(anyString(), anyString())).thenReturn(true);
 
-        when(deleteUserService.deleteUser(userEmail, token)).thenReturn(true);
+        // Test controller method
+        ResponseEntity<String> response = deleteUserController.deleteUser("test@example.com", "mockedToken");
 
-        mockMvc.perform(delete("/api/delete-user")
-                        .param("userEmail", userEmail)
-                        .header("Authorization", token)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Account successfully deleted."));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Account successfully deleted.", response.getBody());
     }
 
     @Test
-    public void testDeleteUserFailure() throws Exception {
-        String userEmail = "test@example.com";
-        String token = "invalid.jwt.token";
+    public void testDeleteUser_Failure() {
+        // Mocking service method return value
+        when(deleteUserService.deleteUser(anyString(), anyString())).thenReturn(false);
 
-        when(deleteUserService.deleteUser(userEmail, token)).thenReturn(false);
+        // Test controller method
+        ResponseEntity<String> response = deleteUserController.deleteUser("test@example.com", "mockedToken");
 
-        mockMvc.perform(delete("/api/delete-user")
-                        .param("userEmail", userEmail)
-                        .header("Authorization", token)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string("Failed to delete account."));
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to delete account.", response.getBody());
     }
+
+    @Test
+    public void testDeleteUser_ExceptionHandling() {
+        // Mocking service method to throw an exception
+        doThrow(new DeleteUserException("User not found")).when(deleteUserService).deleteUser(anyString(), anyString());
+
+        // Test controller method
+        ResponseEntity<String> response = deleteUserController.deleteUser("test@example.com", "mockedToken");
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("User not found", response.getBody());
+    }
+
+    // Add more tests for other scenarios like invalid token, email mismatch, etc.
 }
-

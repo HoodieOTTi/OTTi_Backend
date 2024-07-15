@@ -1,9 +1,10 @@
 package com.hoodie.otti.entity.login;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+
 
 /**
  * 사용자 엔티티 클래스
@@ -20,6 +21,7 @@ public class User {
     private String userEmail;   // 사용자 이메일
     private String kakaoUserId; // 카카오 사용자 ID
     private String nickname;    // 사용자 닉네임
+    
 
     // 기본 생성자
     public User() {}

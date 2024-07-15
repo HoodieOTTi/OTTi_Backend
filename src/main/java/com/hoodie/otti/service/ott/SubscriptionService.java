@@ -1,11 +1,11 @@
 package com.hoodie.otti.service.ott;
 
 import com.hoodie.otti.dto.ott.SubscriptionSaveRequestDto;
-import com.hoodie.otti.model.Ott;
-import com.hoodie.otti.model.Subscription;
-import com.hoodie.otti.model.profile.UserProfile;
+import com.hoodie.otti.entity.ott.Ott;
+import com.hoodie.otti.entity.subscripition.Subscription;
+import com.hoodie.otti.entity.profile.UserProfile;
 import com.hoodie.otti.repository.ott.OttRepository;
-import com.hoodie.otti.repository.ott.SubscriptionRepository;
+import com.hoodie.otti.repository.subscription.SubscriptionRepository;
 import com.hoodie.otti.repository.profile.UserProfileRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

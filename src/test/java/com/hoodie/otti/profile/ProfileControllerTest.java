@@ -1,8 +1,9 @@
-package com.hoodie.otti.controller.profile;
+package com.hoodie.otti.profile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
+import com.hoodie.otti.controller.profile.ProfileController;
 import com.hoodie.otti.service.profile.UserProfileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.hoodie.otti.model.profile;
+package com.hoodie.otti.entity.profile;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

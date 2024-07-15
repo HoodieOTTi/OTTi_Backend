@@ -1,6 +1,7 @@
-package com.hoodie.otti.model;
+package com.hoodie.otti.entity.subscripition;
 
-import com.hoodie.otti.model.profile.UserProfile;
+import com.hoodie.otti.entity.ott.Ott;
+import com.hoodie.otti.entity.profile.UserProfile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;

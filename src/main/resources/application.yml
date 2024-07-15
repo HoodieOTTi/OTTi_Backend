@@ -1,14 +1,14 @@
 spring:
   datasource:
-    url: ${DB_JDBC_URL}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://127.0.0.1:3306/Hoodie
+    username: root
+    password: Best3034~!
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:

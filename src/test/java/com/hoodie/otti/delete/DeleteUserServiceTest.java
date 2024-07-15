@@ -1,5 +1,7 @@
 package com.hoodie.otti.delete;
 
+import com.hoodie.otti.entity.login.User;
+import com.hoodie.otti.exception.delete.DeleteUserException;
 import com.hoodie.otti.repository.delete.DeleteUserRepository;
 import com.hoodie.otti.service.delete.DeleteUserService;
 import com.hoodie.otti.util.login.JwtTokenProvider;
@@ -9,21 +11,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class DeleteUserServiceTest {
 
     @Mock
-    private DeleteUserRepository deleteUserRepository;
+    private DeleteUserRepository userRepository;
 
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtTokenProvider tokenProvider;
 
     @InjectMocks
-    private DeleteUserService deleteUserService;
+    private DeleteUserService userService;
 
     @BeforeEach
     public void setUp() {
@@ -31,26 +33,37 @@ public class DeleteUserServiceTest {
     }
 
     @Test
-    public void testDeleteUserSuccess() {
-        String userEmail = "test@example.com";
-        String token = "valid.jwt.token";
+    public void testDeleteUser_Success() {
+        // Mocking token validation
+        when(tokenProvider.validateToken(anyString())).thenReturn(true);
+        when(tokenProvider.getUserEmailFromToken(anyString())).thenReturn("test@example.com");
 
-        doNothing().when(deleteUserRepository).deleteByEmail(userEmail);
-        doNothing().when(jwtTokenProvider).invalidateToken(token);
+        // Mocking repository behavior
+        User user = new User();
+        user.setUserEmail("test@example.com");
+        Optional<User> optionalUser = Optional.of(user);
+        when(userRepository.findByEmail(anyString())).thenReturn(optionalUser);
 
-        boolean result = deleteUserService.deleteUser(userEmail, token);
-        assertTrue(result);
+        // Mocking delete method
+        doNothing().when(userRepository).delete(any(User.class));
+
+        // Mocking token invalidation
+        doNothing().when(tokenProvider).invalidateToken(anyString());
+
+        // Test the service method
+        assertDoesNotThrow(() -> userService.deleteUser("test@example.com", "mockedToken"));
     }
 
     @Test
-    public void testDeleteUserFailure() {
-        String userEmail = "test@example.com";
-        String token = "invalid.jwt.token";
+    public void testDeleteUser_InvalidToken() {
+        // Mocking token validation failure
+        when(tokenProvider.validateToken(anyString())).thenReturn(false);
 
-        doThrow(new RuntimeException()).when(deleteUserRepository).deleteByEmail(userEmail);
-        doThrow(new RuntimeException()).when(jwtTokenProvider).invalidateToken(token);
-
-        boolean result = deleteUserService.deleteUser(userEmail, token);
-        assertFalse(result);
+        // Test should throw DeleteUserException with "Invalid token" message
+        DeleteUserException exception = assertThrows(DeleteUserException.class,
+                () -> userService.deleteUser("test@example.com", "invalidToken"));
+        assertEquals("Invalid token", exception.getMessage());
     }
+
+    // Add more tests for other scenarios like email mismatch, user not found, unexpected errors, etc.
 }

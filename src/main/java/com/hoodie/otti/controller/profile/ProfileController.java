@@ -1,16 +1,12 @@
 package com.hoodie.otti.controller.profile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hoodie.otti.dto.profile.UserProfileDTO;
-import com.hoodie.otti.exception.profile.ProfileControllerException;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
-import com.hoodie.otti.model.profile.UserProfile;
 import com.hoodie.otti.service.profile.UserProfileService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
