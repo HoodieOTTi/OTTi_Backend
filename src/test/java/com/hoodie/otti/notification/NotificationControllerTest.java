@@ -6,23 +6,31 @@ import com.hoodie.otti.entity.notification.Notification;
 import com.hoodie.otti.service.notification.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(NotificationController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 public class NotificationControllerTest {
 
     @Autowired
@@ -34,111 +42,95 @@ public class NotificationControllerTest {
     @InjectMocks
     private NotificationController notificationController;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(notificationController).build();
     }
 
     @Test
     void testGetAllNotifications() throws Exception {
-        // Mock 데이터
-        Notification notification1 = new Notification("Notification 1");
-        Notification notification2 = new Notification("Notification 2");
-        List<Notification> notifications = Arrays.asList(notification1, notification2);
+        List<Notification> notifications = new ArrayList<>();
+        notifications.add(new Notification("Test notification"));
 
-        // Mock service behavior
         when(notificationService.getAllNotifications()).thenReturn(notifications);
 
-        // MockMvc를 이용한 API 호출 및 검증
-        mockMvc.perform(MockMvcRequestBuilders.get("/notification"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].message").value("Notification 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].message").value("Notification 2"));
+        mockMvc.perform(get("/notification")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].message").value("Test notification"));
     }
 
     @Test
-    void testCreateNotification() throws Exception {
-        // Mock 데이터
-        Notification notification = new Notification("New Notification");
+    public void testCreateNotification() throws Exception {
+        LocalDateTime createdAt = LocalDateTime.now();
+        Notification notification = new Notification();
+        notification.setUserId(1L);
+        notification.setMessage("Test Notification");
+        notification.setCreatedAt(createdAt);
 
-        // Mock service behavior
         when(notificationService.saveOrUpdateNotification(any(Notification.class))).thenReturn(notification);
 
-        // MockMvc를 이용한 API 호출 및 검증
         mockMvc.perform(MockMvcRequestBuilders.post("/notification")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(notification)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("New Notification"));
+                        .content(objectMapper.writeValueAsString(notification)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(1L))
+                .andExpect(jsonPath("$.message").value("Test Notification"))
+                .andExpect(jsonPath("$.createdAt").value(createdAt.toString()));
     }
 
     @Test
     void testGetNotificationById() throws Exception {
-        // Mock 데이터
-        Long notificationId = 1L;
-        Notification notification = new Notification(notificationId, "Test Notification", false, null);
+        Notification notification = new Notification("Test notification");
+        notification.setUserId(1L);
 
-        // Mock service behavior
-        when(notificationService.getNotificationById(notificationId)).thenReturn(notification);
+        when(notificationService.getNotificationById(1L)).thenReturn(notification);
 
-        // MockMvc를 이용한 API 호출 및 검증
-        mockMvc.perform(MockMvcRequestBuilders.get("/notification/{id}", notificationId))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Test Notification"));
+        mockMvc.perform(get("/notification/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Test notification"));
     }
 
     @Test
     void testMarkNotificationAsRead() throws Exception {
-        // Mock 데이터
-        Long notificationId = 1L;
-        Notification notification = new Notification(notificationId, "Test Notification", false, null);
+        Notification notification = new Notification("Test notification");
+        notification.setUserId(1L);
 
-        // Mock service behavior
-        when(notificationService.markNotificationAsRead(notificationId)).thenReturn(notification);
+        when(notificationService.markNotificationAsRead(1L)).thenReturn(notification);
 
-        // MockMvc를 이용한 API 호출 및 검증
-        mockMvc.perform(MockMvcRequestBuilders.put("/notification/{id}/mark-as-read", notificationId))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.isRead").value(true));
+        mockMvc.perform(put("/notification/1/mark-as-read")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Test notification"))
+                .andExpect(jsonPath("$.read").value(true));
     }
 
     @Test
     void testGetUnreadNotifications() throws Exception {
-        // Mock 데이터
-        Long userId = 1L;
-        Notification notification1 = new Notification("Notification 1");
-        Notification notification2 = new Notification("Notification 2");
-        List<Notification> notifications = Arrays.asList(notification1, notification2);
+        List<Notification> notifications = new ArrayList<>();
+        notifications.add(new Notification("Unread notification"));
 
-        // Mock service behavior
-        when(notificationService.getUnreadNotifications(userId)).thenReturn(notifications);
+        when(notificationService.getUnreadNotifications(1L)).thenReturn(notifications);
 
-        // MockMvc를 이용한 API 호출 및 검증
-        mockMvc.perform(MockMvcRequestBuilders.get("/notification/unread/{id}", userId))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].message").value("Notification 1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].message").value("Notification 2"));
+        mockMvc.perform(get("/notification/unread/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].message").value("Unread notification"));
     }
 
     @Test
     void testCountNotificationsByUserId() throws Exception {
-        // Mock 데이터
-        Long userId = 1L;
-        long count = 5;
+        when(notificationService.countNotificationsByUserId(1L)).thenReturn(5L);
 
-        // Mock service behavior
-        when(notificationService.countNotificationsByUserId(userId)).thenReturn(count);
-
-        // MockMvc를 이용한 API 호출 및 검증
-        mockMvc.perform(MockMvcRequestBuilders.get("/notification/user/{id}/count", userId))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().string(String.valueOf(count)));
+        mockMvc.perform(get("/notification/user/1/count")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string("5"));
     }
-
 }

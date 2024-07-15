@@ -29,7 +29,7 @@ public class Notification {
     private LocalDateTime createdAt;
 
     // 기본 생성자 (JPA 규약을 따라야 함)
-    protected Notification() {
+    public Notification() {
     }
 
     // 메시지를 받아 초기화하는 생성자

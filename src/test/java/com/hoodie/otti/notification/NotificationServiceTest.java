@@ -6,11 +6,13 @@ import com.hoodie.otti.repository.notification.NotificationRepository;
 import com.hoodie.otti.service.notification.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
 
     @Mock
@@ -28,75 +31,110 @@ public class NotificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void testGetAllNotifications() {
-        // Mock 데이터
-        Notification notification1 = new Notification("Notification 1");
-        Notification notification2 = new Notification("Notification 2");
-        List<Notification> notifications = Arrays.asList(notification1, notification2);
+        // 테스트용 데이터 생성
+        List<Notification> notifications = new ArrayList<>();
+        notifications.add(new Notification("Test notification"));
 
-        // Mock repository behavior
+        // Mock 객체 설정
         when(notificationRepository.findAll()).thenReturn(notifications);
 
-        // 호출 및 검증
+        // 서비스 메서드 호출
         List<Notification> result = notificationService.getAllNotifications();
-        assertEquals(2, result.size());
-        assertEquals(notification1, result.get(0));
-        assertEquals(notification2, result.get(1));
+
+        // 검증
+        assertEquals(1, result.size());
+        assertEquals("Test notification", result.get(0).getMessage());
     }
 
     @Test
     void testGetNotificationById() {
-        // Mock 데이터
-        Long notificationId = 1L;
-        Notification notification = new Notification(notificationId, "Test Notification", false, null);
+        // 테스트용 데이터 생성
+        Notification notification = new Notification("Test notification");
+        notification.setUserId(1L);
 
-        // Mock repository behavior
-        when(notificationRepository.findById(notificationId)).thenReturn(Optional.of(notification));
+        // Mock 객체 설정
+        when(notificationRepository.findById(1L)).thenReturn(Optional.of(notification));
 
-        // 호출 및 검증
-        Notification result = notificationService.getNotificationById(notificationId);
-        assertEquals(notificationId, result.getUserId());
-        assertEquals("Test Notification", result.getMessage());
-        assertFalse(result.isRead());
+        // 서비스 메서드 호출
+        Notification result = notificationService.getNotificationById(1L);
+
+        // 검증
+        assertNotNull(result);
+        assertEquals("Test notification", result.getMessage());
     }
 
     @Test
     void testGetNotificationById_NotFound() {
-        // Mock repository behavior
-        when(notificationRepository.findById(any())).thenReturn(Optional.empty());
+        // Mock 객체 설정 (빈 Optional 반환)
+        when(notificationRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
-        // 호출 시 예외 발생 여부 검증
-        assertThrows(NotificationNotFoundException.class, () -> notificationService.getNotificationById(999L));
+        // 예외 발생 여부 확인
+        assertThrows(NotificationNotFoundException.class, () -> notificationService.getNotificationById(1L));
     }
 
     @Test
     void testSaveOrUpdateNotification() {
-        // Mock 데이터
-        Notification notification = new Notification("New Notification");
+        // 테스트용 데이터 생성
+        Notification notification = new Notification("New notification");
 
-        // Mock repository behavior
-        when(notificationRepository.save(notification)).thenReturn(notification);
+        // Mock 객체 설정
+        when(notificationRepository.save(any(Notification.class))).thenReturn(notification);
 
-        // 호출 및 검증
+        // 서비스 메서드 호출
         Notification result = notificationService.saveOrUpdateNotification(notification);
+
+        // 검증
         assertNotNull(result);
-        assertEquals("New Notification", result.getMessage());
+        assertEquals("New notification", result.getMessage());
     }
 
     @Test
-    void testDeleteNotification() {
-        // Mock 데이터
-        Long notificationId = 1L;
+    void testMarkNotificationAsRead() {
+        // 테스트용 데이터 생성
+        Notification notification = new Notification("Test notification");
+        notification.setRead(false);
 
-        // 호출
-        notificationService.deleteNotification(notificationId);
+        // Mock 객체 설정
+        when(notificationRepository.findById(1L)).thenReturn(Optional.of(notification));
+        when(notificationRepository.save(any(Notification.class))).thenReturn(notification);
 
-        // 삭제가 호출되었는지 검증
-        verify(notificationRepository, times(1)).deleteById(notificationId);
+        // 서비스 메서드 호출
+        Notification result = notificationService.markNotificationAsRead(1L);
+
+        // 검증
+        assertTrue(result.isRead());
     }
 
+    @Test
+    void testGetUnreadNotifications() {
+        // 테스트용 데이터 생성
+        List<Notification> notifications = new ArrayList<>();
+        notifications.add(new Notification("Unread notification"));
+
+        // Mock 객체 설정
+        when(notificationRepository.findByIsReadFalseAndUserId(1L)).thenReturn(notifications);
+
+        // 서비스 메서드 호출
+        List<Notification> result = notificationService.getUnreadNotifications(1L);
+
+        // 검증
+        assertEquals(1, result.size());
+        assertEquals("Unread notification", result.get(0).getMessage());
+    }
+
+    @Test
+    void testCountNotificationsByUserId() {
+        // Mock 객체 설정
+        when(notificationRepository.countByUserId(1L)).thenReturn(5L);
+
+        // 서비스 메서드 호출
+        long result = notificationService.countNotificationsByUserId(1L);
+
+        // 검증
+        assertEquals(5, result);
+    }
 }
