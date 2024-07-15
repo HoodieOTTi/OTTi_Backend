@@ -40,12 +40,20 @@ public class LoginServiceTest {
     @InjectMocks
     private LoginService loginService;
 
+    /**
+     * 각 테스트 메서드 실행 전 LoginService 인스턴스를 초기화합니다.
+     */
     @BeforeEach
     void setUp() {
         // Mock 객체 초기화 및 설정
         loginService = new LoginService(userRepository, jwtTokenProvider, restTemplate);
     }
 
+    /**
+     * kakaoLogin 메서드의 성공적인 동작을 테스트합니다.
+     *
+     * @throws LoginService.BaseException 예외 처리 시 처리됩니다.
+     */
     @Test
     void testKakaoLogin() throws LoginService.BaseException {
         // Given
@@ -58,9 +66,16 @@ public class LoginServiceTest {
         UserResponseDto mockUserResponseDto = new UserResponseDto();
         mockUserResponseDto.setUserEmail("test@example.com");
 
+        // loginService.getUserKaKaoAccessInfo 메서드의 반환 값을 모의 설정합니다.
         when(loginService.getUserKaKaoAccessInfo(anyString())).thenReturn(userInfo);
+
+        // loginService.findByUserKakaoIdentifier 메서드의 반환 값을 모의 설정합니다.
         when(loginService.findByUserKakaoIdentifier(anyString())).thenReturn(null);
+
+        // loginService.signUp 메서드의 반환 값을 모의 설정합니다.
         when(loginService.signUp(any(UserKakaoSignupRequestDto.class))).thenReturn(1L);
+
+        // jwtTokenProvider.createToken 메서드의 반환 값을 모의 설정합니다.
         when(jwtTokenProvider.createToken(anyString())).thenReturn("dummy_token");
 
         // When
@@ -71,12 +86,16 @@ public class LoginServiceTest {
         assertEquals("test@example.com", responseDto.getUserEmail());
     }
 
+    /**
+     * getKaKaoAccessToken 메서드의 동작을 테스트합니다.
+     */
     @Test
     void testGetKaKaoAccessToken() {
         // Given
         String code = "dummy_code";
         String accessToken = "dummy_access_token";
 
+        // restTemplate.postForEntity 메서드의 반환 값을 모의 설정합니다.
         when(restTemplate.postForEntity(anyString(), any(), eq(String.class)))
                 .thenReturn(null);
 
@@ -87,5 +106,4 @@ public class LoginServiceTest {
         assertEquals(accessToken, result);
     }
 
-    // 추가적인 테스트 케이스들을 여기에 작성할 수 있습니다.
 }

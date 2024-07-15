@@ -28,6 +28,9 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * NotificationControllerTest는 NotificationController 클래스의 REST API 기능을 테스트하는 클래스입니다.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
@@ -47,9 +50,13 @@ public class NotificationControllerTest {
 
     @BeforeEach
     void setUp() {
+        // MockMvc 객체를 설정합니다.
         mockMvc = MockMvcBuilders.standaloneSetup(notificationController).build();
     }
 
+    /**
+     * 모든 알림 조회 API의 성공 테스트입니다.
+     */
     @Test
     void testGetAllNotifications() throws Exception {
         List<Notification> notifications = new ArrayList<>();
@@ -64,6 +71,9 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$[0].message").value("Test notification"));
     }
 
+    /**
+     * 알림 생성 API의 성공 테스트입니다.
+     */
     @Test
     public void testCreateNotification() throws Exception {
         LocalDateTime createdAt = LocalDateTime.now();
@@ -83,6 +93,9 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$.createdAt").value(createdAt.toString()));
     }
 
+    /**
+     * 특정 알림 조회 API의 성공 테스트입니다.
+     */
     @Test
     void testGetNotificationById() throws Exception {
         Notification notification = new Notification("Test notification");
@@ -96,6 +109,9 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$.message").value("Test notification"));
     }
 
+    /**
+     * 알림을 읽음 처리하는 API의 성공 테스트입니다.
+     */
     @Test
     void testMarkNotificationAsRead() throws Exception {
         Notification notification = new Notification("Test notification");
@@ -110,6 +126,9 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$.read").value(true));
     }
 
+    /**
+     * 읽지 않은 알림 조회 API의 성공 테스트입니다.
+     */
     @Test
     void testGetUnreadNotifications() throws Exception {
         List<Notification> notifications = new ArrayList<>();
@@ -124,6 +143,9 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$[0].message").value("Unread notification"));
     }
 
+    /**
+     * 사용자별 알림 수 조회 API의 성공 테스트입니다.
+     */
     @Test
     void testCountNotificationsByUserId() throws Exception {
         when(notificationService.countNotificationsByUserId(1L)).thenReturn(5L);
