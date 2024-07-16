@@ -53,18 +53,6 @@ public class UserProfileService {
     }
 
     /**
-     * 닉네임 업데이트
-     * @param userId 유저 ID
-     * @param newNickname 새로운 닉네임
-     * @throws UserProfileNotFoundException 유저 프로필이 존재하지 않을 경우
-     */
-    public void updateUserProfileNickname(Long userId, String newNickname) {
-        UserProfile userProfile = getUserProfileById(userId);
-        userProfile.setNickname(newNickname);
-        userProfileRepository.save(userProfile);
-    }
-
-    /**
      * 프로필 전체 업데이트
      * @param userId 유저 ID
      * @param newUsername 새로운 유저네임
@@ -75,7 +63,6 @@ public class UserProfileService {
     public void updateUserProfile(Long userId, String newUsername, String newNickname, String photoUrl) {
         UserProfile userProfile = getUserProfileById(userId);
         userProfile.setUsername(newUsername);
-        userProfile.setNickname(newNickname);
         userProfile.setProfilePhotoUrl(photoUrl);
         userProfileRepository.save(userProfile);
     }

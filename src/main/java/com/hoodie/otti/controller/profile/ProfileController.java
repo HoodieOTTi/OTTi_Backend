@@ -44,14 +44,6 @@ public class ProfileController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/nickname")
-    public ResponseEntity<Void> updateProfileNickname(
-            @PathVariable Long userId,
-            @RequestParam @NotBlank String newNickname) {
-        userProfileService.updateUserProfileNickname(userId, newNickname);
-        return ResponseEntity.ok().build();
-    }
-
     @PutMapping("/update")
     public ResponseEntity<Void> updateProfile(
             @PathVariable Long userId,

@@ -13,7 +13,6 @@ public class UserProfile {
     private Long id;
 
     private String username;
-    private String nickname;
     private String profilePhotoUrl;
 
     public UserProfile() {
@@ -21,7 +20,6 @@ public class UserProfile {
 
     public UserProfile(String username, String nickname, String profilePhotoUrl) {
         this.username = username;
-        this.nickname = nickname;
         this.profilePhotoUrl = profilePhotoUrl;
     }
 
@@ -39,14 +37,6 @@ public class UserProfile {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     public String getProfilePhotoUrl() {
