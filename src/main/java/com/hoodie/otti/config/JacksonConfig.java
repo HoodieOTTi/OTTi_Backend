@@ -7,10 +7,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class JacksonConfig {
+
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // Java 8 날짜/시간 타입 지원을 위한 모듈 등록
+        objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
     }
 }

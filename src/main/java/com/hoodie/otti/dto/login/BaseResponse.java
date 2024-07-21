@@ -1,124 +1,53 @@
 package com.hoodie.otti.dto.login;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
- * HTTP 상태 코드, 메시지 및 데이터를 포함하는 일반적인 응답 객체입니다.
+ * API 응답의 기본 구조를 정의하는 클래스입니다.
+ * 모든 응답에서 공통으로 사용되는 필드와 메서드를 제공합니다.
  *
- * @param <T> 데이터 필드의 유형
+ * @param <T> 응답 데이터의 타입
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BaseResponse<T> {
-    private int statusCode; // HTTP 상태 코드
-    private String message; // 응답 메시지
-    private T data; // 응답 데이터
+
+    private String message;   // 응답 메시지
+    private boolean success;  // 요청 처리 성공 여부
+    private T data;           // 응답 데이터
 
     /**
-     * BaseResponse 객체를 생성합니다.
+     * 성공적인 응답을 생성하는 헬퍼 메서드입니다.
      *
-     * @param statusCode HTTP 상태 코드
-     * @param message    응답 메시지
-     * @param data       응답 데이터
+     * @param data 응답 데이터
+     * @param <T>  응답 데이터의 타입
+     * @return 성공적인 응답
      */
-    public BaseResponse(int statusCode, String message, T data) {
-        this.statusCode = statusCode;
-        this.message = message;
-        this.data = data;
+    public static <T> BaseResponse<T> success(T data) {
+        return BaseResponse.<T>builder()
+                .success(true)
+                .message("Request was successful")
+                .data(data)
+                .build();
     }
 
     /**
-     * HTTP 상태 코드를 반환합니다.
+     * 실패 응답을 생성하는 헬퍼 메서드입니다.
      *
-     * @return HTTP 상태 코드
+     * @param message 오류 메시지
+     * @param <T>     응답 데이터의 타입
+     * @return 실패 응답
      */
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    /**
-     * HTTP 상태 코드를 설정합니다.
-     *
-     * @param statusCode 설정할 HTTP 상태 코드
-     */
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    /**
-     * 응답 메시지를 반환합니다.
-     *
-     * @return 응답 메시지
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * 응답 메시지를 설정합니다.
-     *
-     * @param message 설정할 응답 메시지
-     */
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    /**
-     * 응답 데이터를 반환합니다.
-     *
-     * @return 응답 데이터
-     */
-    public T getData() {
-        return data;
-    }
-
-    /**
-     * 응답 데이터를 설정합니다.
-     *
-     * @param data 설정할 응답 데이터
-     */
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    /**
-     * 객체 정보를 문자열로 반환합니다.
-     *
-     * @return 객체 정보 문자열
-     */
-    @Override
-    public String toString() {
-        return "BaseResponse{" +
-                "statusCode=" + statusCode +
-                ", message='" + message + '\'' +
-                ", data=" + data +
-                '}';
-    }
-
-    /**
-     * 객체 동등성 비교를 위한 equals 메서드입니다.
-     *
-     * @param o 비교할 객체
-     * @return 동등성 여부
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        BaseResponse<?> that = (BaseResponse<?>) o;
-
-        if (statusCode != that.statusCode) return false;
-        if (!message.equals(that.message)) return false;
-        return data != null ? data.equals(that.data) : that.data == null;
-    }
-
-    /**
-     * 객체 해시코드를 생성합니다.
-     *
-     * @return 해시코드
-     */
-    @Override
-    public int hashCode() {
-        int result = statusCode;
-        result = 31 * result + message.hashCode();
-        result = 31 * result + (data != null ? data.hashCode() : 0);
-        return result;
+    public static <T> BaseResponse<T> failure(String message) {
+        return BaseResponse.<T>builder()
+                .success(false)
+                .message(message)
+                .data(null)
+                .build();
     }
 }

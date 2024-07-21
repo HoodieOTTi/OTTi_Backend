@@ -18,7 +18,7 @@ public class UserProfile {
     public UserProfile() {
     }
 
-    public UserProfile(String username, String nickname, String profilePhotoUrl) {
+    public UserProfile(String username, String profilePhotoUrl) {
         this.username = username;
         this.profilePhotoUrl = profilePhotoUrl;
     }

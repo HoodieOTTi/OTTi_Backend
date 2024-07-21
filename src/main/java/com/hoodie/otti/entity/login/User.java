@@ -8,11 +8,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
-/**
- * 사용자 엔티티 클래스
- * 이 클래스는 데이터베이스에서 사용자 정보를 관리하기 위한 엔티티입니다.
- * 사용자의 식별자(userId), 이메일(userEmail), 카카오 사용자 ID(kakaoUserId), 닉네임(nickname) 등의 정보를 저장합니다.
- */
 @Entity
 public class User {
 
@@ -86,5 +81,4 @@ public class User {
         this.nickname = nickname;
     }
 
-    // 추가적인 도메인 로직이 필요한 경우 여기에 추가할 수 있습니다.
 }

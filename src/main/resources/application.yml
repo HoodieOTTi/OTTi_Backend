@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_JDBC_URL}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://127.0.0.1:3306/Hoodie
+    username: root
+    password: Best3034~!
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database: mysql
@@ -14,3 +14,21 @@ spring:
       hibernate:
         format_sql: false
         use_sql_comments: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: bb661499b90028f548ca03c11a3fb225
+            client-secret: MY_KAKAO_CLIENT_SECRET
+            redirect-uri: http://localhost:3000/oauth
+            authorization-grant-type: authorization_code
+            scope: profile, account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+  main:
+    allow-bean-definition-overriding: true

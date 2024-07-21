@@ -1,8 +1,11 @@
 package com.hoodie.otti.controller.notification;
 
 import com.hoodie.otti.entity.notification.Notification;
+import com.hoodie.otti.exception.notification.NotificationNotFoundException;
 import com.hoodie.otti.service.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,8 +38,9 @@ public class NotificationController {
      * @return 생성된 알림 객체
      */
     @PostMapping
-    public Notification createNotification(@RequestBody Notification notification) {
-        return notificationService.saveOrUpdateNotification(notification);
+    public ResponseEntity<Notification> createNotification(@RequestBody Notification notification) {
+        Notification createdNotification = notificationService.saveOrUpdateNotification(notification);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdNotification); // 상태 코드 201 반환
     }
 
     /**
@@ -46,8 +50,13 @@ public class NotificationController {
      * @return 조회된 알림 객체
      */
     @GetMapping("/{id}")
-    public Notification getNotificationById(@PathVariable Long id) {
-        return notificationService.getNotificationById(id);
+    public ResponseEntity<Notification> getNotificationById(@PathVariable Long id) {
+        Notification notification = notificationService.getNotificationById(id);
+        if (notification != null) {
+            return ResponseEntity.ok(notification);
+        } else {
+            return ResponseEntity.notFound().build(); // 404 Not Found
+        }
     }
 
     /**
@@ -56,9 +65,14 @@ public class NotificationController {
      * @param id 읽음으로 표시할 알림의 ID
      * @return 읽음으로 표시된 알림 객체
      */
-    @PutMapping("/{id}/mark-as-read")
-    public Notification markNotificationAsRead(@PathVariable Long id) {
-        return notificationService.markNotificationAsRead(id);
+    @PostMapping("/{id}/mark-as-read")
+    public ResponseEntity<Notification> markNotificationAsRead(@PathVariable Long id) {
+        try {
+            Notification notification = notificationService.markNotificationAsRead(id);
+            return ResponseEntity.ok(notification);
+        } catch (NotificationNotFoundException e) {
+            return ResponseEntity.notFound().build(); // 404 Not Found
+        }
     }
 
     /**

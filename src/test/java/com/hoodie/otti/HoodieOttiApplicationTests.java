@@ -1,31 +1,32 @@
 package com.hoodie.otti;
 
-import com.hoodie.otti.repository.delete.DeleteUserRepository;
-import com.hoodie.otti.service.delete.DeleteUserService;
+import com.hoodie.otti.repository.notification.NotificationRepository;
 import com.hoodie.otti.service.notification.NotificationService;
+import com.hoodie.otti.service.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest(classes = {DeleteUserService.class, DeleteUserRepository.class})
+
+@SpringBootTest
 class HoodieOttiApplicationTests {
 
 	@Autowired
-	private HoodieOttiApplication application;
+	private NotificationService notificationService;
 
-	@MockBean
-	private NotificationService notificationService; // 외부 서비스 모킹
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private NotificationRepository notificationRepository;
 
 	@Test
 	void contextLoads() {
-		// 애플리케이션 객체가 정상적으로 생성되었는지 검증
-		assertThat(application).isNotNull();
-
-		// NotificationService가 모킹되었는지 검증
 		assertThat(notificationService).isNotNull();
+		assertThat(userService).isNotNull();
+		assertNotNull(notificationRepository);
 	}
-
 }

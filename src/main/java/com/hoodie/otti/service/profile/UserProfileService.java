@@ -1,5 +1,6 @@
 package com.hoodie.otti.service.profile;
 
+import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
 import com.hoodie.otti.entity.profile.UserProfile;
 import com.hoodie.otti.repository.profile.UserProfileRepository;
@@ -16,7 +17,6 @@ public class UserProfileService {
         this.userProfileRepository = userProfileRepository;
     }
 
-
     /**
      * 유저 ID로 프로필 조회
      * @param id 유저 ID
@@ -29,41 +29,15 @@ public class UserProfileService {
     }
 
     /**
-     * 프로필 사진 업데이트
+     * 유저 프로필 전체 업데이트
      * @param userId 유저 ID
-     * @param photoUrl 새로운 프로필 사진 URL
+     * @param userProfileDTO UserProfileDTO 객체
      * @throws UserProfileNotFoundException 유저 프로필이 존재하지 않을 경우
      */
-    public void updateUserProfilePhoto(Long userId, String photoUrl) {
+    public void updateUserProfile(Long userId, UserProfileDTO userProfileDTO) {
         UserProfile userProfile = getUserProfileById(userId);
-        userProfile.setProfilePhotoUrl(photoUrl);
-        userProfileRepository.save(userProfile);
-    }
-
-    /**
-     * 유저네임 업데이트
-     * @param userId 유저 ID
-     * @param newUsername 새로운 유저네임
-     * @throws UserProfileNotFoundException 유저 프로필이 존재하지 않을 경우
-     */
-    public void updateUserProfileUsername(Long userId, String newUsername) {
-        UserProfile userProfile = getUserProfileById(userId);
-        userProfile.setUsername(newUsername);
-        userProfileRepository.save(userProfile);
-    }
-
-    /**
-     * 프로필 전체 업데이트
-     * @param userId 유저 ID
-     * @param newUsername 새로운 유저네임
-     * @param newNickname 새로운 닉네임
-     * @param photoUrl 새로운 프로필 사진 URL
-     * @throws UserProfileNotFoundException 유저 프로필이 존재하지 않을 경우
-     */
-    public void updateUserProfile(Long userId, String newUsername, String newNickname, String photoUrl) {
-        UserProfile userProfile = getUserProfileById(userId);
-        userProfile.setUsername(newUsername);
-        userProfile.setProfilePhotoUrl(photoUrl);
+        userProfile.setUsername(userProfileDTO.getUsername());
+        userProfile.setProfilePhotoUrl(userProfileDTO.getProfilePhotoUrl());
         userProfileRepository.save(userProfile);
     }
 

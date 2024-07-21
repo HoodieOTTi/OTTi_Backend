@@ -1,43 +1,39 @@
 package com.hoodie.otti.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hoodie.otti.controller.notification.NotificationController;
 import com.hoodie.otti.entity.notification.Notification;
 import com.hoodie.otti.service.notification.NotificationService;
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-/**
- * NotificationControllerTest는 NotificationController 클래스의 REST API 기능을 테스트하는 클래스입니다.
- */
-@SpringBootTest
-@AutoConfigureMockMvc
-@ExtendWith(MockitoExtension.class)
+
+
 public class NotificationControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Mock
     private NotificationService notificationService;
@@ -45,114 +41,107 @@ public class NotificationControllerTest {
     @InjectMocks
     private NotificationController notificationController;
 
-    @Autowired
+    private MockMvc mockMvc;
     private ObjectMapper objectMapper;
 
     @BeforeEach
-    void setUp() {
-        // MockMvc 객체를 설정합니다.
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         mockMvc = MockMvcBuilders.standaloneSetup(notificationController).build();
     }
 
-    /**
-     * 모든 알림 조회 API의 성공 테스트입니다.
-     */
     @Test
     void testGetAllNotifications() throws Exception {
-        List<Notification> notifications = new ArrayList<>();
-        notifications.add(new Notification("Test notification"));
+        Notification notification1 = new Notification("Test message 1");
+        Notification notification2 = new Notification("Test message 2");
+        List<Notification> notifications = Arrays.asList(notification1, notification2);
 
         when(notificationService.getAllNotifications()).thenReturn(notifications);
 
-        mockMvc.perform(get("/notification")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/notification"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].message").value("Test notification"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].message", is("Test message 1")))
+                .andExpect(jsonPath("$[1].message", is("Test message 2")));
     }
 
-    /**
-     * 알림 생성 API의 성공 테스트입니다.
-     */
     @Test
-    public void testCreateNotification() throws Exception {
-        LocalDateTime createdAt = LocalDateTime.now();
-        Notification notification = new Notification();
-        notification.setUserId(1L);
-        notification.setMessage("Test Notification");
-        notification.setCreatedAt(createdAt);
+    void testCreateNotification() throws Exception {
+        Notification notification = new Notification("New message");
 
-        when(notificationService.saveOrUpdateNotification(any(Notification.class))).thenReturn(notification);
+        when(notificationService.saveOrUpdateNotification(any(Notification.class)))
+                .thenReturn(notification);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/notification")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(notification)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(1L))
-                .andExpect(jsonPath("$.message").value("Test Notification"))
-                .andExpect(jsonPath("$.createdAt").value(createdAt.toString()));
+        mockMvc.perform(post("/notification")
+                        .content(objectMapper.writeValueAsString(notification))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()) // 상태 코드를 201로 변경
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("New message")));
     }
 
-    /**
-     * 특정 알림 조회 API의 성공 테스트입니다.
-     */
+
+
     @Test
     void testGetNotificationById() throws Exception {
-        Notification notification = new Notification("Test notification");
-        notification.setUserId(1L);
+        Long id = 1L;
+        Notification notification = new Notification(id, "Test message", false, LocalDateTime.now());
 
-        when(notificationService.getNotificationById(1L)).thenReturn(notification);
+        when(notificationService.getNotificationById(id)).thenReturn(notification);
 
-        mockMvc.perform(get("/notification/1")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/notification/{id}", id))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Test notification"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message", is("Test message")));
     }
 
-    /**
-     * 알림을 읽음 처리하는 API의 성공 테스트입니다.
-     */
     @Test
     void testMarkNotificationAsRead() throws Exception {
-        Notification notification = new Notification("Test notification");
-        notification.setUserId(1L);
+        Long notificationId = 1L;
+        Notification notification = new Notification();
+        notification.setUserId(notificationId);
+        notification.setRead(true);
 
-        when(notificationService.markNotificationAsRead(1L)).thenReturn(notification);
+        when(notificationService.markNotificationAsRead(notificationId)).thenReturn(notification);
 
-        mockMvc.perform(put("/notification/1/mark-as-read")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/notification/{id}/mark-as-read", notificationId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Test notification"))
-                .andExpect(jsonPath("$.read").value(true));
+                .andExpect(jsonPath("$.id", is(notificationId.intValue())))
+                .andExpect(jsonPath("$.isRead", is(true)));
     }
 
-    /**
-     * 읽지 않은 알림 조회 API의 성공 테스트입니다.
-     */
+
+
     @Test
     void testGetUnreadNotifications() throws Exception {
-        List<Notification> notifications = new ArrayList<>();
-        notifications.add(new Notification("Unread notification"));
+        Long userId = 1L;
+        Notification notification1 = new Notification(userId, "Unread message 1", false, LocalDateTime.now());
+        Notification notification2 = new Notification(userId, "Unread message 2", false, LocalDateTime.now());
+        List<Notification> unreadNotifications = Arrays.asList(notification1, notification2);
 
-        when(notificationService.getUnreadNotifications(1L)).thenReturn(notifications);
+        when(notificationService.getUnreadNotifications(userId)).thenReturn(unreadNotifications);
 
-        mockMvc.perform(get("/notification/unread/1")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/notification/unread/{id}", userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].message").value("Unread notification"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].message", is("Unread message 1")))
+                .andExpect(jsonPath("$[1].message", is("Unread message 2")));
     }
 
-    /**
-     * 사용자별 알림 수 조회 API의 성공 테스트입니다.
-     */
     @Test
     void testCountNotificationsByUserId() throws Exception {
-        when(notificationService.countNotificationsByUserId(1L)).thenReturn(5L);
+        Long userId = 1L;
+        long count = 5L;
 
-        mockMvc.perform(get("/notification/user/1/count")
-                        .contentType(MediaType.APPLICATION_JSON))
+        when(notificationService.countNotificationsByUserId(userId)).thenReturn(count);
+
+        mockMvc.perform(get("/notification/user/{id}/count", userId))
                 .andExpect(status().isOk())
-                .andExpect(content().string("5"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", is((int) count)));
     }
 }

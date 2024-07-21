@@ -1,20 +1,25 @@
 package com.hoodie.otti.dto.profile;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 
 public class UserProfileDTO {
 
     @NotBlank(message = "Username cannot be blank")
     private String username;
-    @NotBlank(message = "Nickname cannot be blank")
-    private String nickname;
 
     private String profilePhotoUrl;
 
-    // 생성자
-    public UserProfileDTO(String username, String nickname, String profilePhotoUrl) {
+    public UserProfileDTO() {
+    }
+
+
+    @JsonCreator
+    public UserProfileDTO(
+            @JsonProperty("username") String username,
+            @JsonProperty("profilePhotoUrl") String profilePhotoUrl) {
         this.username = username;
-        this.nickname = nickname;
         this.profilePhotoUrl = profilePhotoUrl;
     }
 
@@ -27,14 +32,6 @@ public class UserProfileDTO {
         this.username = username;
     }
 
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
     public String getProfilePhotoUrl() {
         return profilePhotoUrl;
     }
@@ -43,4 +40,3 @@ public class UserProfileDTO {
         this.profilePhotoUrl = profilePhotoUrl;
     }
 }
-

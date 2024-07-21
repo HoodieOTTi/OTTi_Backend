@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class NotificationServiceTest {
      * 모든 알림을 조회하는 테스트입니다.
      */
     @Test
+    @WithMockUser(username = "user", password = "password", roles = {"USER"})
     void testGetAllNotifications() {
         // Given
         List<Notification> notifications = new ArrayList<>();
@@ -62,6 +64,7 @@ public class NotificationServiceTest {
      * 특정 ID로 알림을 조회하는 테스트입니다.
      */
     @Test
+    @WithMockUser(username = "user", password = "password", roles = {"USER"})
     void testGetNotificationById() {
         // Given
         Notification notification = new Notification("Test notification");
@@ -82,6 +85,7 @@ public class NotificationServiceTest {
      * 존재하지 않는 ID로 알림을 조회할 때 발생하는 예외 처리를 테스트합니다.
      */
     @Test
+    @WithMockUser(username = "user", password = "password", roles = {"USER"})
     void testGetNotificationById_NotFound() {
         // Mock 설정 (빈 Optional 반환)
         when(notificationRepository.findById(any(Long.class))).thenReturn(Optional.empty());
@@ -94,6 +98,7 @@ public class NotificationServiceTest {
      * 알림을 저장 또는 업데이트하는 테스트입니다.
      */
     @Test
+    @WithMockUser(username = "user", password = "password", roles = {"USER"})
     void testSaveOrUpdateNotification() {
         // Given
         Notification notification = new Notification("New notification");
@@ -113,6 +118,7 @@ public class NotificationServiceTest {
      * 알림을 읽음 상태로 변경하는 테스트입니다.
      */
     @Test
+    @WithMockUser(username = "user", password = "password", roles = {"USER"})
     void testMarkNotificationAsRead() {
         // Given
         Notification notification = new Notification("Test notification");
@@ -133,6 +139,7 @@ public class NotificationServiceTest {
      * 읽지 않은 알림 목록을 조회하는 테스트입니다.
      */
     @Test
+    @WithMockUser(username = "user", password = "password", roles = {"USER"})
     void testGetUnreadNotifications() {
         // Given
         List<Notification> notifications = new ArrayList<>();
@@ -153,6 +160,7 @@ public class NotificationServiceTest {
      * 사용자별 알림 개수를 조회하는 테스트입니다.
      */
     @Test
+    @WithMockUser(username = "user", password = "password", roles = {"USER"})
     void testCountNotificationsByUserId() {
         // Mock 설정
         when(notificationRepository.countByUserId(1L)).thenReturn(5L);
