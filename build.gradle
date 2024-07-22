@@ -13,37 +13,46 @@ java {
 	}
 }
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	// Spring Boot 관련 의존성
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// Spring Boot 기본 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
+	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Web MVC
+
+	// OAuth2 클라이언트 의존성 추가
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth2 클라이언트 기능
+
+	// 데이터베이스 연결 및 런타임 도구
+	runtimeOnly 'mysql:mysql-connector-java:8.0.28' // MySQL 커넥터
 
 	// Lombok을 통한 코드 간소화
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// 데이터베이스 연결 및 런타임 도구
-	runtimeOnly 'mysql:mysql-connector-java:8.0.28'
-
 	// 개발 도구
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
 
 	// JSON Web Token (JWT) 라이브러리
-	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
 	// Google Gson을 통한 JSON 처리
 	implementation 'com.google.code.gson:gson:2.8.9'
 
-	// Swagger API 문서화를 위한 의존성
-	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+	// Swagger API 문서화
+	implementation 'io.springfox:springfox-swagger2:2.9.2'
+	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
 	// Java Persistence API (JPA) 및 Hibernate
 	implementation 'org.hibernate:hibernate-core:6.0.1.Final'
@@ -56,12 +65,22 @@ dependencies {
 	// Spring Boot Test 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	// 기타 테스트 관련 의존성 (필요에 따라 정리)
+	// Spring Security 테스트
 	testImplementation 'org.springframework.security:spring-security-test'
 
 	// Mockito 의존성
 	testImplementation 'org.mockito:mockito-core:4.3.1'
 
+	// Jackson JSR-310 모듈
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	// jsr310 의존성
+	testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+}
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs += ['-Xlint:deprecation']
 }
 
 tasks.named('test') {
