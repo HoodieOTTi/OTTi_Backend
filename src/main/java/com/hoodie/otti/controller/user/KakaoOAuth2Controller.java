@@ -1,8 +1,5 @@
 package com.hoodie.otti.controller.user;
 
-import com.hoodie.otti.dto.login.KakaoTokenResponse;
-import com.hoodie.otti.dto.login.KakaoProfileResponse;
-import com.hoodie.otti.entity.login.User;
 import com.hoodie.otti.service.user.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -14,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 public class KakaoOAuth2Controller {

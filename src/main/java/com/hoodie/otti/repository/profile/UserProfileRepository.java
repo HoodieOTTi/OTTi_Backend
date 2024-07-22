@@ -1,6 +1,6 @@
 package com.hoodie.otti.repository.profile;
 
-import com.hoodie.otti.entity.profile.UserProfile;
+import com.hoodie.otti.model.profile.UserProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

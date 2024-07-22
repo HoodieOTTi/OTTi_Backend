@@ -1,6 +1,6 @@
 package com.hoodie.otti.repository.notification;
 
-import com.hoodie.otti.entity.notification.Notification;
+import com.hoodie.otti.model.notification.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

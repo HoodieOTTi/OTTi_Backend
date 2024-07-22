@@ -1,7 +1,6 @@
-package com.hoodie.otti.entity.subscripition;
+package com.hoodie.otti.model.ott;
 
-import com.hoodie.otti.entity.ott.Ott;
-import com.hoodie.otti.entity.profile.UserProfile;
+import com.hoodie.otti.model.profile.UserProfile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -40,8 +39,7 @@ public class Subscription {
     @Column(columnDefinition = "TEXT")
     private String memo;
 
-    @Temporal(TemporalType.DATE)
-    private Date paymentDate;
+    private Integer paymentDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
@@ -53,26 +51,26 @@ public class Subscription {
 
     @ManyToOne
     @JoinColumn(name = "USER_PROFILE_ID", nullable = false)
-    private UserProfile userProfileId;
+    private UserProfile userProfile;
 
     @ManyToOne
     @JoinColumn(name = "OTT_ID", nullable = false)
     private Ott ottId;
 
     @Builder
-    public Subscription(String name, Integer payment, String memo, Date paymentDate, Date createdDate,
-                        Date modifiedDate, UserProfile userProfileId, Ott ottId) {
+    public Subscription(String name, Integer payment, String memo, Integer paymentDate, Date createdDate,
+                        Date modifiedDate, UserProfile userProfile, Ott ottId) {
         this.name = name;
         this.payment = payment;
         this.memo = memo;
         this.paymentDate = paymentDate;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.userProfileId = userProfileId;
+        this.userProfile = userProfile;
         this.ottId = ottId;
     }
 
-    public void update(String name, Integer payment, String memo, Date paymentDate, Ott ottId) {
+    public void update(String name, Integer payment, String memo, Integer paymentDate, Ott ottId) {
         if (!isNullAndBlank(name)) {
             this.name = name;
         }

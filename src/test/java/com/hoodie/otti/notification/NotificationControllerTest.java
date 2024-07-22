@@ -3,7 +3,7 @@ package com.hoodie.otti.notification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.hoodie.otti.controller.notification.NotificationController;
-import com.hoodie.otti.entity.notification.Notification;
+import com.hoodie.otti.model.notification.Notification;
 import com.hoodie.otti.service.notification.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

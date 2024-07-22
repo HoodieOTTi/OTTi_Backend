@@ -1,5 +1,6 @@
-package com.hoodie.otti.entity.profile;
+package com.hoodie.otti.model.profile;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

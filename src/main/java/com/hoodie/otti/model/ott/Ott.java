@@ -1,4 +1,4 @@
-package com.hoodie.otti.entity.ott;
+package com.hoodie.otti.model.ott;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-
 import java.util.Date;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.hoodie.otti.controller.notification;
 
-import com.hoodie.otti.entity.notification.Notification;
+import com.hoodie.otti.model.notification.Notification;
 import com.hoodie.otti.exception.notification.NotificationNotFoundException;
 import com.hoodie.otti.service.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,8 @@
 package com.hoodie.otti.user;
 
 import com.hoodie.otti.controller.user.KakaoOAuth2Controller;
-import com.hoodie.otti.dto.login.KakaoTokenResponse;
 import com.hoodie.otti.dto.login.KakaoProfileResponse;
-import com.hoodie.otti.entity.login.User;
+import com.hoodie.otti.model.login.User;
 import com.hoodie.otti.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,10 +11,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 

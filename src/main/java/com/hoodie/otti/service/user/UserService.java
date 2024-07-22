@@ -1,7 +1,7 @@
 package com.hoodie.otti.service.user;
 
 import com.hoodie.otti.dto.login.BaseResponse;
-import com.hoodie.otti.entity.login.User;
+import com.hoodie.otti.model.login.User;
 import com.hoodie.otti.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

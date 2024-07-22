@@ -1,6 +1,6 @@
 package com.hoodie.otti.dto.ott;
 
-import com.hoodie.otti.entity.ott.Ott;
+import com.hoodie.otti.model.ott.Ott;
 import java.util.Date;
 import lombok.Builder;
 import lombok.Getter;

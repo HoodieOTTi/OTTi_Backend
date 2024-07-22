@@ -1,4 +1,4 @@
-package com.hoodie.otti.entity.login;
+package com.hoodie.otti.model.login;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

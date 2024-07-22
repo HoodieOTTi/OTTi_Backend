@@ -1,6 +1,6 @@
 package com.hoodie.otti.repository.user;
 
-import com.hoodie.otti.entity.login.User;
+import com.hoodie.otti.model.login.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

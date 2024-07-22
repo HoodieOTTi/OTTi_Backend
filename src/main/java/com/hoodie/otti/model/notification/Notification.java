@@ -1,4 +1,4 @@
-package com.hoodie.otti.entity.notification;
+package com.hoodie.otti.model.notification;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;

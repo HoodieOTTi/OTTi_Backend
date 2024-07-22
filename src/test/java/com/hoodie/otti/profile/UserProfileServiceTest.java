@@ -1,7 +1,7 @@
 package com.hoodie.otti.profile;
 
 import com.hoodie.otti.dto.profile.UserProfileDTO;
-import com.hoodie.otti.entity.profile.UserProfile;
+import com.hoodie.otti.model.profile.UserProfile;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
 import com.hoodie.otti.repository.profile.UserProfileRepository;
 import com.hoodie.otti.service.profile.UserProfileService;
