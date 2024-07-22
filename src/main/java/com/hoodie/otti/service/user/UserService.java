@@ -22,8 +22,8 @@ public class UserService {
         userRepository.deleteByUserEmail(userEmail);
     }
 
-    public void deleteUserById(Long userId) {
-        userRepository.deleteById(userId);
+    public void deleteUserById(Long kakaoUserId) {
+        userRepository.deleteById(kakaoUserId);
     }
 
     public Optional<User> findByKakaoUserId(String kakaoUserId) {

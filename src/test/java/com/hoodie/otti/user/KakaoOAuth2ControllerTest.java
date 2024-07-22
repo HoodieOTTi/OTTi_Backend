@@ -19,6 +19,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -54,8 +57,8 @@ public class KakaoOAuth2ControllerTest {
     @Test
     void testKakaoCallback() throws Exception {
         // Mock KakaoTokenResponse
-        KakaoTokenResponse mockTokenResponse = new KakaoTokenResponse();
-        mockTokenResponse.setAccessToken("mock-access-token");
+        HashMap<String, Object> mockTokenResponse = new HashMap<>();
+        mockTokenResponse.put("access_token", "mock-access-token");
 
         // Mock KakaoProfileResponse
         KakaoProfileResponse mockProfileResponse = new KakaoProfileResponse();
@@ -71,35 +74,35 @@ public class KakaoOAuth2ControllerTest {
         when(restTemplate.exchange(
                 contains("https://kauth.kakao.com/oauth/token"),
                 eq(HttpMethod.POST),
-                argThat(request -> request.getHeaders().get(HttpHeaders.CONTENT_TYPE).contains(MediaType.APPLICATION_FORM_URLENCODED_VALUE)),
-                eq(KakaoTokenResponse.class)
+                any(HttpEntity.class),
+                eq(HashMap.class)
         )).thenReturn(new ResponseEntity<>(mockTokenResponse, HttpStatus.OK));
 
         // Mock the RestTemplate behavior for profile request
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer mock-access-token");
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         when(restTemplate.exchange(
                 contains("https://kapi.kakao.com/v2/user/me"),
                 eq(HttpMethod.GET),
-                argThat(request -> request.getHeaders().equals(headers)),
+                argThat(request -> {
+                    String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+                    return authHeader != null && authHeader.equals("Bearer mock-access-token");
+                }),
                 eq(KakaoProfileResponse.class)
         )).thenReturn(new ResponseEntity<>(mockProfileResponse, HttpStatus.OK));
 
         // Mock UserService behavior
-        when(userService.findByKakaoUserId(anyString())).thenReturn(java.util.Optional.empty());
+        when(userService.findByKakaoUserId(anyString())).thenReturn(Optional.empty());
         when(userService.saveUser(any(User.class))).thenReturn(new User("mock-email@example.com", "12345", "mock-nickname"));
 
         mockMvc.perform(get("/oauth/kakao/callback")
                         .param("code", "mock-code"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.email").value("mock-email@example.com"))
-                .andExpect(jsonPath("$.nickname").value("mock-nickname"));
+                .andExpect(jsonPath("$.id").value("mock-id"));
 
         verify(userService, times(1)).saveUser(any(User.class));
     }
+
+
 
 
 

@@ -7,9 +7,9 @@ import com.hoodie.otti.service.user.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -49,66 +49,34 @@ public class KakaoOAuth2Controller {
         return "redirect:" + authUri;
     }
 
-    @GetMapping("/oauth/kakao/callback")
-    public ResponseEntity<?> kakaoCallback(@RequestParam("code") String code) {
-        String tokenUri = UriComponentsBuilder.fromUriString("https://kauth.kakao.com/oauth/token")
-                .queryParam("grant_type", "authorization_code")
-                .queryParam("client_id", clientId)
-                .queryParam("redirect_uri", redirectUri)
-                .queryParam("code", code)
-                .queryParam("client_secret", clientSecret)
-                .build().toUriString();
+    @RequestMapping(value = "/oauth/kakao/callback", method = RequestMethod.GET)
+    public ResponseEntity<String> kakaoCallback(String code) {
+        String tokenUri = "https://kauth.kakao.com/oauth/token";
 
-        // Token request
-        ResponseEntity<KakaoTokenResponse> tokenResponseEntity = restTemplate.exchange(
-                tokenUri,
-                HttpMethod.POST,
-                null,
-                KakaoTokenResponse.class
-        );
-
-        if (tokenResponseEntity.getStatusCode() != HttpStatus.OK) {
-            return ResponseEntity.status(tokenResponseEntity.getStatusCode()).body("Error fetching token");
-        }
-
-        KakaoTokenResponse tokenResponse = tokenResponseEntity.getBody();
-        String accessToken = tokenResponse != null ? tokenResponse.getAccessToken() : null;
-
-        if (accessToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No access token received");
-        }
-
-        // User info request
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        headers.set("Content-Type", "application/x-www-form-urlencoded");
 
-        ResponseEntity<KakaoProfileResponse> userInfoResponseEntity = restTemplate.exchange(
-                userInfoUri,
-                HttpMethod.GET,
-                entity,
-                KakaoProfileResponse.class
-        );
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", "YOUR_CLIENT_ID");
+        params.add("redirect_uri", "YOUR_REDIRECT_URI");
+        params.add("code", code);
 
-        if (userInfoResponseEntity.getStatusCode() != HttpStatus.OK) {
-            return ResponseEntity.status(userInfoResponseEntity.getStatusCode()).body("Error fetching user info");
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+
+        ResponseEntity<HashMap> response = restTemplate.exchange(
+                tokenUri, HttpMethod.POST, request, HashMap.class);
+
+        if (response.getStatusCode() != HttpStatus.OK) {
+            return ResponseEntity.status(response.getStatusCode()).body("Error fetching token");
         }
 
-        KakaoProfileResponse userInfoResponse = userInfoResponseEntity.getBody();
-        KakaoProfileResponse.KakaoAccount kakaoAccount = userInfoResponse.getKakaoAccount();
-        KakaoProfileResponse.KakaoAccount.Profile profile = kakaoAccount.getProfile();
+        HashMap<String, Object> responseBody = response.getBody();
+        String accessToken = (String) responseBody.get("access_token");
 
-        String kakaoUserId = String.valueOf(userInfoResponse.getId());
-        String email = kakaoAccount.getEmail();
-        String nickname = profile.getNickname();
-
-        User user = userService.findByKakaoUserId(kakaoUserId).orElse(
-                new User(email, kakaoUserId, nickname)
-        );
-        userService.saveUser(user);
-
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok("Access Token: " + accessToken);
     }
+
 
     @PostMapping("/api/logout")
     public ResponseEntity<?> logout() {

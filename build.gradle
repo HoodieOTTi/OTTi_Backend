@@ -74,6 +74,7 @@ dependencies {
 	// Jackson JSR-310 모듈
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+	// jsr310 의존성
 	testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
