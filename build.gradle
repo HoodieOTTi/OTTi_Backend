@@ -20,7 +20,7 @@ repositories {
 dependencies {
 	// Spring Boot 관련 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	// Lombok을 통한 코드 간소화
@@ -42,8 +42,7 @@ dependencies {
 	implementation 'com.google.code.gson:gson:2.8.9'
 
 	// Swagger API 문서화를 위한 의존성
-	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
 	// Java Persistence API (JPA) 및 Hibernate
 	implementation 'org.hibernate:hibernate-core:6.0.1.Final'
