@@ -36,3 +36,4 @@ spring:
 
 kakao:
   logout-redirect-uri: ${MY_LOGOUT_REDIRECT_URI}
+  unlink-url: ${UNLINK_URI}

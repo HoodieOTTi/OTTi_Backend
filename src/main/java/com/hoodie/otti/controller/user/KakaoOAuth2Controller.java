@@ -10,11 +10,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -27,7 +26,8 @@ public class KakaoOAuth2Controller {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
 
-    private final String LOGOUT_REDIRECT_URI = "https://example.com/logout";
+    @Value("${kakao.logout-redirect-uri}")
+    private String logoutRedirectUri;
 
     private final OAuthService oAuthService;
     private final UserService userService;
@@ -144,12 +144,25 @@ public class KakaoOAuth2Controller {
     }
 
 
-//    @PostMapping("/api/delete-user")
-//    public ResponseEntity<?> deleteUser(@RequestParam("kakaoUserId") Long kakaoUserId, HttpSession session) {
-//        session.invalidate();
-//        userService.findByUserId(kakaoUserId);
-//        return ResponseEntity.ok("User successfully deleted");
-//    }
+    @GetMapping("/api/unlink")
+    public ResponseEntity<String> unlink(HttpServletRequest request) {
+        // Authorization 헤더에서 액세스 토큰을 추출
+        String accessToken = request.getHeader("Authorization");
+        if (accessToken != null && accessToken.startsWith("Bearer ")) {
+            accessToken = accessToken.substring(7); // "Bearer "를 제거하여 토큰만 추출
+        } else {
+            return ResponseEntity.badRequest().body("Error: access_token is required");
+        }
 
+        try {
+            oAuthService.unlinkUser(accessToken);
+            request.getSession().invalidate();
+            return ResponseEntity.ok("User successfully unlinked");
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
     }
+
+}
 

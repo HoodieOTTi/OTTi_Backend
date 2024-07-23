@@ -9,13 +9,11 @@ import com.hoodie.otti.dto.login.RegisterRequest;
 import com.hoodie.otti.model.login.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
@@ -27,10 +25,12 @@ import java.util.UUID;
 public class OAuthService {
 
     private final UserService userService;
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public OAuthService(UserService userService) {
+    public OAuthService(UserService userService, RestTemplate restTemplate) {
         this.userService = userService;
+        this.restTemplate = restTemplate;
     }
 
 
@@ -45,6 +45,9 @@ public class OAuthService {
 
     @Value("${kakao.logout-redirect-uri}")
     private String logoutRedirectUri;
+
+    @Value("${kakao.unlink-url}")
+    private String unlinkUrl;
 
 
     // 토큰 받기
@@ -108,7 +111,7 @@ public class OAuthService {
 
 
     // 카카오 사용자 정보 확인
-    public MemberResponse ifNeedKakaoInfo (KakaoInfo kakaoInfo) {
+    public MemberResponse ifNeedKakaoInfo(KakaoInfo kakaoInfo) {
         // DB에 중복되는 email이 있는지 확인
         String kakaoEmail = kakaoInfo.getEmail();
 
@@ -167,12 +170,31 @@ public class OAuthService {
         JsonNode jsonNode = objectMapper.readTree(responseBody);
 
         Long id = jsonNode.get("id").asLong();
-        System.out.println("반환된 id: "+id);
+        System.out.println("반환된 id: " + id);
     }
 
     public String buildKakaoLogoutUrl() {
         return "https://kauth.kakao.com/oauth/logout?client_id=" + clientId +
                 "&logout_redirect_uri=" + URLEncoder.encode(logoutRedirectUri, StandardCharsets.UTF_8);
+    }
+
+    public void unlinkUser(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange("https://kapi.kakao.com/v1/user/unlink", HttpMethod.POST, entity, String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // Success
+                System.out.println("Successfully unlinked user: " + response.getBody());
+            } else {
+                throw new RuntimeException("Failed to unlink user: " + response.getBody());
+            }
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Failed to unlink user: " + e.getMessage(), e);
+        }
     }
 
 }
