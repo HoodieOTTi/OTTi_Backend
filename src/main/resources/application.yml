@@ -30,5 +30,9 @@ spring:
             authorization-uri: ${AUTHORIZATION_URI}
             token-uri: ${TOKEN_URI}
             user-info-uri: ${USER_INFO_URI}
+
   main:
     allow-bean-definition-overriding: true
+
+kakao:
+  logout-redirect-uri: ${MY_LOGOUT_REDIRECT_URI}

@@ -18,6 +18,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,6 +42,9 @@ public class OAuthService {
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
     private String clientSecret;
+
+    @Value("${kakao.logout-redirect-uri}")
+    private String logoutRedirectUri;
 
 
     // 토큰 받기
@@ -151,7 +156,7 @@ public class OAuthService {
         RestTemplate rt = new RestTemplate();
         ResponseEntity<String> response = rt.exchange(
                 "https://kapi.kakao.com/v1/user/logout",
-                HttpMethod.POST,
+                HttpMethod.GET,
                 request,
                 String.class
         );
@@ -163,6 +168,11 @@ public class OAuthService {
 
         Long id = jsonNode.get("id").asLong();
         System.out.println("반환된 id: "+id);
+    }
+
+    public String buildKakaoLogoutUrl() {
+        return "https://kauth.kakao.com/oauth/logout?client_id=" + clientId +
+                "&logout_redirect_uri=" + URLEncoder.encode(logoutRedirectUri, StandardCharsets.UTF_8);
     }
 
 }

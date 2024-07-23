@@ -5,12 +5,18 @@ import com.hoodie.otti.dto.login.KakaoInfo;
 import com.hoodie.otti.dto.login.MemberResponse;
 import com.hoodie.otti.service.user.OAuthService;
 import com.hoodie.otti.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.io.IOException;
 
 @Controller
 public class KakaoOAuth2Controller {
@@ -20,6 +26,8 @@ public class KakaoOAuth2Controller {
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
+
+    private final String LOGOUT_REDIRECT_URI = "https://example.com/logout";
 
     private final OAuthService oAuthService;
     private final UserService userService;
@@ -88,13 +96,16 @@ public class KakaoOAuth2Controller {
     }
 
 
+    @GetMapping("/kakaoLogout")
+    public void kakaoLogout(HttpServletResponse response) throws IOException {
+        String logoutUrl = oAuthService.buildKakaoLogoutUrl();
+        response.sendRedirect(logoutUrl);
+    }
 
-    @PostMapping("/api/logout")
-    public String kakaoLogout(HttpSession session, @RequestParam(value = "access_token", required = false) String accessToken) {
+    @GetMapping("/api/logout")
+    public String logout(HttpServletRequest request) {
         // 세션에서 엑세스 토큰을 가져옴
-        if (accessToken == null) {
-            accessToken = (String) session.getAttribute("kakaoToken");
-        }
+//        String accessToken = (String) session.getAttribute("kakaoToken");
 
         // 액세스 토큰을 헤더에서 추출
 //        String accessToken = null;
@@ -103,31 +114,42 @@ public class KakaoOAuth2Controller {
 //        }
 
         // 엑세스 토큰이 존재할 경우 로그아웃 처리
-        if (accessToken != null && !"".equals(accessToken)) {
-            try {
-                // 카카오 로그아웃 처리
-                oAuthService.kakaoDisconnect(accessToken);
-            } catch (JsonProcessingException e) {
-                // 예외 처리
-                e.printStackTrace();
-                return "redirect:/error";  // 에러 페이지로 리다이렉트 (예: 에러 처리 페이지)
-            }
-            // 세션에서 관련 정보 삭제
-            session.removeAttribute("kakaoToken");
-            session.removeAttribute("loginMember");
-        } else {
-            System.out.println("accessToken is null");
-            return "redirect:/error";  // 액세스 토큰이 없는 경우 에러 페이지로 리다이렉트
-        }
+//        if (accessToken != null && !"".equals(accessToken)) {
+//            try {
+//                // 카카오 로그아웃 처리
+//                oAuthService.kakaoDisconnect(accessToken);
+//            } catch (JsonProcessingException e) {
+//                // 예외 처리
+//                e.printStackTrace();
+//            }
+//            // 세션에서 관련 정보 삭제
+//            session.removeAttribute("kakaoToken");
+//            session.removeAttribute("loginMember");
+//        } else {
+//            System.out.println("accessToken is null");
+//        }
+
+        // 세션에서 관련 정보 삭제
+//            session.removeAttribute("kakaoToken");
+//            session.removeAttribute("loginMember");
+
+
+        // 세션 무효화
+//        session.invalidate();
+
+        request.getSession().invalidate();
 
         // 로그아웃 후 리다이렉트할 URL 설정
         return "redirect:/";
     }
 
-    @PostMapping("/api/delete-user")
-    public ResponseEntity<?> deleteUser(@RequestParam("kakaoUserId") Long kakaoUserId, HttpSession session) {
-        session.invalidate();
-        userService.findByUserId(kakaoUserId);
-        return ResponseEntity.ok("User successfully deleted");
+
+//    @PostMapping("/api/delete-user")
+//    public ResponseEntity<?> deleteUser(@RequestParam("kakaoUserId") Long kakaoUserId, HttpSession session) {
+//        session.invalidate();
+//        userService.findByUserId(kakaoUserId);
+//        return ResponseEntity.ok("User successfully deleted");
+//    }
+
     }
-}
+
