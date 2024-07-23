@@ -34,6 +34,7 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+
 kakao:
   logout-redirect-uri: ${MY_LOGOUT_REDIRECT_URI}
   unlink-url: ${UNLINK_URI}

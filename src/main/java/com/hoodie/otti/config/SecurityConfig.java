@@ -14,11 +14,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())  // CSRF 비활성화
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login/kakaologin", "/kakao/callback").permitAll()
-                        .requestMatchers("/kakaoLogout", "/logout").permitAll()
-                        .requestMatchers("/api/unlink", "/kakaoLogout").permitAll()
+                        .requestMatchers("/login/kakaologin", "/kakao/callback", "/api/user/info").permitAll()
+                        .requestMatchers("/logout","/kakaoLogout", "/api/logout", "/api/unlink").permitAll()
                         .anyRequest().authenticated()
                 )
+
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login")
                         .defaultSuccessUrl("/home", true)

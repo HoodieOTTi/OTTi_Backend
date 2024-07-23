@@ -4,16 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hoodie.otti.dto.login.KakaoInfo;
 import com.hoodie.otti.dto.login.MemberResponse;
 import com.hoodie.otti.service.user.OAuthService;
-import com.hoodie.otti.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
@@ -26,16 +25,19 @@ public class KakaoOAuth2Controller {
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
 
+    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
+    private String userinfoUri;
+
     @Value("${kakao.logout-redirect-uri}")
     private String logoutRedirectUri;
 
     private final OAuthService oAuthService;
-    private final UserService userService;
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public KakaoOAuth2Controller(OAuthService oAuthService, UserService userService) {
+    public KakaoOAuth2Controller(OAuthService oAuthService, RestTemplate restTemplate) {
         this.oAuthService = oAuthService;
-        this.userService = userService;
+        this.restTemplate = restTemplate;
     }
 
 
@@ -84,6 +86,7 @@ public class KakaoOAuth2Controller {
         // 세션에 회원 정보 저장 & 세션 유지 시간 설정
         if (kakaoMember != null) {
             session.setAttribute("loginMember", kakaoMember);
+            System.out.println("User info stored in session: " + kakaoMember); // 로그 확인
             // session.setMaxInactiveInterval( ) : 세션 타임아웃을 설정하는 메서드
             // 로그인 유지 시간 설정 (1800초 == 30분)
             session.setMaxInactiveInterval(60 * 30);
@@ -94,6 +97,21 @@ public class KakaoOAuth2Controller {
 
         return "redirect:/";
     }
+
+    @GetMapping("/api/user/info")
+    public ResponseEntity<MemberResponse> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+
+        try {
+            KakaoInfo kakaoInfo = oAuthService.getKakaoInfo(accessToken);
+            MemberResponse member = new MemberResponse(kakaoInfo.getId(), kakaoInfo.getNickname(), kakaoInfo.getEmail());
+            return ResponseEntity.ok(member);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+
 
 
     @GetMapping("/kakaoLogout")

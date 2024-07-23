@@ -7,6 +7,7 @@ import com.hoodie.otti.dto.login.KakaoInfo;
 import com.hoodie.otti.dto.login.MemberResponse;
 import com.hoodie.otti.dto.login.RegisterRequest;
 import com.hoodie.otti.model.login.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -26,11 +27,13 @@ public class OAuthService {
 
     private final UserService userService;
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public OAuthService(UserService userService, RestTemplate restTemplate) {
+    public OAuthService(UserService userService, RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.userService = userService;
         this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
     }
 
 
@@ -39,6 +42,9 @@ public class OAuthService {
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
+
+    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
+    private String tokenUri;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
     private String clientSecret;
@@ -80,31 +86,51 @@ public class OAuthService {
         return jsonNode.get("access_token").asText();
     }
 
+    // 로그인 과정 중 KakaoInfo를 MemberResponse로 변환하여 세션에 저장
+    public void loginUser(String accessToken, HttpSession session) throws JsonProcessingException {
+        KakaoInfo kakaoInfo = getKakaoInfo(accessToken);
+        MemberResponse memberResponse = new MemberResponse(
+                kakaoInfo.getId(),
+                kakaoInfo.getNickname(),
+                kakaoInfo.getEmail()
+        );
+        session.setAttribute("loginMember", memberResponse);
+    }
+
+
     // 액세스 토큰으로 사용자 정보 가져오기
     public KakaoInfo getKakaoInfo(String accessToken) throws JsonProcessingException {
+
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + accessToken);
-        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        headers.setBearerAuth(accessToken);  // Authorization 헤더에 액세스 토큰 설정
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         // HTTP 요청 보내기
-        HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
+        HttpEntity<String> kakaoUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
-        ResponseEntity<String> response = rt.exchange(
-                "https://kapi.kakao.com/v2/user/me",
-                HttpMethod.POST,
-                kakaoUserInfoRequest,
-                String.class
-        );
 
-        // responseBody에 있는 정보 꺼내기
+        ResponseEntity<String> response;
+        try {
+            response = rt.exchange(
+                    "https://kapi.kakao.com/v2/user/me",
+                    HttpMethod.GET, // GET 메서드 사용
+                    kakaoUserInfoRequest,
+                    String.class
+            );
+        } catch (HttpClientErrorException e) {
+            // 에러 메시지 출력
+            throw new RuntimeException("Failed to get user info from Kakao: " + e.getMessage(), e);
+        }
+
+        // 응답 본문을 JSON으로 파싱
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
 
         Long userId = jsonNode.get("id").asLong();
-        String userEmail = jsonNode.get("kakao_account").get("email").asText();
-        String nickname = jsonNode.get("properties").get("nickname").asText();
+        String userEmail = jsonNode.path("kakao_account").path("email").asText();
+        String nickname = jsonNode.path("properties").path("nickname").asText();
 
         return new KakaoInfo(userId, nickname, userEmail);
     }
@@ -196,5 +222,6 @@ public class OAuthService {
             throw new RuntimeException("Failed to unlink user: " + e.getMessage(), e);
         }
     }
+
 
 }
