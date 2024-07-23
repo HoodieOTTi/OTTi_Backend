@@ -55,29 +55,29 @@ public class KakaoOAuth2Controller {
     // 세션 로그인
     // Service에 작성한 함수를 바탕으로 Controller를 작성하고, 세션에 값을 담아 로그인을 구현
     @RequestMapping(value = "/kakao/callback", method = RequestMethod.GET)
-    public String kakaoCallback(@RequestParam("code") String code, HttpSession session){
-        // SETP1 : 인가코드 받기
-        // (카카오 인증 서버는 서비스 서버의 Redirect URI로 인가 코드를 전달합니다.)
-        // System.out.println(code);
+    public String kakaoCallback(@RequestParam("accessToken") String accessToken, HttpSession session){
+//         SETP1 : 인가코드 받기
+//         (카카오 인증 서버는 서비스 서버의 Redirect URI로 인가 코드를 전달합니다.)
+//         System.out.println(accessToken);
 
-        // STEP2: 인가코드를 기반으로 토큰(Access Token) 발급
+//         STEP2: 인가코드를 기반으로 토큰(Access Token) 발급
 //        String accessToken = null;
-//        try {
-//            accessToken = oAuthService.getAccessToken(code);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
-        //System.out.println("엑세스 토큰  "+accessToken);
+        try {
+            accessToken = oAuthService.getAccessToken(accessToken);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("엑세스 토큰  "+accessToken);
 
         // STEP3: 토큰를 통해 사용자 정보 조회
         KakaoInfo kakaoInfo = null;
         try {
-//            kakaoInfo = oAuthService.getKakaoInfo(accessToken);
-            kakaoInfo = oAuthService.getKakaoInfo(code);
+            kakaoInfo = oAuthService.getKakaoInfo(accessToken);
+//            kakaoInfo = oAuthService.getKakaoInfo(code);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        //System.out.println("이메일 확인 "+kakaoInfo.getEmail());
+        System.out.println("이메일 확인 "+kakaoInfo.getEmail());
 
         // STEP4: 카카오 사용자 정보 확인
         MemberResponse kakaoMember = oAuthService.ifNeedKakaoInfo(kakaoInfo);
@@ -91,8 +91,7 @@ public class KakaoOAuth2Controller {
             // 로그인 유지 시간 설정 (1800초 == 30분)
             session.setMaxInactiveInterval(60 * 30);
             // 로그아웃 시 사용할 카카오토큰 추가
-//            session.setAttribute("kakaoToken", accessToken);
-            session.setAttribute("kakaoToken", code);
+            session.setAttribute("kakaoToken", accessToken);
         }
 
         return "redirect:/";
@@ -112,54 +111,83 @@ public class KakaoOAuth2Controller {
     }
 
 
-
-
     @GetMapping("/kakaoLogout")
     public void kakaoLogout(HttpServletResponse response) throws IOException {
         String logoutUrl = oAuthService.buildKakaoLogoutUrl();
         response.sendRedirect(logoutUrl);
     }
 
+//    @GetMapping("/api/logout")
+//    public String logout(HttpServletRequest request) {
+//        // 세션에서 엑세스 토큰을 가져옴
+////        String accessToken = (String) session.getAttribute("kakaoToken");
+//
+//        // 액세스 토큰을 헤더에서 추출
+////        String accessToken = null;
+////        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+////            accessToken = authorizationHeader.substring(7); // "Bearer " 문자열 제거
+////        }
+//
+//        // 엑세스 토큰이 존재할 경우 로그아웃 처리
+////        if (accessToken != null && !"".equals(accessToken)) {
+////            try {
+////                // 카카오 로그아웃 처리
+////                oAuthService.kakaoDisconnect(accessToken);
+////            } catch (JsonProcessingException e) {
+////                // 예외 처리
+////                e.printStackTrace();
+////            }
+////            // 세션에서 관련 정보 삭제
+////            session.removeAttribute("kakaoToken");
+////            session.removeAttribute("loginMember");
+////        } else {
+////            System.out.println("accessToken is null");
+////        }
+//
+//        // 세션에서 관련 정보 삭제
+////            session.removeAttribute("kakaoToken");
+////            session.removeAttribute("loginMember");
+//
+//
+//        // 세션 무효화
+////        session.invalidate();
+//
+//        request.getSession().invalidate();
+//
+//        // 로그아웃 후 리다이렉트할 URL 설정
+//        return "redirect:/";
+//    }
+
     @GetMapping("/api/logout")
     public String logout(HttpServletRequest request) {
         // 세션에서 엑세스 토큰을 가져옴
-//        String accessToken = (String) session.getAttribute("kakaoToken");
+        String accessToken = (String) request.getSession().getAttribute("kakaoToken");
 
-        // 액세스 토큰을 헤더에서 추출
-//        String accessToken = null;
-//        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-//            accessToken = authorizationHeader.substring(7); // "Bearer " 문자열 제거
-//        }
+        // 액세스 토큰이 존재할 경우 로그아웃 처리
+        if (accessToken != null && !accessToken.isEmpty()) {
+            try {
+                // 카카오 로그아웃 처리
+                oAuthService.kakaoDisconnect(accessToken);
+            } catch (JsonProcessingException e) {
+                // 예외 처리
+                e.printStackTrace();
+                // 로그아웃 처리 실패 시, 사용자에게 에러 메시지를 보여줄 수도 있습니다.
+            }
 
-        // 엑세스 토큰이 존재할 경우 로그아웃 처리
-//        if (accessToken != null && !"".equals(accessToken)) {
-//            try {
-//                // 카카오 로그아웃 처리
-//                oAuthService.kakaoDisconnect(accessToken);
-//            } catch (JsonProcessingException e) {
-//                // 예외 처리
-//                e.printStackTrace();
-//            }
-//            // 세션에서 관련 정보 삭제
-//            session.removeAttribute("kakaoToken");
-//            session.removeAttribute("loginMember");
-//        } else {
-//            System.out.println("accessToken is null");
-//        }
-
-        // 세션에서 관련 정보 삭제
-//            session.removeAttribute("kakaoToken");
-//            session.removeAttribute("loginMember");
-
+            // 세션에서 관련 정보 삭제
+            request.getSession().removeAttribute("kakaoToken");
+            request.getSession().removeAttribute("loginMember");
+        } else {
+            System.out.println("accessToken is null or empty");
+        }
 
         // 세션 무효화
-//        session.invalidate();
-
         request.getSession().invalidate();
 
         // 로그아웃 후 리다이렉트할 URL 설정
-        return "redirect:/";
+        return "redirect:" + oAuthService.buildKakaoLogoutUrl();
     }
+
 
 
     @GetMapping("/api/unlink")
