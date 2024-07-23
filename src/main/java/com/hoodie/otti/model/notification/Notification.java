@@ -1,11 +1,7 @@
 package com.hoodie.otti.model.notification;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +14,7 @@ public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("id")
+    @JsonProperty("userid")
     private Long userId;
 
     @Column(nullable = false) // 'is_read' 컬럼을 매핑합니다. NULL 값 허용하지 않음.
@@ -33,7 +29,7 @@ public class Notification {
     @JsonProperty("createdAt")
     private LocalDateTime createdAt;
 
-    // 기본 생성자 (JPA 규약을 따라야 함)
+    // 기본 생성자
     public Notification() {
     }
 
