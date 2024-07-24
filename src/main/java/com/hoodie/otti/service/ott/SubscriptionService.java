@@ -4,10 +4,10 @@ import com.hoodie.otti.dto.ott.SubscriptionSaveRequestDto;
 import com.hoodie.otti.dto.ott.SubscriptionUpdateRequestDto;
 import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.ott.Subscription;
-import com.hoodie.otti.model.profile.UserProfile;
+import com.hoodie.otti.model.profile.User;
 import com.hoodie.otti.repository.ott.OttRepository;
 import com.hoodie.otti.repository.ott.SubscriptionRepository;
-import com.hoodie.otti.repository.profile.UserProfileRepository;
+import com.hoodie.otti.repository.profile.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -21,12 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
-    private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
     private final OttRepository ottRepository;
 
     @Transactional
     public Long save(SubscriptionSaveRequestDto requestDto) {
-        UserProfile user = userProfileRepository.findById(requestDto.getUserProfileId())
+        User user = userRepository.findById(requestDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
         Ott ott = ottRepository.findOttByNameAndAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
@@ -36,7 +36,7 @@ public class SubscriptionService {
                 .payment(requestDto.getPayment())
                 .memo(requestDto.getMemo())
                 .paymentDate(requestDto.getPaymentDate())
-                .userProfile(user)
+                .userId(user)
                 .ottId(ott)
                 .build();
 
@@ -53,7 +53,7 @@ public class SubscriptionService {
     }
 
     public List<Subscription> findAllByUserId(Long userId) {
-        return subscriptionRepository.findByUserProfile_Id(userId);
+        return subscriptionRepository.findByUserId_Id(userId);
     }
 
     public Integer calculateDDay(Long id) {

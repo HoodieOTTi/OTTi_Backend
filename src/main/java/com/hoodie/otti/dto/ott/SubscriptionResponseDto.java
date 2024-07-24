@@ -25,7 +25,7 @@ public class SubscriptionResponseDto {
         this.payment = subscription.getPayment();
         this.memo = subscription.getMemo();
         this.paymentDate = subscription.getPaymentDate();
-        this.userId = subscription.getUserProfile().getId();
+        this.userId = subscription.getUserId().getId();
         this.ott = new OttResponseDto(subscription.getOttId());
         this.createdDate = subscription.getCreatedDate();
         this.modifiedDate = subscription.getModifiedDate();
