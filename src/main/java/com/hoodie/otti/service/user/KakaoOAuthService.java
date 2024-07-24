@@ -12,13 +12,11 @@ import com.hoodie.otti.model.profile.User;
 import com.hoodie.otti.repository.profile.UserRepository;
 import com.hoodie.otti.util.login.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
@@ -30,6 +28,7 @@ public class KakaoOAuthService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RestTemplate restTemplate;
     private final String KAKAO_CLIENT_ID;
     private final String REDIRECT_URI;
     private final String CLIENT_ID;
@@ -40,9 +39,11 @@ public class KakaoOAuthService {
                              @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String kakaoClientId,
                              @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}") String redirectUri,
                              @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String clientId,
-                             @Value("${kakao.logout-redirect-uri}") String logoutRedirectUri) {
+                             @Value("${kakao.logout-redirect-uri}") String logoutRedirectUri,
+                             RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.restTemplate = restTemplate;
         this.KAKAO_CLIENT_ID = kakaoClientId;
         this.REDIRECT_URI = redirectUri;
         this.CLIENT_ID = clientId;
@@ -109,5 +110,24 @@ public class KakaoOAuthService {
     public String buildKakaoLogoutUrl() {
         return "https://kauth.kakao.com/oauth/logout?client_id=" + CLIENT_ID +
                 "&logout_redirect_uri=" + URLEncoder.encode(MY_LOGOUT_REDIRECT_URI, StandardCharsets.UTF_8);
+    }
+
+    public void unlinkUser(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange("https://kapi.kakao.com/v1/user/unlink", HttpMethod.POST, entity, String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // Success
+                System.out.println("Successfully unlinked user: " + response.getBody());
+            } else {
+                throw new RuntimeException("Failed to unlink user: " + response.getBody());
+            }
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Failed to unlink user: " + e.getMessage(), e);
+        }
     }
 }
