@@ -8,7 +8,7 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -28,13 +28,17 @@ spring:
         provider:
           kakao:
             authorization-uri: ${AUTHORIZATION_URI}
-            token-uri: ${TOKEN_URI}
             user-info-uri: ${USER_INFO_URI}
+            token-uri: ${TOKEN-URI}
+jwt:
+  secret: ${SECRET_KEY}
+  access-token-validity-in-milliseconds: ${ACCESS_TOKEN_EXPIRE_TIME}
 
-  main:
-    allow-bean-definition-overriding: true
 
-
-kakao:
-  logout-redirect-uri: ${MY_LOGOUT_REDIRECT_URI}
-  unlink-url: ${UNLINK_URI}
+#  main:
+#    allow-bean-definition-overriding: true
+#
+#
+#kakao:
+#  logout-redirect-uri: ${MY_LOGOUT_REDIRECT_URI}
+#  unlink-url: ${UNLINK_URI}

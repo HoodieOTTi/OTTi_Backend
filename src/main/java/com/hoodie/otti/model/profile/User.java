@@ -1,5 +1,6 @@
 package com.hoodie.otti.model.profile;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,12 +17,13 @@ public class User {
     private Long id;
 
     @NotEmpty(message = "닉네임은 필수 입력 사항입니다.")
-    @Size(min = 3, max = 50, message = "닉네임은 최소 3자에서 최대 50자여야 합니다.")
+    @Size(min = 2, max = 50, message = "닉네임은 최소 2자에서 최대 50자여야 합니다.")
     private String username;
 
-    @NotEmpty(message = "이메일은 필수 입력 사항입니다.")
-    @Email(message = "올바른 이메일 형식이어야 합니다.")
-    private String userEmail;   // 사용자 이메일
+    private String userEmail;
+
+    @Column(unique = true)
+    private Long kakaoId;
 
     private String profilePhotoUrl;
 
@@ -31,6 +33,12 @@ public class User {
     public User(String username, String profilePhotoUrl, String userEmail) {
         this.username = username;
         this.profilePhotoUrl = profilePhotoUrl;
+        this.userEmail = userEmail;
+    }
+
+    public User(Long kakaoId, String username, String userEmail) {
+        this.kakaoId = kakaoId;
+        this.username = username;
         this.userEmail = userEmail;
     }
 
