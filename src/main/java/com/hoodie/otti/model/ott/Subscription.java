@@ -1,6 +1,6 @@
 package com.hoodie.otti.model.ott;
 
-import com.hoodie.otti.model.profile.UserProfile;
+import com.hoodie.otti.model.profile.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -50,8 +50,8 @@ public class Subscription {
     private Date modifiedDate;
 
     @ManyToOne
-    @JoinColumn(name = "USER_PROFILE_ID", nullable = false)
-    private UserProfile userProfile;
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User userId;
 
     @ManyToOne
     @JoinColumn(name = "OTT_ID", nullable = false)
@@ -59,14 +59,14 @@ public class Subscription {
 
     @Builder
     public Subscription(String name, Integer payment, String memo, Integer paymentDate, Date createdDate,
-                        Date modifiedDate, UserProfile userProfile, Ott ottId) {
+                        Date modifiedDate, User userId, Ott ottId) {
         this.name = name;
         this.payment = payment;
         this.memo = memo;
         this.paymentDate = paymentDate;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.userProfile = userProfile;
+        this.userId = userId;
         this.ottId = ottId;
     }
 

@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
-    List<Subscription> findByUserProfile_Id(Long userProfileId);
+    List<Subscription> findByUserId_Id(Long userId);
 }
