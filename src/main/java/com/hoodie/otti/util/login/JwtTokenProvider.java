@@ -5,11 +5,19 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import java.util.Date;
 import org.springframework.util.StringUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Component
 public class JwtTokenProvider {
@@ -33,6 +41,7 @@ public class JwtTokenProvider {
 
         String accessToken = Jwts.builder()
                 .setSubject(String.valueOf(kakaoId))
+                .claim("auth", "ROLE_USER")
                 .setExpiration(tokenExpiredTime)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -40,6 +49,23 @@ public class JwtTokenProvider {
         return ServiceTokenDto.builder()
                 .accessToken(accessToken)
                 .build();
+    }
+
+    // 토큰에 담겨있는 정보를 가져오는 메소드
+    public Authentication getAuthentication(String serviceAccessToken) {
+        Claims claims = parseClaims(serviceAccessToken);
+
+        if (claims.get("auth") == null) {
+            throw new IllegalArgumentException("권한 없음");
+        }
+
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get("auth").toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .toList();
+
+        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
     // 토큰 유효성 검사 메서드
@@ -84,13 +110,20 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-
-    // 남은 유효기간 반환
-    public Long getExpiration(String accessToken) {
-        // accessToken 남은 유효시간
-        Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().getExpiration();
-        // 현재 시간
-        Long now = new Date().getTime();
-        return (expiration.getTime() - now);
+    private Claims parseClaims(String serviceAccessToken) {
+        try {
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(serviceAccessToken).getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
     }
+
+//    // 남은 유효기간 반환
+//    public Long getExpiration(String accessToken) {
+//        // accessToken 남은 유효시간
+//        Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().getExpiration();
+//        // 현재 시간
+//        Long now = new Date().getTime();
+//        return (expiration.getTime() - now);
+//    }
 }
