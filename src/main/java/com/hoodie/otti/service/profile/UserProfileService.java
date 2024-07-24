@@ -2,19 +2,19 @@ package com.hoodie.otti.service.profile;
 
 import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
-import com.hoodie.otti.model.profile.UserProfile;
-import com.hoodie.otti.repository.profile.UserProfileRepository;
+import com.hoodie.otti.model.profile.User;
+import com.hoodie.otti.repository.profile.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserProfileService {
 
-    private final UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserProfileService(UserProfileRepository userProfileRepository) {
-        this.userProfileRepository = userProfileRepository;
+    public UserProfileService(UserRepository userProfileRepository) {
+        this.userRepository = userProfileRepository;
     }
 
     /**
@@ -23,8 +23,8 @@ public class UserProfileService {
      * @return 조회된 UserProfile 객체
      * @throws UserProfileNotFoundException 유저 프로필이 존재하지 않을 경우
      */
-    public UserProfile getUserProfileById(Long id) {
-        return userProfileRepository.findById(id)
+    public User getUserProfileById(Long id) {
+        return userRepository.findById(id)
                 .orElseThrow(() -> new UserProfileNotFoundException("ID에 해당하는 유저 프로필을 찾을 수 없습니다: " + id));
     }
 
@@ -35,10 +35,10 @@ public class UserProfileService {
      * @throws UserProfileNotFoundException 유저 프로필이 존재하지 않을 경우
      */
     public void updateUserProfile(Long userId, UserProfileDTO userProfileDTO) {
-        UserProfile userProfile = getUserProfileById(userId);
+        User userProfile = getUserProfileById(userId);
         userProfile.setUsername(userProfileDTO.getUsername());
         userProfile.setProfilePhotoUrl(userProfileDTO.getProfilePhotoUrl());
-        userProfileRepository.save(userProfile);
+        userRepository.save(userProfile);
     }
 
     /**
@@ -46,8 +46,8 @@ public class UserProfileService {
      * @param userProfile 저장할 UserProfile 객체
      * @return 저장된 UserProfile 객체
      */
-    public UserProfile saveUserProfile(UserProfile userProfile) {
-        return userProfileRepository.save(userProfile);
+    public User saveUserProfile(User userProfile) {
+        return userRepository.save(userProfile);
     }
 
     /**
@@ -55,6 +55,6 @@ public class UserProfileService {
      * @param id 유저 ID
      */
     public void deleteUserProfile(Long id) {
-        userProfileRepository.deleteById(id);
+        userRepository.deleteById(id);
     }
 }
