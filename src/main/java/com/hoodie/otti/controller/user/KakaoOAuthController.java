@@ -5,15 +5,13 @@ import com.hoodie.otti.dto.login.KakaoTokenDto;
 import com.hoodie.otti.dto.login.ServiceTokenDto;
 import com.hoodie.otti.dto.login.UserDto;
 import com.hoodie.otti.service.user.KakaoOAuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,4 +32,11 @@ public class KakaoOAuthController {
         ServiceTokenDto serviceToken = kakaoOAuthService.joinAndLogin(kakaoToken);
         return ResponseEntity.ok(serviceToken);
     }
+
+    @GetMapping("/logout")
+    public void logout(HttpServletResponse response) throws IOException {
+        String logoutUrl = kakaoOAuthService.buildKakaoLogoutUrl();
+        response.sendRedirect(logoutUrl);
+    }
+
 }

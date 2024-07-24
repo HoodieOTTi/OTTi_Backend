@@ -11,7 +11,6 @@ import com.hoodie.otti.dto.login.UserDto;
 import com.hoodie.otti.model.profile.User;
 import com.hoodie.otti.repository.profile.UserRepository;
 import com.hoodie.otti.util.login.JwtTokenProvider;
-import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +21,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+
 @Service
 public class KakaoOAuthService {
 
@@ -29,15 +32,21 @@ public class KakaoOAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final String KAKAO_CLIENT_ID;
     private final String REDIRECT_URI;
+    private final String CLIENT_ID;
+    private final String MY_LOGOUT_REDIRECT_URI;
 
 
     public KakaoOAuthService(UserRepository userRepository, JwtTokenProvider jwtTokenProvider,
                              @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String kakaoClientId,
-                             @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}") String redirectUri) {
+                             @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}") String redirectUri,
+                             @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String clientId,
+                             @Value("${kakao.logout-redirect-uri}") String logoutRedirectUri) {
         this.userRepository = userRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.KAKAO_CLIENT_ID = kakaoClientId;
         this.REDIRECT_URI = redirectUri;
+        this.CLIENT_ID = clientId;
+        this.MY_LOGOUT_REDIRECT_URI = logoutRedirectUri;
     }
 
     public KakaoTokenDto getKakaoToken(String code) {
@@ -94,5 +103,11 @@ public class KakaoOAuthService {
         ServiceTokenDto tokenDTO = jwtTokenProvider.createToken(id);
 
         return tokenDTO;
+    }
+
+
+    public String buildKakaoLogoutUrl() {
+        return "https://kauth.kakao.com/oauth/logout?client_id=" + CLIENT_ID +
+                "&logout_redirect_uri=" + URLEncoder.encode(MY_LOGOUT_REDIRECT_URI, StandardCharsets.UTF_8);
     }
 }

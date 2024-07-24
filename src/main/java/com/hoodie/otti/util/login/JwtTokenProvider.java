@@ -1,15 +1,21 @@
 package com.hoodie.otti.util.login;
 
+import com.hoodie.otti.dto.login.KakaoTokenDto;
 import com.hoodie.otti.dto.login.ServiceTokenDto;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import java.security.Key;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.jsonwebtoken.*;
-import java.util.Date;
 import org.springframework.util.StringUtils;
+
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
@@ -93,4 +99,35 @@ public class JwtTokenProvider {
         Long now = new Date().getTime();
         return (expiration.getTime() - now);
     }
+
+
+    // refreshToken을 이용한 생명 연장
+    public KakaoTokenDto.ServiceToken createAccessTokenByRefreshToken(HttpServletRequest request, String refreshToken) {
+        String[] chunks = resolveToken(request).split("\\.");
+
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String payload = new String(decoder.decode(chunks[1]));
+        String name = payload.split("\"")[3];
+
+        // 현재 시간
+        long now = (new Date()).getTime();
+
+        // AccessToken 유효 기간
+        Date tokenExpiredTime = new Date(now + ACCESS_TOKEN_VALIDITY_TIME);
+
+        // AccessToken 생성
+        String accessToken = Jwts.builder()
+                .setSubject(name)
+                .claim("auth", "ROLE_USER")
+                .setExpiration(tokenExpiredTime)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        // TokenDTO 형태로 반환
+        return KakaoTokenDto.ServiceToken.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
 }
