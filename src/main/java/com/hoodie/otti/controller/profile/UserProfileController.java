@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.http.HttpStatus;
 import com.hoodie.otti.exception.profile.ErrorResponse;
 import org.springframework.web.server.ResponseStatusException;
