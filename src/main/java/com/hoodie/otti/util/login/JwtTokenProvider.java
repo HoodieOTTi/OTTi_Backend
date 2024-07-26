@@ -54,12 +54,28 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    // 토큰에 담겨있는 정보를 가져오는 메소드
+//    // 토큰에 담겨있는 정보를 가져오는 메소드
+//    public Authentication getAuthentication(String serviceAccessToken) {
+//        Claims claims = parseClaims(serviceAccessToken);
+//
+//        if (claims.get("auth") == null) {
+//            throw new IllegalArgumentException("권한 없음");
+//        }
+//
+//        Collection<? extends GrantedAuthority> authorities =
+//                Arrays.stream(claims.get("auth").toString().split(","))
+//                        .map(SimpleGrantedAuthority::new)
+//                        .toList();
+//
+//        UserDetails principal = new User(claims.getSubject(), "", authorities);
+//        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+//    }
+
     public Authentication getAuthentication(String serviceAccessToken) {
         Claims claims = parseClaims(serviceAccessToken);
 
-        if (claims.get("auth") == null) {
-            throw new IllegalArgumentException("권한 없음");
+        if (claims == null || claims.get("auth") == null) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다."); // 클레임이 `null`인 경우 적절한 예외를 던집니다.
         }
 
         Collection<? extends GrantedAuthority> authorities =
@@ -71,15 +87,16 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    // 토큰 유효성 검사 메서드
+
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey("your_secret_key").parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
+
 
     // 토큰에서 사용자 정보 추출 메서드
     public String getUserEmailFromToken(String token) {
@@ -113,18 +130,31 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+//    private Claims parseClaims(String serviceAccessToken) {
+//        try {
+//            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(serviceAccessToken).getBody();
+//        } catch (ExpiredJwtException e) {
+//            // 토큰이 만료된 경우 만료된 클레임을 반환
+//            return e.getClaims();
+//        } catch (MalformedJwtException e) {
+//            return null;
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
+
     private Claims parseClaims(String serviceAccessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(serviceAccessToken).getBody();
         } catch (ExpiredJwtException e) {
             // 토큰이 만료된 경우 만료된 클레임을 반환
             return e.getClaims();
-        } catch (MalformedJwtException e) {
-            return null;
-        } catch (Exception e) {
-            return null;
+        } catch (JwtException | IllegalArgumentException e) {
+            // JWT 예외나 잘못된 인자에 대한 처리
+            return null; // `null`을 반환할 때, `getAuthentication`에서 `null` 체크를 해야 합니다.
         }
     }
+
 
     // 남은 유효기간 반환
     public Long getExpiration(String accessToken) {
