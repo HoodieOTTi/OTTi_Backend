@@ -31,6 +31,7 @@ public class Notification {
 
     // 기본 생성자
     public Notification() {
+        this.createdAt = LocalDateTime.now(); // 생성 시 자동으로 현재 시간으로 초기화
     }
 
     // 메시지를 받아 초기화하는 생성자
