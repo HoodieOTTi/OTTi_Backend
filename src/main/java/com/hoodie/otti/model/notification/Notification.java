@@ -14,23 +14,24 @@ public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("userid")
+    @JsonProperty("userId")  // JSON 필드 이름과 매핑
     private Long userId;
 
-    @Column(nullable = false) // 'is_read' 컬럼을 매핑합니다. NULL 값 허용하지 않음.
+    @Column(nullable = false)
     @JsonProperty("isRead")
     private boolean isRead;
 
     @Column(length = 255)
-    @JsonProperty("message")// 'message' 컬럼을 매핑합니다. 최대 길이는 255자입니다.
+    @JsonProperty("message")
     private String message;
 
-    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP") // 'created_at' 컬럼을 매핑합니다. NULL 값 허용하지 않음.
+    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @JsonProperty("createdAt")
     private LocalDateTime createdAt;
 
     // 기본 생성자
     public Notification() {
+        this.createdAt = LocalDateTime.now(); // 생성 시 자동으로 현재 시간으로 초기화
     }
 
     // 메시지를 받아 초기화하는 생성자

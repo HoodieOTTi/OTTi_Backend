@@ -1,23 +1,26 @@
 package com.hoodie.otti.util.login;
 
+import com.hoodie.otti.dto.login.KakaoTokenDto;
 import com.hoodie.otti.dto.login.ServiceTokenDto;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import io.jsonwebtoken.*;
-import java.util.Date;
 import org.springframework.util.StringUtils;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
@@ -51,12 +54,28 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    // 토큰에 담겨있는 정보를 가져오는 메소드
+//    // 토큰에 담겨있는 정보를 가져오는 메소드
+//    public Authentication getAuthentication(String serviceAccessToken) {
+//        Claims claims = parseClaims(serviceAccessToken);
+//
+//        if (claims.get("auth") == null) {
+//            throw new IllegalArgumentException("권한 없음");
+//        }
+//
+//        Collection<? extends GrantedAuthority> authorities =
+//                Arrays.stream(claims.get("auth").toString().split(","))
+//                        .map(SimpleGrantedAuthority::new)
+//                        .toList();
+//
+//        UserDetails principal = new User(claims.getSubject(), "", authorities);
+//        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+//    }
+
     public Authentication getAuthentication(String serviceAccessToken) {
         Claims claims = parseClaims(serviceAccessToken);
 
-        if (claims.get("auth") == null) {
-            throw new IllegalArgumentException("권한 없음");
+        if (claims == null || claims.get("auth") == null) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다."); // 클레임이 `null`인 경우 적절한 예외를 던집니다.
         }
 
         Collection<? extends GrantedAuthority> authorities =
@@ -68,15 +87,16 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    // 토큰 유효성 검사 메서드
+
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey("your_secret_key").parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
+
 
     // 토큰에서 사용자 정보 추출 메서드
     public String getUserEmailFromToken(String token) {
@@ -110,20 +130,69 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+//    private Claims parseClaims(String serviceAccessToken) {
+//        try {
+//            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(serviceAccessToken).getBody();
+//        } catch (ExpiredJwtException e) {
+//            // 토큰이 만료된 경우 만료된 클레임을 반환
+//            return e.getClaims();
+//        } catch (MalformedJwtException e) {
+//            return null;
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
+
     private Claims parseClaims(String serviceAccessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(serviceAccessToken).getBody();
         } catch (ExpiredJwtException e) {
+            // 토큰이 만료된 경우 만료된 클레임을 반환
             return e.getClaims();
+        } catch (JwtException | IllegalArgumentException e) {
+            // JWT 예외나 잘못된 인자에 대한 처리
+            return null; // `null`을 반환할 때, `getAuthentication`에서 `null` 체크를 해야 합니다.
         }
     }
 
-//    // 남은 유효기간 반환
-//    public Long getExpiration(String accessToken) {
-//        // accessToken 남은 유효시간
-//        Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().getExpiration();
-//        // 현재 시간
-//        Long now = new Date().getTime();
-//        return (expiration.getTime() - now);
-//    }
+
+    // 남은 유효기간 반환
+    public Long getExpiration(String accessToken) {
+        // accessToken 남은 유효시간
+        Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().getExpiration();
+        // 현재 시간
+        Long now = new Date().getTime();
+        return (expiration.getTime() - now);
+    }
+
+
+    // refreshToken을 이용한 생명 연장
+    public KakaoTokenDto.ServiceToken createAccessTokenByRefreshToken(HttpServletRequest request, String refreshToken) {
+        String[] chunks = resolveToken(request).split("\\.");
+
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String payload = new String(decoder.decode(chunks[1]));
+        String name = payload.split("\"")[3];
+
+        // 현재 시간
+        long now = (new Date()).getTime();
+
+        // AccessToken 유효 기간
+        Date tokenExpiredTime = new Date(now + ACCESS_TOKEN_VALIDITY_TIME);
+
+        // AccessToken 생성
+        String accessToken = Jwts.builder()
+                .setSubject(name)
+                .claim("auth", "ROLE_USER")
+                .setExpiration(tokenExpiredTime)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        // TokenDTO 형태로 반환
+        return KakaoTokenDto.ServiceToken.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
 }

@@ -3,8 +3,8 @@ package com.hoodie.otti.dto.login;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Builder
@@ -25,4 +25,11 @@ public class KakaoTokenDto {
 //
 //    @JsonProperty("scope")
 //    private String scope;
+
+    @Data
+    @Builder
+    public static class ServiceToken{
+        private String accessToken;
+        private String refreshToken;
+    }
 }

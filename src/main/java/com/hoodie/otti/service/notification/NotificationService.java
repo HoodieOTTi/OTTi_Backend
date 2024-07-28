@@ -1,7 +1,6 @@
 package com.hoodie.otti.service.notification;
 
 import com.hoodie.otti.model.notification.Notification;
-import com.hoodie.otti.exception.notification.NotificationNotFoundException;
 import com.hoodie.otti.repository.notification.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,24 +17,24 @@ public class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
+    public Notification saveNotification(Notification notification) {
+        return notificationRepository.save(notification);
+    }
+
     public List<Notification> getAllNotifications() {
         return notificationRepository.findAll();
     }
 
-    public Notification getNotificationById(Long notificationId) {
-        return notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new NotificationNotFoundException("해당하는 알림을 찾을 수 없습니다: " + notificationId));
+    public Notification getNotificationById(Long id) {
+        return notificationRepository.findById(id).orElse(null);
     }
 
-    public Notification saveOrUpdateNotification(Notification notification) {
-        return notificationRepository.save(notification);
+    public void deleteNotification(Long id) {
+        notificationRepository.deleteById(id);
     }
 
-    public void deleteNotification(Long notificationId) {
-        if (!notificationRepository.existsById(notificationId)) {
-            throw new NotificationNotFoundException("해당하는 알림을 찾을 수 없습니다: " + notificationId);
-        }
-        notificationRepository.deleteById(notificationId);
+    public boolean existsById(Long id) {
+        return notificationRepository.existsById(id);
     }
 
     public Notification markNotificationAsRead(Long notificationId) {
@@ -51,4 +50,7 @@ public class NotificationService {
     public long countNotificationsByUserId(Long userId) {
         return notificationRepository.countByUserId(userId);
     }
+
+
+
 }
