@@ -39,6 +39,9 @@ kakao:
   logout-redirect-uri: ${MY_LOGOUT_REDIRECT_URI}
   unlink-url: ${UNLINK_URI}
 
+server:
+  port: 8443
+
 #  main:
 #    allow-bean-definition-overriding: true
 #
