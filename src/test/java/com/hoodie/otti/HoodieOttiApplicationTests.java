@@ -2,7 +2,7 @@ package com.hoodie.otti;
 
 import com.hoodie.otti.repository.notification.NotificationRepository;
 import com.hoodie.otti.service.notification.NotificationService;
-import com.hoodie.otti.service.user.UserService;
+import com.hoodie.otti.service.user.KakaoOAuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +18,7 @@ class HoodieOttiApplicationTests {
 	private NotificationService notificationService;
 
 	@Autowired
-	private UserService userService;
+	private KakaoOAuthService kakaoOAuthService;
 
 	@Autowired
 	private NotificationRepository notificationRepository;
@@ -26,7 +26,7 @@ class HoodieOttiApplicationTests {
 	@Test
 	void contextLoads() {
 		assertThat(notificationService).isNotNull();
-		assertThat(userService).isNotNull();
+		assertThat(kakaoOAuthService).isNotNull();
 		assertNotNull(notificationRepository);
 	}
 }
