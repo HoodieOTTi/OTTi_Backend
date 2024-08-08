@@ -21,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 @Service
 public class KakaoOAuthService {
@@ -55,19 +54,30 @@ public class KakaoOAuthService {
 
         RestTemplate restTemplate = new RestTemplate();
 
+        // HttpHeader 객체 생성
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        // HttpBody 객체 생성
         MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
         requestParams.add("grant_type", "authorization_code");
         requestParams.add("client_id", KAKAO_CLIENT_ID);
         requestParams.add("redirect_uri", REDIRECT_URI);
         requestParams.add("code", code);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-
+        // HttpHeader와 HttpBody를 하나의 객체에 담기
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestParams, headers);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(reqURL, HttpMethod.POST, requestEntity, String.class);
-        JsonElement element = JsonParser.parseString(Objects.requireNonNull(responseEntity.getBody())).getAsJsonObject();
 
+        // 카카오에게 Http 요청하기 (POST 방식)
+        ResponseEntity<String> responseEntity = restTemplate.exchange(
+                reqURL,
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        // JSON 응답을 KakaoTokenDto로 변환
+        JsonElement element = JsonParser.parseString(responseEntity.getBody());
         String accessToken = element.getAsJsonObject().get("access_token").getAsString();
         String refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
 
