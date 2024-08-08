@@ -23,7 +23,7 @@ public class KakaoOAuthController {
     private final KakaoOAuthService kakaoOAuthService;
 
     @ResponseBody
-    @GetMapping("/kakao")
+    @PostMapping("/kakao")
     public KakaoTokenDto kakaoCallback(@RequestParam String code) {
         return kakaoOAuthService.getKakaoToken(code);
     }
