@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/", "/main","/swagger-ui/**", "/v3/api-docs/**","/api/oauth/**").permitAll()
+                                .requestMatchers("/", "/main","/swagger-ui/**", "/v3/api-docs/**","/api/oauth/kakao", "/api/oauth/login", "/api/oauth/**").permitAll()
                                 .requestMatchers("/api/subscription/**", "/api/users/{userId}/profile/**").hasRole("USER")
                                 .requestMatchers("/notification").hasRole("USER")
                                 .anyRequest().authenticated())
@@ -47,7 +47,7 @@ public class SecurityConfig {
     public CorsConfigurationSource configurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000", "http://localhost"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Access-Control-Allow-Credentials", "Authorization", "Set-Cookie"));
