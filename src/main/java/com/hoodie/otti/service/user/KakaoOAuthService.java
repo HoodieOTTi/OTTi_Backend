@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.hoodie.otti.dto.login.KakaoTokenDto;
 import com.hoodie.otti.dto.login.ServiceTokenDto;
 import com.hoodie.otti.dto.login.UserDto;
+import com.hoodie.otti.exception.profile.NotKakaoTokenException;
 import com.hoodie.otti.model.profile.User;
 import com.hoodie.otti.repository.profile.UserRepository;
 import com.hoodie.otti.util.login.JwtTokenProvider;
@@ -69,7 +70,7 @@ public class KakaoOAuthService {
                     .getAccessToken();
         }
 
-        throw new RuntimeException("구글 엑세스 토큰을 가져오는데 실패했습니다.");
+        throw new NotKakaoTokenException("카카오 엑세스 토큰을 가져오는데 실패했습니다.");
     }
 
 

@@ -38,6 +38,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(NotKakaoTokenException.class)
+    public ResponseEntity<String> handleUserProfileNotKakaoTokenException(NotKakaoTokenException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     /**
      * MethodArgumentNotValidException을 처리하는 메서드
      * @param ex 발생한 예외 객체
