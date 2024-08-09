@@ -30,6 +30,9 @@ spring:
             authorization-uri: ${AUTHORIZATION_URI}
             user-info-uri: ${USER_INFO_URI}
             token-uri: ${TOKEN-URI}
+  graphql:
+    cors:
+      allowed-origins: ${CORS_ALLOWED_ORIGINS}
 
 jwt:
   secret: ${SECRET_KEY}
@@ -47,6 +50,7 @@ server:
     key-store-type: pkcs12
     key-alias: tomcat
     enabled: true
+
 
 #  main:
 #    allow-bean-definition-overriding: true
