@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.hoodie.otti.dto.login.KakaoTokenDto;
 import com.hoodie.otti.dto.login.ServiceTokenDto;
 import com.hoodie.otti.dto.login.UserDto;
 import com.hoodie.otti.model.profile.User;
@@ -50,7 +49,7 @@ public class KakaoOAuthService {
         this.MY_LOGOUT_REDIRECT_URI = logoutRedirectUri;
     }
 
-    public KakaoTokenDto getKakaoToken(String code) {
+    public String getKakaoToken(String code) {
         String reqURL = "https://kauth.kakao.com/oauth/token";
 
         RestTemplate restTemplate = new RestTemplate();
@@ -68,11 +67,11 @@ public class KakaoOAuthService {
         ResponseEntity<String> responseEntity = restTemplate.exchange(reqURL, HttpMethod.POST, requestEntity, String.class);
         JsonElement element = JsonParser.parseString(Objects.requireNonNull(responseEntity.getBody())).getAsJsonObject();
 
-        String accessToken = element.getAsJsonObject().get("access_token").getAsString();
-        String refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
+        String access_Token = element.getAsJsonObject().get("access_token").getAsString();
 
-        return new KakaoTokenDto(accessToken, refreshToken);
+        return access_Token;
     }
+
 
     public ServiceTokenDto joinAndLogin(UserDto tokenDto) throws JsonProcessingException {
         String reqURL = "https://kapi.kakao.com/v2/user/me";

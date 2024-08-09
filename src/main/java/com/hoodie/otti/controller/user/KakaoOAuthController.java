@@ -1,7 +1,6 @@
 package com.hoodie.otti.controller.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.hoodie.otti.dto.login.KakaoTokenDto;
 import com.hoodie.otti.dto.login.ServiceTokenDto;
 import com.hoodie.otti.dto.login.UserDto;
 import com.hoodie.otti.service.user.KakaoOAuthService;
@@ -24,8 +23,9 @@ public class KakaoOAuthController {
 
     @ResponseBody
     @GetMapping("/kakao")
-    public ResponseEntity<KakaoTokenDto> kakaoCallback(@RequestParam(name = "code") String code) {
-        return ResponseEntity.ok(kakaoOAuthService.getKakaoToken(code));
+    public ResponseEntity<String> kakaoCallback(@RequestParam(name = "code") String code) {
+        String kakaoToken = kakaoOAuthService.getKakaoToken(code);
+        return ResponseEntity.ok(kakaoToken);
     }
 
     @PostMapping("/login")
