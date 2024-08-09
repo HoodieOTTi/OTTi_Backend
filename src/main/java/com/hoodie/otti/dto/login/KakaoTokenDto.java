@@ -1,6 +1,7 @@
 package com.hoodie.otti.dto.login;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,13 +12,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class KakaoTokenDto {
 
-    @JsonProperty("access_token")
+    @SerializedName("access_token")
     private String accessToken;
 
 //    @JsonProperty("token_type")
 //    private String tokenType;
 
-    @JsonProperty("refresh_token")
+    @SerializedName("refresh_token")
     private String refreshToken;
 
 //    @JsonProperty("expires_in")

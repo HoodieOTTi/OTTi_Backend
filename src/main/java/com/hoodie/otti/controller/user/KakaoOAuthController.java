@@ -24,11 +24,9 @@ public class KakaoOAuthController {
 
     @ResponseBody
     @GetMapping("/kakao")
-    public KakaoTokenDto kakaoCallback(@RequestParam String code) {
-        return kakaoOAuthService.getKakaoToken(code);
+    public ResponseEntity<KakaoTokenDto> kakaoCallback(@RequestParam(name = "code") String code) {
+        return ResponseEntity.ok(kakaoOAuthService.getKakaoToken(code));
     }
-
-
 
     @PostMapping("/login")
     public ResponseEntity<ServiceTokenDto> login(@RequestBody UserDto kakaoToken) throws JsonProcessingException {
