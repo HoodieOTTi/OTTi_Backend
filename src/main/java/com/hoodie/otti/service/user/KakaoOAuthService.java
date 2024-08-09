@@ -3,25 +3,22 @@ package com.hoodie.otti.service.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
 import com.hoodie.otti.dto.login.KakaoTokenDto;
 import com.hoodie.otti.dto.login.ServiceTokenDto;
 import com.hoodie.otti.dto.login.UserDto;
 import com.hoodie.otti.model.profile.User;
 import com.hoodie.otti.repository.profile.UserRepository;
 import com.hoodie.otti.util.login.JwtTokenProvider;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 @Service
 public class KakaoOAuthService {
@@ -50,29 +47,31 @@ public class KakaoOAuthService {
         this.MY_LOGOUT_REDIRECT_URI = logoutRedirectUri;
     }
 
-    public KakaoTokenDto getKakaoToken(String code) {
+    public String getKakaoToken(String code) {
         String reqURL = "https://kauth.kakao.com/oauth/token";
 
         RestTemplate restTemplate = new RestTemplate();
 
-        MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
-        requestParams.add("grant_type", "authorization_code");
-        requestParams.add("client_id", KAKAO_CLIENT_ID);
-        requestParams.add("redirect_uri", REDIRECT_URI);
-        requestParams.add("code", code);
+        Map<String, String> params = Map.of(
+                "code", code,
+                "client_id", KAKAO_CLIENT_ID
+                ,"redirect_uri", REDIRECT_URI,
+                "grant_type", "authorization_code"
+        );
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(reqURL, params, String.class);
 
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestParams, headers);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(reqURL, HttpMethod.POST, requestEntity, String.class);
-        JsonElement element = JsonParser.parseString(Objects.requireNonNull(responseEntity.getBody())).getAsJsonObject();
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            String json = responseEntity.getBody();
+            Gson gson = new Gson();
 
-        String accessToken = element.getAsJsonObject().get("access_token").getAsString();
-        String refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
+            return gson.fromJson(json, KakaoTokenDto.class)
+                    .getAccessToken();
+        }
 
-        return new KakaoTokenDto(accessToken, refreshToken);
+        throw new RuntimeException("구글 엑세스 토큰을 가져오는데 실패했습니다.");
     }
+
 
     public ServiceTokenDto joinAndLogin(UserDto tokenDto) throws JsonProcessingException {
         String reqURL = "https://kapi.kakao.com/v2/user/me";

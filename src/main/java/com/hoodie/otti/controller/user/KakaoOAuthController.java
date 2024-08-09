@@ -24,7 +24,7 @@ public class KakaoOAuthController {
 
     @ResponseBody
     @GetMapping("/kakao")
-    public ResponseEntity<KakaoTokenDto> kakaoCallback(@RequestParam(name = "code") String code) {
+    public ResponseEntity<String> kakaoCallback(@RequestParam(name = "code") String code) {
         return ResponseEntity.ok(kakaoOAuthService.getKakaoToken(code));
     }
 
