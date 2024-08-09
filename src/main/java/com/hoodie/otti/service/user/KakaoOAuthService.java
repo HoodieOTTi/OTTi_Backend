@@ -51,6 +51,10 @@ public class KakaoOAuthService {
     public String getKakaoToken(String code) {
         String reqURL = "https://kauth.kakao.com/oauth/token";
 
+        if (code == null) {
+            throw new NotKakaoTokenException("code 못 받아옴");
+        }
+
         RestTemplate restTemplate = new RestTemplate();
 
         Map<String, String> params = Map.of(
