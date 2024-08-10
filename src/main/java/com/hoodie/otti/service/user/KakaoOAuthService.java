@@ -70,8 +70,11 @@ public class KakaoOAuthService {
 
         String accessToken = element.getAsJsonObject().get("access_token").getAsString();
         String refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
+        String tokenType = element.getAsJsonObject().get("token_type").getAsString();
+        int expiresIn = element.getAsJsonObject().get("expires_in").getAsInt();
+        String scope = element.getAsJsonObject().get("scope").getAsString();
 
-        return new KakaoTokenDto(accessToken, refreshToken);
+        return new KakaoTokenDto(accessToken, refreshToken, tokenType, expiresIn, scope);
     }
 
     public ServiceTokenDto joinAndLogin(UserDto tokenDto) throws JsonProcessingException {
