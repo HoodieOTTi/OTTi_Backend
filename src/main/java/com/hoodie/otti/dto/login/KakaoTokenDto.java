@@ -12,19 +12,19 @@ import lombok.Getter;
 @AllArgsConstructor
 public class KakaoTokenDto {
 
-    @JsonProperty("access_token")
+    @SerializedName("access_token")
     private String accessToken;
 
-    @JsonProperty("refresh_token")
+    @SerializedName("refresh_token")
     private String refreshToken;
 
-    @JsonProperty("token_type")
+    @SerializedName("token_type")
     private String tokenType;
 
-    @JsonProperty("expires_in")
+    @SerializedName("expires_in")
     private int expiresIn;
 
-    @JsonProperty("scope")
+    @SerializedName("scope")
     private String scope;
 
     @Data
