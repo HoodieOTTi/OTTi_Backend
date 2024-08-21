@@ -3,10 +3,10 @@ package com.hoodie.otti.controller.ott;
 import com.hoodie.otti.dto.ott.SubscriptionByUserResponseDto;
 import com.hoodie.otti.dto.ott.SubscriptionDDayResponseDto;
 import com.hoodie.otti.dto.ott.SubscriptionResponseDto;
-import com.hoodie.otti.dto.ott.SubscriptionSaveRequestDto;
-import com.hoodie.otti.dto.ott.SubscriptionUpdateRequestDto;
+import com.hoodie.otti.dto.ott.SubscriptionRequestDto;
 import com.hoodie.otti.service.ott.SubscriptionService;
 import java.net.URI;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +28,8 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody SubscriptionSaveRequestDto requestDto) {
-        Long id = subscriptionService.save(requestDto);
+    public ResponseEntity<Void> save(@RequestBody SubscriptionRequestDto requestDto, Principal principal) {
+        Long id = subscriptionService.save(requestDto, principal);
         return ResponseEntity.created(URI.create("/api/subscription/" + id)).build();
     }
 
@@ -48,9 +48,9 @@ public class SubscriptionController {
         return ResponseEntity.ok().body(new SubscriptionResponseDto(subscriptionService.findById(id)));
     }
 
-    @GetMapping("/user/{userid}")
-    public ResponseEntity<List<SubscriptionByUserResponseDto>> findByUserId(@PathVariable Long userid) {
-        return ResponseEntity.ok().body(subscriptionService.findAllByUserId(userid)
+    @GetMapping("/user")
+    public ResponseEntity<List<SubscriptionByUserResponseDto>> findByUserId(Principal principal) {
+        return ResponseEntity.ok().body(subscriptionService.findAllByUserId(principal)
                 .stream()
                 .map(SubscriptionByUserResponseDto::new)
                 .collect(Collectors.toList()));
@@ -62,7 +62,7 @@ public class SubscriptionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> update(@PathVariable Long id, @RequestBody SubscriptionUpdateRequestDto requestDto) {
+    public ResponseEntity<Long> update(@PathVariable Long id, @RequestBody SubscriptionRequestDto requestDto) {
         subscriptionService.update(id, requestDto);
         return ResponseEntity.ok().body(id);
     }
