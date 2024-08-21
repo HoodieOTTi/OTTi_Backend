@@ -54,7 +54,7 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    // 토큰에 담긴 정보 가져은 메소드
+    // 토큰에 담긴 정보 가져오는 메소드
     public Authentication getAuthentication(String serviceAccessToken) {
         Claims claims = parseClaims(serviceAccessToken);
 
