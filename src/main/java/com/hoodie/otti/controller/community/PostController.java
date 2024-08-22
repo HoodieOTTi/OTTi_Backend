@@ -3,7 +3,6 @@ package com.hoodie.otti.controller.community;
 import com.hoodie.otti.dto.community.PostResponseDto;
 import com.hoodie.otti.dto.community.PostSaveRequestDto;
 import com.hoodie.otti.dto.community.PostUpdateRequestDto;
-import com.hoodie.otti.dto.ott.SubscriptionUpdateRequestDto;
 import com.hoodie.otti.service.community.PostService;
 import java.net.URI;
 import java.util.List;
