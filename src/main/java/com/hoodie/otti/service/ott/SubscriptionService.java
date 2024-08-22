@@ -1,6 +1,7 @@
 package com.hoodie.otti.service.ott;
 
 import com.hoodie.otti.dto.ott.SubscriptionRequestDto;
+import com.hoodie.otti.dto.ott.SubscriptionTotalPaymentResponseDto;
 import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.ott.Subscription;
 import com.hoodie.otti.model.profile.User;
@@ -81,6 +82,13 @@ public class SubscriptionService {
 
         LocalDate nextPaymentDate = now.withDayOfMonth(paymentDate).plusMonths(1);
         return (int) ChronoUnit.DAYS.between(now, nextPaymentDate);
+    }
+
+    public SubscriptionTotalPaymentResponseDto calculateTotalPayment(Principal principal) {
+        return new SubscriptionTotalPaymentResponseDto(
+                findAllByUserId(principal).stream()
+                .mapToInt(Subscription::getPayment)
+                .sum());
     }
 
     @Transactional

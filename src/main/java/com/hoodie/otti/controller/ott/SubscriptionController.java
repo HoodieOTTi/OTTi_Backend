@@ -4,6 +4,7 @@ import com.hoodie.otti.dto.ott.SubscriptionByUserResponseDto;
 import com.hoodie.otti.dto.ott.SubscriptionDDayResponseDto;
 import com.hoodie.otti.dto.ott.SubscriptionResponseDto;
 import com.hoodie.otti.dto.ott.SubscriptionRequestDto;
+import com.hoodie.otti.dto.ott.SubscriptionTotalPaymentResponseDto;
 import com.hoodie.otti.service.ott.SubscriptionService;
 import java.net.URI;
 import java.security.Principal;
@@ -59,6 +60,11 @@ public class SubscriptionController {
     @GetMapping("/d-day/{id}")
     public ResponseEntity<SubscriptionDDayResponseDto> getDDay(@PathVariable Long id) {
         return ResponseEntity.ok().body(new SubscriptionDDayResponseDto(subscriptionService.calculateDDay(id)));
+    }
+
+    @GetMapping("/total-payment")
+    public ResponseEntity<SubscriptionTotalPaymentResponseDto> getTotalPayment(Principal principal) {
+        return ResponseEntity.ok().body(subscriptionService.calculateTotalPayment(principal));
     }
 
     @PutMapping("/{id}")
