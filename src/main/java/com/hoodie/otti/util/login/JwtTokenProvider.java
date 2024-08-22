@@ -54,23 +54,7 @@ public class JwtTokenProvider {
                 .build();
     }
 
-//    // 토큰에 담겨있는 정보를 가져오는 메소드
-//    public Authentication getAuthentication(String serviceAccessToken) {
-//        Claims claims = parseClaims(serviceAccessToken);
-//
-//        if (claims.get("auth") == null) {
-//            throw new IllegalArgumentException("권한 없음");
-//        }
-//
-//        Collection<? extends GrantedAuthority> authorities =
-//                Arrays.stream(claims.get("auth").toString().split(","))
-//                        .map(SimpleGrantedAuthority::new)
-//                        .toList();
-//
-//        UserDetails principal = new User(claims.getSubject(), "", authorities);
-//        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
-//    }
-
+    // 토큰에 담긴 정보 가져오는 메소드
     public Authentication getAuthentication(String serviceAccessToken) {
         Claims claims = parseClaims(serviceAccessToken);
 
@@ -87,7 +71,6 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -96,7 +79,6 @@ public class JwtTokenProvider {
             return false;
         }
     }
-
 
     // 토큰에서 사용자 정보 추출 메서드
     public String getUserEmailFromToken(String token) {
@@ -155,7 +137,6 @@ public class JwtTokenProvider {
         }
     }
 
-
     // 남은 유효기간 반환
     public Long getExpiration(String accessToken) {
         // accessToken 남은 유효시간
@@ -164,7 +145,6 @@ public class JwtTokenProvider {
         Long now = new Date().getTime();
         return (expiration.getTime() - now);
     }
-
 
     // refreshToken을 이용한 생명 연장
     public KakaoTokenDto.ServiceToken createAccessTokenByRefreshToken(HttpServletRequest request, String refreshToken) {
@@ -194,5 +174,4 @@ public class JwtTokenProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
-
 }

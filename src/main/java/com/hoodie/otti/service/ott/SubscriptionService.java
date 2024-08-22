@@ -1,7 +1,7 @@
 package com.hoodie.otti.service.ott;
 
-import com.hoodie.otti.dto.ott.SubscriptionSaveRequestDto;
-import com.hoodie.otti.dto.ott.SubscriptionUpdateRequestDto;
+import com.hoodie.otti.dto.ott.SubscriptionRequestDto;
+import com.hoodie.otti.dto.ott.SubscriptionTotalPaymentResponseDto;
 import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.ott.Subscription;
 import com.hoodie.otti.model.profile.User;
@@ -9,9 +9,11 @@ import com.hoodie.otti.repository.ott.OttRepository;
 import com.hoodie.otti.repository.ott.SubscriptionRepository;
 import com.hoodie.otti.repository.profile.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +27,12 @@ public class SubscriptionService {
     private final OttRepository ottRepository;
 
     @Transactional
-    public Long save(SubscriptionSaveRequestDto requestDto) {
-        User user = userRepository.findById(requestDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+    public Long save(SubscriptionRequestDto requestDto, Principal principal) {
+        Optional<User> user = userRepository.findByKakaoId(Long.parseLong(principal.getName()));
+
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+        }
 
         Ott ott = ottRepository.findOttByNameAndAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
                 .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
@@ -36,7 +41,7 @@ public class SubscriptionService {
                 .payment(requestDto.getPayment())
                 .memo(requestDto.getMemo())
                 .paymentDate(requestDto.getPaymentDate())
-                .userId(user)
+                .userId(user.get())
                 .ottId(ott)
                 .build();
 
@@ -52,8 +57,14 @@ public class SubscriptionService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 구독 정보가 없습니다. id=" + id));
     }
 
-    public List<Subscription> findAllByUserId(Long userId) {
-        return subscriptionRepository.findByUserId_Id(userId);
+    public List<Subscription> findAllByUserId(Principal principal) {
+        Optional<User> user = userRepository.findByKakaoId(Long.parseLong(principal.getName()));
+
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+        }
+
+        return subscriptionRepository.findByUserId_Id(user.get().getId());
     }
 
     public Integer calculateDDay(Long id) {
@@ -73,8 +84,15 @@ public class SubscriptionService {
         return (int) ChronoUnit.DAYS.between(now, nextPaymentDate);
     }
 
+    public SubscriptionTotalPaymentResponseDto calculateTotalPayment(Principal principal) {
+        return new SubscriptionTotalPaymentResponseDto(
+                findAllByUserId(principal).stream()
+                .mapToInt(Subscription::getPayment)
+                .sum());
+    }
+
     @Transactional
-    public Long update(Long id, SubscriptionUpdateRequestDto requestDto) {
+    public Long update(Long id, SubscriptionRequestDto requestDto) {
         Ott replaceOtt = null;
 
         Subscription subscription = subscriptionRepository.findById(id)
