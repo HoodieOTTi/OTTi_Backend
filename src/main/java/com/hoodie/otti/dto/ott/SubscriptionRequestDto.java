@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SubscriptionUpdateRequestDto {
+public class SubscriptionRequestDto {
 
     private String name;
     private Integer payment;
@@ -16,8 +16,8 @@ public class SubscriptionUpdateRequestDto {
     private String ottRatePlan;
 
     @Builder
-    public SubscriptionUpdateRequestDto(String name, Integer payment, String memo, Integer paymentDate,
-                                        String ottName, String ottRatePlan) {
+    public SubscriptionRequestDto(String name, Integer payment, String memo,
+                                  Integer paymentDate, String ottName, String ottRatePlan) {
         this.name = name;
         this.payment = payment;
         this.memo = memo;
