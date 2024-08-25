@@ -39,14 +39,14 @@ kakao:
   logout-redirect-uri: ${MY_LOGOUT_REDIRECT_URI}
   unlink-url: ${UNLINK_URI}
 
-#server:
-#  port: 8443
-#  ssl:
-#    key-store: ${KEY_STORE}
-#    key-store-password: ${KEY_STORE_PASSWORD}
-#    key-store-type: pkcs12
-#    key-alias: tomcat
-#    enabled: true
+server:
+  port: 8443
+  ssl:
+    key-store: ${KEY_STORE}
+    key-store-password: ${KEY_STORE_PASSWORD}
+    key-store-type: pkcs12
+    key-alias: tomcat
+    enabled: true
 
 #  main:
 #    allow-bean-definition-overriding: true
