@@ -17,23 +17,11 @@ public class UserProfileService {
         this.userRepository = userProfileRepository;
     }
 
-    /**
-     * 유저 ID로 프로필 조회
-     * @param id 유저 ID
-     * @return 조회된 UserProfile 객체
-     * @throws UserProfileNotFoundException 유저 프로필이 존재하지 않을 경우
-     */
     public User getUserProfileById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserProfileNotFoundException("ID에 해당하는 유저 프로필을 찾을 수 없습니다: " + id));
     }
 
-    /**
-     * 유저 프로필 전체 업데이트
-     * @param userId 유저 ID
-     * @param userProfileDTO UserProfileDTO 객체
-     * @throws UserProfileNotFoundException 유저 프로필이 존재하지 않을 경우
-     */
     public void updateUserProfile(Long userId, UserProfileDTO userProfileDTO) {
         User userProfile = getUserProfileById(userId);
         userProfile.setUsername(userProfileDTO.getUsername());
@@ -41,19 +29,10 @@ public class UserProfileService {
         userRepository.save(userProfile);
     }
 
-    /**
-     * 새로운 유저 프로필 저장
-     * @param userProfile 저장할 UserProfile 객체
-     * @return 저장된 UserProfile 객체
-     */
     public User saveUserProfile(User userProfile) {
         return userRepository.save(userProfile);
     }
 
-    /**
-     * 유저 프로필 삭제
-     * @param id 유저 ID
-     */
     public void deleteUserProfile(Long id) {
         userRepository.deleteById(id);
     }
