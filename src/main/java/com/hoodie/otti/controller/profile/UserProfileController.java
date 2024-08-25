@@ -1,16 +1,18 @@
 package com.hoodie.otti.controller.profile;
 
 import com.hoodie.otti.dto.profile.UserProfileDTO;
+import com.hoodie.otti.exception.profile.ErrorResponse;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
 import com.hoodie.otti.service.profile.UserProfileService;
+import com.hoodie.otti.util.login.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
-import com.hoodie.otti.exception.profile.ErrorResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -19,18 +21,27 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public UserProfileController(UserProfileService userProfileService) {
+    public UserProfileController(UserProfileService userProfileService, JwtTokenProvider jwtTokenProvider) {
         this.userProfileService = userProfileService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
+
 
     @PutMapping("/update")
     public ResponseEntity<Void> updateProfile(
-            @PathVariable Long userId,
-            @RequestBody @Valid UserProfileDTO userProfileDTO) {
+            @RequestBody @Valid UserProfileDTO userProfileDTO,
+            HttpServletRequest request) {
         try {
-            userProfileService.updateUserProfile(userId, userProfileDTO);
+            // 요청 헤더에서 토큰을 가져옵니다.
+            String token = jwtTokenProvider.resolveToken(request);
+            if (token == null || !jwtTokenProvider.validateToken(token)) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+            }
+            // 토큰을 사용하여 프로필을 업데이트합니다.
+            userProfileService.updateUserProfile(token, userProfileDTO);
             return ResponseEntity.ok().build();
         } catch (UserProfileNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 프로필을 찾을 수 없습니다", ex);
