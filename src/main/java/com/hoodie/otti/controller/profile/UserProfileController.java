@@ -41,6 +41,17 @@ public class UserProfileController {
         }
     }
 
+    @GetMapping("/userid")
+    public ResponseEntity<Long> getUserId(Principal principal) {
+        try {
+            Long userId = Long.parseLong(principal.getName()); // Principal에서 사용자 ID를 가져옵니다.
+            return ResponseEntity.ok(userId);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 ID를 가져오는 데 실패했습니다", ex);
+        }
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult().getFieldError().getDefaultMessage();
