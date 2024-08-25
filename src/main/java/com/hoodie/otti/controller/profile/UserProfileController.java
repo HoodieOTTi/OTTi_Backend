@@ -4,8 +4,6 @@ import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.exception.profile.ErrorResponse;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
 import com.hoodie.otti.service.profile.UserProfileService;
-import com.hoodie.otti.util.login.JwtTokenProvider;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,33 +13,26 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api/users/{userId}/profile")
 @Validated
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public UserProfileController(UserProfileService userProfileService, JwtTokenProvider jwtTokenProvider) {
+    public UserProfileController(UserProfileService userProfileService) {
         this.userProfileService = userProfileService;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
-
 
     @PutMapping("/update")
     public ResponseEntity<Void> updateProfile(
-            @RequestBody @Valid UserProfileDTO userProfileDTO,
-            HttpServletRequest request) {
+            Principal principal,
+            @RequestBody @Valid UserProfileDTO userProfileDTO) {
         try {
-            // 요청 헤더에서 토큰을 가져옵니다.
-            String token = jwtTokenProvider.resolveToken(request);
-            if (token == null || !jwtTokenProvider.validateToken(token)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
-            }
-            // 토큰을 사용하여 프로필을 업데이트합니다.
-            userProfileService.updateUserProfile(token, userProfileDTO);
+            userProfileService.updateUserProfile(principal, userProfileDTO);
             return ResponseEntity.ok().build();
         } catch (UserProfileNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 프로필을 찾을 수 없습니다", ex);
