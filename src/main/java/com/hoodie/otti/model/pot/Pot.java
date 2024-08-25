@@ -31,12 +31,12 @@ public class Pot {
     @LastModifiedDate
     private Date modifiedDate;
 
-//    @ManyToOne
-//    @JoinColumn(name = "USER_ID", nullable = false)
-//    private User userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User userId;
 
     @ManyToOne
-    @JoinColumn(name = "OTT_ID", nullable = false)
+    @JoinColumn(name = "ott_id", nullable = false)
     private Ott ottId;
 
     @Column(name = "pot_depositAccount")
@@ -50,27 +50,27 @@ public class Pot {
     private User creatorId;
 
 
-//    @Builder
-//    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan) {
-//        this.id = id;
-//        this.name = name;
-//        this.createdDate = createdDate;
-//        this.modifiedDate = modifiedDate;
-//        this.userId = user;
-//        this.ottId = ott;
-//        this.creatorId = creator;
-//        this.depositAccount = depositAccount;  // 입금계좌
-//        this.ratePlan = ratePlan;  // 결제일
-//    }
-
     @Builder
-    public Pot(Long id, String name, Date createdDate, Date modifiedDate, Ott ott, String depositAccount, String ratePlan) {
+    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+        this.userId = user;
         this.ottId = ott;
+        this.creatorId = creator;
         this.depositAccount = depositAccount;  // 입금계좌
         this.ratePlan = ratePlan;  // 결제일
     }
+
+//    @Builder
+//    public Pot(Long id, String name, Date createdDate, Date modifiedDate, Ott ott, String depositAccount, String ratePlan) {
+//        this.id = id;
+//        this.name = name;
+//        this.createdDate = createdDate;
+//        this.modifiedDate = modifiedDate;
+//        this.ottId = ott;
+//        this.depositAccount = depositAccount;  // 입금계좌
+//        this.ratePlan = ratePlan;  // 결제일
+//    }
 }
