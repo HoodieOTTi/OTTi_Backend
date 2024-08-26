@@ -1,6 +1,5 @@
 package com.hoodie.otti.dto.pot;
 
-import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.profile.User;
 import lombok.Builder;
@@ -40,16 +39,27 @@ public class PotSaveRequestDto {
 
 
     // Pot 엔티티로 변환하는 메서드
-    public Pot toEntity(User user, Ott ott) {
+    public Pot toEntity(User user) {
         return Pot.builder()
                 .name(name)
                 .user(user)
-                .ott(ott)
+                .ott(ottId)
                 .depositAccount(depositAccount)
                 .ratePlan(ratePlan)
                 .creator(user)
                 .build();
     }
+
+//    public Pot toEntity(User user, Ott ott) {
+//        return Pot.builder()
+//                .name(name)
+//                .user(user)
+//                .ott(ott)
+//                .depositAccount(depositAccount)
+//                .ratePlan(ratePlan)
+//                .creator(user)
+//                .build();
+//    }
 
 //    public Pot toEntity(Ott ott) {
 //        return Pot.builder()
