@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/", "/main","/swagger-ui/**", "/v3/api-docs/**","/api/oauth/**", "/api/pot/**").permitAll()
+                                .requestMatchers("/", "/main","/swagger-ui/**", "/v3/api-docs/**","/api/oauth/**").permitAll()
                                 .requestMatchers("/api/subscription/**", "/api/users/{userId}/profile/**", "/api/pot/**").hasRole("USER")
                                 .requestMatchers("/notification").hasRole("USER")
                                 .anyRequest().authenticated())
