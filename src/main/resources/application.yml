@@ -14,7 +14,6 @@ spring:
       hibernate:
         format_sql: false
         use_sql_comments: true
-
   security:
     oauth2:
       client:
@@ -30,6 +29,10 @@ spring:
             authorization-uri: ${AUTHORIZATION_URI}
             user-info-uri: ${USER_INFO_URI}
             token-uri: ${TOKEN-URI}
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 jwt:
   secret: ${SECRET_KEY}
@@ -39,14 +42,27 @@ kakao:
   logout-redirect-uri: ${MY_LOGOUT_REDIRECT_URI}
   unlink-url: ${UNLINK_URI}
 
-server:
-  port: 8443
-  ssl:
-    key-store: ${KEY_STORE}
-    key-store-password: ${KEY_STORE_PASSWORD}
-    key-store-type: pkcs12
-    key-alias: tomcat
-    enabled: true
+cloud:
+  aws:
+    s3:
+      bucket: ${BUCKET_NAME}
+    credentials:
+      access-key: ${BUCKET_ACCESS_KEY}
+      secret-key: ${BUCKET_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
+#server:
+#  port: 8443
+#  ssl:
+#    key-store: ${KEY_STORE}
+#    key-store-password: ${KEY_STORE_PASSWORD}
+#    key-store-type: pkcs12
+#    key-alias: tomcat
+#    enabled: true
 
 #  main:
 #    allow-bean-definition-overriding: true

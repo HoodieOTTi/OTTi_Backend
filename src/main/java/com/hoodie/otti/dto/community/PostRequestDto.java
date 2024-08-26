@@ -7,18 +7,18 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PostUpdateRequestDto {
+public class PostRequestDto {
 
     private String title;
     private String content;
     private List<Long> images;
-    private Long ottId;
+    private Long potId;
 
     @Builder
-    public PostUpdateRequestDto(String title, String content, List<Long> images, Long ottId) {
+    public PostRequestDto(String title, String content, List<Long> images, Long potId) {
         this.title = title;
         this.content = content;
         this.images = images;
-        this.ottId = ottId;
+        this.potId = potId;
     }
 }

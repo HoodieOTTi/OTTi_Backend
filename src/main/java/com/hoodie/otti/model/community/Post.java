@@ -1,6 +1,7 @@
 package com.hoodie.otti.model.community;
 
 import com.hoodie.otti.model.ott.Ott;
+import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.profile.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,6 +18,7 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,30 +66,30 @@ public class Post {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "OTT_ID", nullable = false)
-    private Ott ott;
+    @JoinColumn(name = "POT_ID", nullable = false)
+    private Pot pot;
 
     @Builder
     public Post(String title, String content, Integer viewCount,
-                Date createdDate, Date modifiedDate, User user, Ott ott) {
+                Date createdDate, Date modifiedDate, User user, Pot pot) {
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
         this.user = user;
-        this.ott = ott;
+        this.pot = pot;
     }
 
-    public void update(String title, String content, Ott ott) {
+    public void update(String title, String content, Pot pot) {
         if (!isNullAndBlank(title)) {
             this.title = title;
         }
         if (!isNullAndBlank(content)) {
             this.content = content;
         }
-        if (!isNullAndBlank(ott)) {
-            this.ott = ott;
+        if (!isNullAndBlank(pot)) {
+            this.pot = pot;
         }
     }
 

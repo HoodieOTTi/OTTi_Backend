@@ -6,10 +6,10 @@ import lombok.Getter;
 public class ImageResponseDto {
 
     private Long id;
-    private String url;
+    private String imageUrl;
 
-    public ImageResponseDto(Long id, String url) {
+    public ImageResponseDto(Long id, String imageUrl) {
         this.id = id;
-        this.url = url;
+        this.imageUrl = imageUrl;
     }
 }

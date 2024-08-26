@@ -1,19 +1,22 @@
 package com.hoodie.otti.service.community;
 
 import com.hoodie.otti.dto.community.ImageResponseDto;
+import com.hoodie.otti.dto.community.PostDetailResponseDto;
+import com.hoodie.otti.dto.community.PostRequestDto;
 import com.hoodie.otti.dto.community.PostResponseDto;
-import com.hoodie.otti.dto.community.PostSaveRequestDto;
-import com.hoodie.otti.dto.community.PostUpdateRequestDto;
 import com.hoodie.otti.dto.ott.OttBaseResponseDto;
-import com.hoodie.otti.dto.profile.UserNameResponseDto;
+import com.hoodie.otti.dto.profile.UserResponseDto;
 import com.hoodie.otti.model.community.Image;
 import com.hoodie.otti.model.community.Post;
 import com.hoodie.otti.model.ott.Ott;
+import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.profile.User;
 import com.hoodie.otti.repository.community.ImageRepository;
 import com.hoodie.otti.repository.community.PostRepository;
 import com.hoodie.otti.repository.ott.OttRepository;
+import com.hoodie.otti.repository.pot.PotRepository;
 import com.hoodie.otti.repository.profile.UserRepository;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -28,29 +31,31 @@ public class PostService {
     private final ImageRepository imageRepository;
     private final UserRepository userRepository;
     private final OttRepository ottRepository;
+    private final PotRepository potRepository;
 
     @Transactional
-    public Long save(PostSaveRequestDto requestDto) {
-        User user = userRepository.findById(requestDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+    public Long save(PostRequestDto requestDto, Principal principal) {
+        Optional<User> user = userRepository.findByKakaoId(Long.parseLong(principal.getName()));
 
-        Ott ott = ottRepository.findById(requestDto.getOttId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid ott ID"));
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+        }
 
-        List<Image> images = imageRepository
-                .findAllById(requestDto.getImages())
-                .stream()
-                .toList();
+        Pot pot = potRepository.findById(requestDto.getPotId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 POT 정보를 찾을 수 없습니다."));
 
         Post post = Post.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
                 .viewCount(0)
-                .user(user)
-                .ott(ott)
+                .user(user.get())
+                .pot(pot)
                 .build();
 
-        return postRepository.save(post).getId();
+        Long id = postRepository.save(post).getId();
+        mappingPostAndImage(requestDto, post);
+
+        return id;
     }
 
     public List<PostResponseDto> findAll() {
@@ -61,19 +66,24 @@ public class PostService {
                 .toList();
     }
 
-    public List<PostResponseDto> findAllByUserId(Long id) {
+    public List<PostResponseDto> findAllByUserId(Principal principal) {
+        Optional<User> user = userRepository.findByKakaoId(Long.parseLong(principal.getName()));
 
-        return postRepository.findByUserId_Id(id)
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+        }
+
+        return postRepository.findByUserId_Id(user.get().getId())
                 .stream()
                 .map(this::convertToPostResponseDto)
                 .toList();
     }
 
-    public PostResponseDto findById(Long id) throws IllegalArgumentException {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 글이 없습니다. id=" + id));
+    public PostDetailResponseDto findById(Long postId) throws IllegalArgumentException {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 글이 없습니다. id=" + postId));
 
-        return convertToPostResponseDto(post);
+        return convertToPostDetailResponseDto(post);
     }
 
     @Transactional
@@ -82,18 +92,25 @@ public class PostService {
     }
 
     @Transactional
-    public Long update(Long id, PostUpdateRequestDto requestDto) {
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 글이 없습니다. id=" + id));
+    public Long update(Long postId, PostRequestDto requestDto) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 글이 없습니다. id=" + postId));
 
-        Optional<Ott> replaceOtt = ottRepository.findById(requestDto.getOttId());
+        if (requestDto.getPotId() != null) {
+            Pot replacePot = potRepository.findById(requestDto.getPotId())
+                    .orElseThrow(() -> new IllegalArgumentException("해당 팟이 없습니다."));
+            post.update(requestDto.getTitle(), requestDto.getContent(), replacePot);
+
+            return postId;
+        }
 
         post.update(
                 requestDto.getTitle(),
                 requestDto.getContent(),
-                replaceOtt.get());
+                post.getPot()
+                );
 
-        return id;
+        return postId;
     }
 
     @Transactional
@@ -103,6 +120,12 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    private void mappingPostAndImage(PostRequestDto postRequestDto, Post post) {
+        imageRepository.findAllById(
+                postRequestDto.getImages())
+                .forEach(image -> image.mappingPost(post));
+    }
+
     private PostResponseDto convertToPostResponseDto(Post post) {
 
         return PostResponseDto.builder()
@@ -110,24 +133,36 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .viewCount(post.getViewCount())
-                .images(convertToImageResponseDto(post.getImages()))
-                .userInfo(convertToUserNameResponseDto(post.getUser()))
-                .ottInfo(convertToOttBaseResponseDto(post.getOtt()))
+                .userName(post.getUser().getUsername())
+                .ottImage(post.getPot().getOttId().getImage())
                 .createdDate(post.getCreatedDate())
-                .modifiedDate(post.getModifiedDate())
+                .build();
+    }
+
+    private PostDetailResponseDto convertToPostDetailResponseDto(Post post) {
+
+        return PostDetailResponseDto.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .viewCount(post.getViewCount())
+                .images(convertToImageResponseDto(post.getImages()))
+                .userInfo(convertToUserResponseDto(post.getUser()))
+                .potId(post.getPot().getId())
+                .createdDate(post.getCreatedDate())
                 .build();
     }
 
     private List<ImageResponseDto> convertToImageResponseDto(List<Image> images) {
 
         return images.stream()
-                .map(image -> new ImageResponseDto(image.getId(), image.getUrl()))
+                .map(image -> new ImageResponseDto(image.getId(), image.getImageUrl()))
                 .toList();
     }
 
-    private UserNameResponseDto convertToUserNameResponseDto(User user) {
+    private UserResponseDto convertToUserResponseDto(User user) {
 
-        return new UserNameResponseDto(user.getId(), user.getUsername());
+        return new UserResponseDto(user.getUsername(), user.getProfilePhotoUrl());
     }
 
     private OttBaseResponseDto convertToOttBaseResponseDto(Ott ott) {
