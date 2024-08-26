@@ -36,6 +36,11 @@ public class PotController {
         return ResponseEntity.ok(pot);
     }
 
+//    @PutMapping("/{potId}")
+//    public ResponseEntity<Pot> deletePot(@RequestBody PotSaveRequestDto requestDto){
+//        return
+//    }
+
 
     // 특정 pot에 가입 신청 처리
 //    @PostMapping("/application/joinrequest")
