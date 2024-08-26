@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @Service
 public class UserProfileService {
@@ -25,10 +26,12 @@ public class UserProfileService {
                 .orElseThrow(() -> new UserProfileNotFoundException("ID에 해당하는 유저 프로필을 찾을 수 없습니다: " + id));
     }
 
-    public User getUserProfileByPrincipal(Principal principal) {
+    public UserProfileDTO getUserProfileByPrincipal(Principal principal) {
         Long userId = Long.parseLong(principal.getName());
-        return userRepository.findByKakaoId(userId)
+        User user = userRepository.findByKakaoId(userId)
                 .orElseThrow(() -> new UserProfileNotFoundException("해당 토큰으로 유저 프로필을 찾을 수 없습니다: " + principal.getName()));
+
+        return new UserProfileDTO(user.getUsername(), user.getProfilePhotoUrl());
     }
 
 
@@ -40,10 +43,15 @@ public class UserProfileService {
 //    }
 
     public void updateUserProfile(Principal principal, UserProfileDTO userProfileDTO) {
-        User userProfile = getUserProfileByPrincipal(principal);
-        userProfile.setUsername(userProfileDTO.getUsername());
-        userProfile.setProfilePhotoUrl(userProfileDTO.getProfilePhotoUrl());
-        userRepository.save(userProfile);
+        Optional<User> user = userRepository.findByKakaoId(Long.parseLong(principal.getName()));
+
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+        }
+
+        user.get().setUsername(userProfileDTO.getUsername());
+        user.get().setProfilePhotoUrl(userProfileDTO.getProfilePhotoUrl());
+        userRepository.save(user.get());
     }
 
 
