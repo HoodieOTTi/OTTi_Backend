@@ -40,4 +40,8 @@ public class User {
         this.username = username;
         this.userEmail = userEmail;
     }
+
+    public User(Long id){
+        this.id = id;
+    }
 }
