@@ -37,9 +37,7 @@ public class JwtTokenProvider {
 
     // 토큰 생성 메서드
     public ServiceTokenDto createToken(Long kakaoId) {
-
         long now = (new Date()).getTime();
-
         Date tokenExpiredTime = new Date(now + ACCESS_TOKEN_VALIDITY_TIME);
 
         String accessToken = Jwts.builder()
@@ -54,7 +52,28 @@ public class JwtTokenProvider {
                 .build();
     }
 
-    // 토큰에 담긴 정보 가져오는 메소드
+    // 토큰에서 사용자 정보 추출 메서드
+    public String getUserEmailFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
+
+    // JWT에서 사용자 ID를 추출하는 메서드
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return Long.parseLong(claims.getSubject());
+    }
+
+
     public Authentication getAuthentication(String serviceAccessToken) {
         Claims claims = parseClaims(serviceAccessToken);
 
@@ -71,6 +90,7 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
+
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -80,15 +100,6 @@ public class JwtTokenProvider {
         }
     }
 
-    // 토큰에서 사용자 정보 추출 메서드
-    public String getUserEmailFromToken(String token) {
-
-        Claims claims = Jwts.parser()
-                .setSigningKey("your_secret_key")
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
-    }
 
     //  Request Header에서 토큰 값을 가져오는 메소드, "Authorization": "토큰 값"
     public String resolveToken(HttpServletRequest request) {
@@ -105,25 +116,12 @@ public class JwtTokenProvider {
 
     // 특정 토큰을 무효화하는 메서드
     public void invalidateToken(String token) {
-        // 만료 시각을 현재 시각 이전으로 설정하여 토큰을 무효화합니다.
         Jwts.builder()
                 .setClaims(Jwts.claims())
                 .setExpiration(new Date()) // 현재 시각 이전으로 설정하여 토큰을 무효화
                 .compact();
     }
 
-//    private Claims parseClaims(String serviceAccessToken) {
-//        try {
-//            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(serviceAccessToken).getBody();
-//        } catch (ExpiredJwtException e) {
-//            // 토큰이 만료된 경우 만료된 클레임을 반환
-//            return e.getClaims();
-//        } catch (MalformedJwtException e) {
-//            return null;
-//        } catch (Exception e) {
-//            return null;
-//        }
-//    }
 
     private Claims parseClaims(String serviceAccessToken) {
         try {
@@ -137,6 +135,7 @@ public class JwtTokenProvider {
         }
     }
 
+
     // 남은 유효기간 반환
     public Long getExpiration(String accessToken) {
         // accessToken 남은 유효시간
@@ -145,6 +144,7 @@ public class JwtTokenProvider {
         Long now = new Date().getTime();
         return (expiration.getTime() - now);
     }
+
 
     // refreshToken을 이용한 생명 연장
     public KakaoTokenDto.ServiceToken createAccessTokenByRefreshToken(HttpServletRequest request, String refreshToken) {
@@ -174,4 +174,6 @@ public class JwtTokenProvider {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+
 }

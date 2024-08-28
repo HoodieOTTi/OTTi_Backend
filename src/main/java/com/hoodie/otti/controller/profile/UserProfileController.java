@@ -1,20 +1,22 @@
 package com.hoodie.otti.controller.profile;
 
 import com.hoodie.otti.dto.profile.UserProfileDTO;
+import com.hoodie.otti.exception.profile.ErrorResponse;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
 import com.hoodie.otti.service.profile.UserProfileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
-import com.hoodie.otti.exception.profile.ErrorResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
+
 @RestController
-@RequestMapping("/api/users/{userId}/profile")
+@RequestMapping("/api/users/profile")
 @Validated
 public class UserProfileController {
 
@@ -27,10 +29,10 @@ public class UserProfileController {
 
     @PutMapping("/update")
     public ResponseEntity<Void> updateProfile(
-            @PathVariable Long userId,
+            Principal principal,
             @RequestBody @Valid UserProfileDTO userProfileDTO) {
         try {
-            userProfileService.updateUserProfile(userId, userProfileDTO);
+            userProfileService.updateUserProfile(principal, userProfileDTO);
             return ResponseEntity.ok().build();
         } catch (UserProfileNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 프로필을 찾을 수 없습니다", ex);
@@ -38,6 +40,22 @@ public class UserProfileController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 프로필 업데이트에 실패했습니다", ex);
         }
     }
+
+    @GetMapping("/user")
+    public ResponseEntity<UserProfileDTO> getProfile(Principal principal) {
+        return ResponseEntity.ok().body(userProfileService.getUserProfileByPrincipal(principal));
+    }
+
+    @GetMapping("/userid")
+    public ResponseEntity<Long> getUserId(Principal principal) {
+        try {
+            Long userId = Long.parseLong(principal.getName()); // Principal에서 사용자 ID를 가져옵니다.
+            return ResponseEntity.ok(userId);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 ID를 가져오는 데 실패했습니다", ex);
+        }
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
