@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 
@@ -13,6 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Pot {
 
     @Id
@@ -48,7 +50,6 @@ public class Pot {
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = true)
     private User creatorId;
-
 
 
     @Builder

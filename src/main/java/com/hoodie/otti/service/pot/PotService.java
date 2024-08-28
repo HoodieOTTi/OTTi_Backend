@@ -14,7 +14,9 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.Optional;
@@ -76,26 +78,35 @@ public class PotService {
     }
 
     public void updatePot(Principal principal, PotSaveRequestDto requestDto){
-        Optional<User> user = userRepository.findByKakaoId(Long.parseLong(principal.getName()));
-        Optional<Pot> pot = potRepository.findById(Long.parseLong(principal.getName()));
+        try {
+            Optional<User> user = userRepository.findByKakaoId(Long.parseLong(principal.getName()));
+            Optional<Pot> pot = potRepository.findById(Long.parseLong(principal.getName()));
 
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+            if (user.isEmpty()) {
+                throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+            }
+
+            if (pot.isEmpty()) {
+                throw new IllegalArgumentException("해당 팟이 존재하지 않습니다.");
+            }
+
+            Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getName(), requestDto.getOttRatePlan())
+                    .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
+
+            // 로깅 추가
+            log.info("Updating Pot ID: {}", pot.get().getId());
+            log.info("New Pot Name: {}", requestDto.getName());
+            log.info("Associated Ott ID: {}", ott.getId());
+
+            pot.get().setName(requestDto.getName());
+            pot.get().setOttId(ott);
+            pot.get().setDepositAccount(requestDto.getDepositAccount());
+            pot.get().setRatePlan(requestDto.getRatePlan());
+            potRepository.save(pot.get());
+        } catch (Exception e) {
+            log.error("Error updating pot: {}", e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "팟 업데이트에 실패했습니다", e);
         }
-
-        if (pot.isEmpty()) {
-            throw new IllegalArgumentException("해당 팟이 존재하지 않습니다.");
-        }
-
-        Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getName(), requestDto.getOttRatePlan())
-                .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
-
-
-        pot.get().setName(requestDto.getName());
-        pot.get().setOttId(ott);
-        pot.get().setDepositAccount(requestDto.getDepositAccount());
-        pot.get().setRatePlan(requestDto.getRatePlan());
-        potRepository.save(pot.get());
     }
 
     public void deletePot(Long id){

@@ -55,7 +55,7 @@ public class PotController {
             potService.updatePot(principal, requestDto);
             return ResponseEntity.ok().build();
         }catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 프로필 업데이트에 실패했습니다", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "팟 업데이트에 실패했습니다", e);
         }
     }
 
