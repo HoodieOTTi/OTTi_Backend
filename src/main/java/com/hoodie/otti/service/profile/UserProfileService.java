@@ -3,6 +3,7 @@ package com.hoodie.otti.service.profile;
 import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
 import com.hoodie.otti.model.profile.User;
+import com.hoodie.otti.repository.pot.PotRepository;
 import com.hoodie.otti.repository.profile.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,12 @@ import java.util.Optional;
 public class UserProfileService {
 
     private final UserRepository userRepository;
+    private final PotRepository potRepository;
 
     @Autowired
-    public UserProfileService(UserRepository userProfileRepository) {
+    public UserProfileService(UserRepository userProfileRepository, PotRepository potRepository) {
         this.userRepository = userProfileRepository;
+        this.potRepository = potRepository;
     }
 
 

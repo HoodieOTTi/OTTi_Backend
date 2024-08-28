@@ -1,5 +1,6 @@
 package com.hoodie.otti.model.pot;
 
+import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.profile.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,8 +35,9 @@ public class Pot {
     @JoinColumn(name = "user_id", nullable = false)
     private User userId;
 
-    @Column(name = "ott_id", nullable = false)
-    private Long ottId;
+    @ManyToOne
+    @JoinColumn(name = "ott_id", nullable = false)
+    private Ott ottId;
 
     @Column(name = "pot_depositAccount")
     private String depositAccount;  // 입금계좌
@@ -49,7 +51,7 @@ public class Pot {
 
 
     @Builder
-    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Long ott, User creator, String depositAccount, String ratePlan) {
+    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;

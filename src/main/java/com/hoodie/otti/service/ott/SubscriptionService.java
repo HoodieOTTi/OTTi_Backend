@@ -9,14 +9,15 @@ import com.hoodie.otti.repository.ott.OttRepository;
 import com.hoodie.otti.repository.ott.SubscriptionRepository;
 import com.hoodie.otti.repository.profile.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -34,7 +35,7 @@ public class SubscriptionService {
             throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
         }
 
-        Ott ott = ottRepository.findOttByNameAndAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
+        Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
                 .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
 
         Subscription subscription = Subscription.builder().name(requestDto.getName())
@@ -99,7 +100,7 @@ public class SubscriptionService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 구독 정보가 없습니다. id=" + id));
 
         if (requestDto.getOttName() != null && requestDto.getOttRatePlan() != null) {
-            replaceOtt = ottRepository.findOttByNameAndAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
+            replaceOtt = ottRepository.findOttByNameAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
                     .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
         }
 

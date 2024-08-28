@@ -7,8 +7,11 @@ import com.hoodie.otti.repository.pot.JoinRequestRepository;
 import com.hoodie.otti.repository.pot.PotRepository;
 import com.hoodie.otti.service.notification.NotificationService;
 import com.hoodie.otti.service.profile.UserProfileService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class JoinRequestService {
@@ -41,38 +44,37 @@ public class JoinRequestService {
     }
 
     // 가입 신청을 승인하거나 거절
-//    public void handleJoinRequest(Long joinRequestId, Long adminId, boolean approve) {
-//        JoinRequest joinRequest = joinRequestRepository.findById(joinRequestId)
-//                .orElseThrow(() -> new EntityNotFoundException("Join Request not found"));
-//
-//        Pot pot = joinRequest.getPot();
-//        Pot pot = joinRequest.getPot();
-//        User admin = userProfileService.getUserProfileById(adminId);
-//
-//        if (!pot.getCreatorId().equals(admin)) {
-//            throw new SecurityException("권한을 가진 사용자만 승인과 거절을 선택할 수 있습니다.");
-//        }
-//
-//        joinRequest.setApproved(approve);
-//        joinRequestRepository.save(joinRequest);
-//
-//        if (approve) {
-//            potMembershipService.addUserToPot(joinRequest.getRequester(), joinRequest.getPot());
-//            notificationService.sendJoinApprovalNotification(joinRequest.getRequester(), joinRequest.getPot());
-//        } else {
-//            notificationService.sendJoinRejectionNotification(joinRequest.getRequester(), joinRequest.getPot());
-//        }
-//    }
-//
-//    // 특정 pot에 대한 모든 가입 신청 목록을 조회
-//    public List<JoinRequest> getJoinRequestsByPot(Long potId) {
-//        Pot pot = potRepository.findById(potId).orElseThrow(() -> new EntityNotFoundException("Pot not found"));
-//        return joinRequestRepository.findByPot(pot);
-//    }
-//
-//    // 특정 유저가 제출한 모든 가입 신청 목록을 조회
-//    public List<JoinRequest> getJoinRequestsByUser(Long userId) {
-//        User user = userProfileService.getUserProfileById(userId);
-//        return joinRequestRepository.findByRequester(user);
-//    }
+    public void handleJoinRequest(Long joinRequestId, Long adminId, boolean approve) {
+        JoinRequest joinRequest = joinRequestRepository.findById(joinRequestId)
+                .orElseThrow(() -> new EntityNotFoundException("Join Request not found"));
+
+        Pot pot = joinRequest.getPot();
+        User admin = userProfileService.getUserProfileById(adminId);
+
+        if (!pot.getCreatorId().equals(admin)) {
+            throw new SecurityException("권한을 가진 사용자만 승인과 거절을 선택할 수 있습니다.");
+        }
+
+        joinRequest.setApproved(approve);
+        joinRequestRepository.save(joinRequest);
+
+        if (approve) {
+            potMembershipService.addUserToPot(joinRequest.getRequester(), joinRequest.getPot());
+            notificationService.sendJoinApprovalNotification(joinRequest.getRequester(), joinRequest.getPot());
+        } else {
+            notificationService.sendJoinRejectionNotification(joinRequest.getRequester(), joinRequest.getPot());
+        }
+    }
+
+    // 특정 pot에 대한 모든 가입 신청 목록을 조회
+    public List<JoinRequest> getJoinRequestsByPot(Long potId) {
+        Pot pot = potRepository.findById(potId).orElseThrow(() -> new EntityNotFoundException("Pot not found"));
+        return joinRequestRepository.findByPot(pot);
+    }
+
+    // 특정 유저가 제출한 모든 가입 신청 목록을 조회
+    public List<JoinRequest> getJoinRequestsByUser(Long userId) {
+        User user = userProfileService.getUserProfileById(userId);
+        return joinRequestRepository.findByRequester(user);
+    }
 }
