@@ -92,23 +92,30 @@ public class PostService {
     }
 
     @Transactional
-    public Long update(Long postId, PostRequestDto requestDto) {
+    public Long updatePost(Long postId, PostRequestDto requestDto, Principal principal) {
+        Optional<User> user = userRepository.findByKakaoId(Long.parseLong(principal.getName()));
+
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+        }
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 글이 없습니다. id=" + postId));
 
-        if (requestDto.getPotId() != null) {
-            Pot replacePot = potRepository.findById(requestDto.getPotId())
-                    .orElseThrow(() -> new IllegalArgumentException("해당 팟이 없습니다."));
-            post.update(requestDto.getTitle(), requestDto.getContent(), replacePot);
-
-            return postId;
+        if (user.get().getId() != post.getUser().getId()) {
+            throw new IllegalArgumentException("타인이 작성한 글은 수정할 수 없습니다.");
         }
 
-        post.update(
-                requestDto.getTitle(),
-                requestDto.getContent(),
-                post.getPot()
-                );
+        Optional<Pot> replacePot = requestDto.getPotId() != null ?
+                potRepository.findById(requestDto.getPotId()) :
+                Optional.empty();
+        post.update(requestDto.getTitle(), requestDto.getContent(), replacePot);
+
+        imageRepository.findByPostId_Id(postId)
+                .stream()
+                .peek(image -> image.update(null))
+                .toList();
+        mappingPostAndImage(requestDto, post);
 
         return postId;
     }

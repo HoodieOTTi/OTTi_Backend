@@ -81,16 +81,15 @@ public class Post {
         this.pot = pot;
     }
 
-    public void update(String title, String content, Pot pot) {
+    public void update(String title, String content, Optional<Pot> pot) {
         if (!isNullAndBlank(title)) {
             this.title = title;
         }
         if (!isNullAndBlank(content)) {
             this.content = content;
         }
-        if (!isNullAndBlank(pot)) {
-            this.pot = pot;
-        }
+
+        pot.ifPresent(p -> this.pot = p);
     }
 
     private <T> boolean isNullAndBlank(T argument) {

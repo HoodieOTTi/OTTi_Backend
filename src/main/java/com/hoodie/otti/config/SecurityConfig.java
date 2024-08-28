@@ -36,9 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers("/", "/main","/swagger-ui/**", "/v3/api-docs/**","/api/oauth/**").permitAll()
-                                .requestMatchers("/api/subscription/**", "/api/users/{userId}/profile/**", "/api/pot/**").hasRole("USER")
-                                .requestMatchers("/api/subscription/**", "/api/post/**", "/api/users/{userId}/profile/**").hasRole("USER")
-                                .requestMatchers("/notification").hasRole("USER")
+                                .requestMatchers("/notification", "/api/subscription/**", "/api/users/{userId}/profile/**", "/api/pot/**", "/api/post/**").hasRole("USER")
                                 .anyRequest().authenticated())
                 .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();

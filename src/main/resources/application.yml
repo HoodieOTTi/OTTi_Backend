@@ -54,15 +54,17 @@ cloud:
       auto: false
     stack:
       auto: false
+    cron: ${CRON_TIME}
 
-#server:
-#  port: 8443
-#  ssl:
-#    key-store: ${KEY_STORE}
-#    key-store-password: ${KEY_STORE_PASSWORD}
-#    key-store-type: pkcs12
-#    key-alias: tomcat
-#    enabled: true
+
+server:
+  port: 8443
+  ssl:
+    key-store: ${KEY_STORE}
+    key-store-password: ${KEY_STORE_PASSWORD}
+    key-store-type: pkcs12
+    key-alias: tomcat
+    enabled: true
 
 #  main:
 #    allow-bean-definition-overriding: true

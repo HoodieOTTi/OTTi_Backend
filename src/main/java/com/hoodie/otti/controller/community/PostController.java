@@ -1,6 +1,5 @@
 package com.hoodie.otti.controller.community;
 
-import com.amazonaws.Response;
 import com.hoodie.otti.dto.community.ImageResponseDto;
 import com.hoodie.otti.dto.community.PostDetailResponseDto;
 import com.hoodie.otti.dto.community.PostRequestDto;
@@ -61,8 +60,8 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> update(@PathVariable Long id, @RequestBody PostRequestDto requestDto) {
-        postService.update(id, requestDto);
+    public ResponseEntity<Long> update(@PathVariable Long id, @RequestBody PostRequestDto requestDto, Principal principal) {
+        postService.updatePost(id, requestDto, principal);
         return ResponseEntity.ok().body(id);
     }
 

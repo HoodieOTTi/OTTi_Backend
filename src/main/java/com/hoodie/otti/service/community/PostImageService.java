@@ -2,6 +2,7 @@ package com.hoodie.otti.service.community;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.hoodie.otti.dto.community.ImageResponseDto;
@@ -9,8 +10,11 @@ import com.hoodie.otti.dto.community.UploadImageRequestDto;
 import com.hoodie.otti.model.community.Image;
 import com.hoodie.otti.repository.community.ImageRepository;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +40,7 @@ public class PostImageService {
         final String ext = originName.substring(originName.lastIndexOf("."));
         final String changedImageName = changeImageName(ext);
 
-        final String storeImagePath = uploadImage(requestDto.getImage(), ext, changedImageName);
+        final String storeImagePath = uploadImage(requestDto.getImage(), ext, "post/" + changedImageName);
 
         Image image = Image.builder()
                 .imageName(changedImageName)
@@ -45,6 +49,25 @@ public class PostImageService {
         imageRepository.save(image);
 
         return new ImageResponseDto(image.getId(), image.getImageUrl());
+    }
+
+    @Scheduled(cron = "${cloud.aws.cron}")
+    @Transactional
+    public void deleteUnNecessaryImage() {
+
+        List<Image> images = imageRepository.findAllByPostIsNull();
+
+        images.stream()
+                .filter(image -> new LocalDateTime(image.getCreatedDate()).plusHours(24).isBefore(LocalDateTime.now()))
+                .forEach(image -> {
+                    deleteImage(image.getImageName());
+                    imageRepository.delete(image);
+                });
+    }
+
+    private void deleteImage(String imageName) {
+        String fullPath = "post/" + imageName;
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fullPath));
     }
 
     private String uploadImage(final MultipartFile image,
