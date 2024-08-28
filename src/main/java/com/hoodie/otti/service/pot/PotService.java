@@ -53,11 +53,11 @@ public class PotService {
                     .orElseThrow(() -> new IllegalArgumentException("유효한 user ID가 아닙니다."));
 
             // OTT 조회 (이름과 요금제에 따라)
-            Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getName(), requestDto.getOttRatePlan())
+            Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
                     .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
 
             // Pot 엔티티 생성
-            Pot pot = requestDto.toEntity(user, ott);
+            Pot pot = requestDto.toEntity(user, ott, user);
 
             // 팟 저장
             potRepository.save(pot);

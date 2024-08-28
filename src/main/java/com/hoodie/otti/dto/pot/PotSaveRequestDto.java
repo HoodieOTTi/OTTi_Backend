@@ -15,7 +15,7 @@ public class PotSaveRequestDto {
 
     private String name;  // 팟 이름
     private Long userId;  // 사용자 ID
-    private String ottName;   // OTT 이름 (변경됨)
+    private String ottName;   // OTT 이름
     private String ottRatePlan; // OTT 요금제
     private String depositAccount;  // 입금계좌
     private String ratePlan;  // 결제일
@@ -26,7 +26,7 @@ public class PotSaveRequestDto {
                              String depositAccount, String ratePlan, Long creatorId) {
         this.name = name;
         this.userId = userId;
-        this.ottName = ottName; // 변경됨
+        this.ottName = ottName;
         this.ottRatePlan = ottRatePlan;
         this.depositAccount = depositAccount;
         this.ratePlan = ratePlan;
@@ -34,14 +34,14 @@ public class PotSaveRequestDto {
     }
 
     // Pot 엔티티로 변환하는 메서드
-    public Pot toEntity(User user, Ott ott) {
+    public Pot toEntity(User user, Ott ott, User creator) {  // creator 추가
         return Pot.builder()
                 .name(name)
                 .user(user)
                 .ott(ott)
                 .depositAccount(depositAccount)
                 .ratePlan(ratePlan)
-                .creator(user)
+                .creator(creator)
                 .build();
     }
 }

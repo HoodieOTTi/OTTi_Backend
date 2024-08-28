@@ -31,6 +31,7 @@ public class PotController {
 
     @Autowired
     private PotService potService;
+
     @Autowired
     private PotRepository potRepository;
 
@@ -59,8 +60,8 @@ public class PotController {
     }
 
     @DeleteMapping("/{potId}")
-    public ResponseEntity<Void> deletePot(Long id) {
-        potService.deletePot(id);
+    public ResponseEntity<Void> deletePot(@PathVariable Long potId) {
+        potService.deletePot(potId);
         return ResponseEntity.noContent().build();
     }
 

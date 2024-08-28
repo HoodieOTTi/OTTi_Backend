@@ -50,6 +50,7 @@ public class Pot {
     private User creatorId;
 
 
+
     @Builder
     public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan) {
         this.id = id;
