@@ -8,6 +8,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PotMembershipService {
 
@@ -40,5 +42,16 @@ public class PotMembershipService {
     public PotMembership getMembership(User user, Pot pot) {
         return potMembershipRepository.findByUserAndPot(user, pot)
                 .orElseThrow(() -> new EntityNotFoundException("Membership not found"));
+    }
+
+    // potId에 해당하는 승인된 멤버 목록을 조회
+    public List<PotMembership> getApprovedMembersByPotId(Long potId) {
+        return potMembershipRepository.findByPotIdAndApproved(potId, true);
+    }
+
+    // 특정 userId에 해당하는 승인된 pot 목록을 조회
+    public List<PotMembership> getApprovedPotsByUserId(Long userId) {
+        // userId와 승인된 상태(true)인 pot 목록을 조회
+        return potMembershipRepository.findByUserIdAndApproved(userId, true);
     }
 }

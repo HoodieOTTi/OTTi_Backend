@@ -3,9 +3,11 @@ package com.hoodie.otti.controller.pot;
 import com.hoodie.otti.dto.pot.PotSaveRequestDto;
 import com.hoodie.otti.model.pot.JoinRequest;
 import com.hoodie.otti.model.pot.Pot;
+import com.hoodie.otti.model.pot.PotMembership;
 import com.hoodie.otti.model.profile.User;
 import com.hoodie.otti.repository.pot.PotRepository;
 import com.hoodie.otti.service.pot.JoinRequestService;
+import com.hoodie.otti.service.pot.PotMembershipService;
 import com.hoodie.otti.service.pot.PotService;
 import com.hoodie.otti.service.profile.UserProfileService;
 import jakarta.validation.Valid;
@@ -33,6 +35,8 @@ public class PotController {
 
     @Autowired
     private PotRepository potRepository;
+    @Autowired
+    private PotMembershipService potMembershipService;
 
     @PostMapping("/create")
     public ResponseEntity<Void> createPot(@RequestBody PotSaveRequestDto requestDto) {
@@ -90,7 +94,7 @@ public class PotController {
 
     // 특정 pot에 대한 모든 가입 신청 목록
     @GetMapping("/applications/member/{potId}")
-    public ResponseEntity<List<JoinRequest>> getJoinRequests(@PathVariable Long potId) {
+    public ResponseEntity<List<JoinRequest>> getJoinRequestsByPot(@PathVariable Long potId) {
         List<JoinRequest> joinRequests = joinRequestService.getJoinRequestsByPot(potId);
         return ResponseEntity.ok(joinRequests);
     }
@@ -100,6 +104,20 @@ public class PotController {
     public ResponseEntity<List<JoinRequest>> getJoinRequestsByUser(@PathVariable Long userId) {
         List<JoinRequest> joinRequests = joinRequestService.getJoinRequestsByUser(userId);
         return ResponseEntity.ok(joinRequests);
+    }
+
+    // 특정 pot에 포함된 전체 user 목록 조회 API
+    @GetMapping("/application/pot/{potId}/users/approve")
+    public ResponseEntity<List<PotMembership>> getApproveJoinRequestsByPot(@PathVariable Long potId) {
+        List<PotMembership> potMembership = potMembershipService.getApprovedMembersByPotId(potId);
+        return ResponseEntity.ok(potMembership);
+    }
+
+    // 특정 user가 권한을 지닌 전체 pot 목록 조회 API
+    @GetMapping("/application/user/{userId}/pots/approve")
+    public ResponseEntity<List<PotMembership>> getApproveJoinRequestsByUser(@PathVariable Long userId) {
+        List<PotMembership> potMembership = potMembershipService.getApprovedPotsByUserId(userId);
+        return ResponseEntity.ok(potMembership);
     }
 
 }
