@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
-import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -49,10 +48,10 @@ public class PotController {
 
     @PutMapping("/{potId}")
     public ResponseEntity<Void> updatePot(
-            Principal principal,
+            @PathVariable Long potId,
             @RequestBody @Valid PotSaveRequestDto requestDto) {
         try {
-            potService.updatePot(principal, requestDto);
+            potService.updatePot(potId, requestDto);
             return ResponseEntity.ok().build();
         }catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "팟 업데이트에 실패했습니다", e);

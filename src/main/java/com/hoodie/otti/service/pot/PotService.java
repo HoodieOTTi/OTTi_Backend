@@ -18,9 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.security.Principal;
-import java.util.Optional;
-
 @Service
 public class PotService {
 
@@ -77,32 +74,40 @@ public class PotService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 POT이 존재하지 않습니다.: " + potId));
     }
 
-    public void updatePot(Principal principal, PotSaveRequestDto requestDto){
+    public void updatePot(Long potId, PotSaveRequestDto requestDto){
         try {
-            Optional<User> user = userRepository.findByKakaoId(Long.parseLong(principal.getName()));
-            Optional<Pot> pot = potRepository.findById(Long.parseLong(principal.getName()));
+            Pot pot = potRepository.findById(potId)
+                    .orElseThrow(() -> new IllegalArgumentException("해당 팟이 존재하지 않습니다."));
 
-            if (user.isEmpty()) {
-                throw new IllegalArgumentException("해당 유저가 존재하지 않습니다.");
+            System.out.println("Pot ID: " + pot.getId());
+            System.out.println("Pot 이름: " + pot.getName());
+            System.out.println("requestDto Pot 이름: " + requestDto.getName());
+            System.out.println("requestDto OttName 이름: " + requestDto.getOttName());
+            System.out.println("requestDto OttRatePlan 이름: " + requestDto.getOttRatePlan());
+
+            if (requestDto.getOttName() != null && requestDto.getOttRatePlan() != null) {
+                // OTT 조회 (이름과 요금제에 따라)
+                Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
+                        .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
+                pot.setOttId(ott);
+            } else {
+                // OTT 정보는 변경하지 않음
+                System.out.println("OTT 이름과 요금제가 null로 설정되어 있어, 기존 OTT 정보를 유지합니다.");
             }
 
-            if (pot.isEmpty()) {
-                throw new IllegalArgumentException("해당 팟이 존재하지 않습니다.");
+            if (requestDto.getName() != null) {
+                pot.setName(requestDto.getName());
             }
 
-            Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getName(), requestDto.getOttRatePlan())
-                    .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
+            if (requestDto.getDepositAccount() != null) {
+                pot.setDepositAccount(requestDto.getDepositAccount());
+            }
 
-            // 로깅 추가
-            log.info("Updating Pot ID: {}", pot.get().getId());
-            log.info("New Pot Name: {}", requestDto.getName());
-            log.info("Associated Ott ID: {}", ott.getId());
+            if (requestDto.getRatePlan() != null) {
+                pot.setRatePlan(requestDto.getRatePlan());
+            }
 
-            pot.get().setName(requestDto.getName());
-            pot.get().setOttId(ott);
-            pot.get().setDepositAccount(requestDto.getDepositAccount());
-            pot.get().setRatePlan(requestDto.getRatePlan());
-            potRepository.save(pot.get());
+            potRepository.save(pot);
         } catch (Exception e) {
             log.error("Error updating pot: {}", e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "팟 업데이트에 실패했습니다", e);
