@@ -1,5 +1,6 @@
 package com.hoodie.otti.model.pot;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.profile.User;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -50,6 +52,10 @@ public class Pot {
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = true)
     private User creatorId;
+
+    @OneToMany(mappedBy = "pot", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<JoinRequest> joinRequests;
 
 
     @Builder

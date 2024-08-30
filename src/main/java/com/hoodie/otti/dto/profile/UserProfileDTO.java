@@ -11,9 +11,6 @@ public class UserProfileDTO {
 
     private String profilePhotoUrl;
 
-    public UserProfileDTO() {
-    }
-
 
     @JsonCreator
     public UserProfileDTO(
@@ -23,7 +20,7 @@ public class UserProfileDTO {
         this.profilePhotoUrl = profilePhotoUrl;
     }
 
-    // Getter 및 Setter 메서드
+
     public String getUsername() {
         return username;
     }

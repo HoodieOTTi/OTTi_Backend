@@ -1,10 +1,13 @@
 package com.hoodie.otti.model.profile;
 
+import com.hoodie.otti.model.pot.JoinRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,6 +28,10 @@ public class User {
     private Long kakaoId;
 
     private String profilePhotoUrl;
+
+    @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)
+    private List<JoinRequest> joinRequests;
+
 
     public User() {
     }

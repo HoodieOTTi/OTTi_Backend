@@ -1,7 +1,10 @@
 package com.hoodie.otti.service.pot;
 
 
+import com.hoodie.otti.dto.pot.JoinRequestDTO;
+import com.hoodie.otti.dto.pot.PotJoinRequestDTO;
 import com.hoodie.otti.dto.pot.PotSaveRequestDto;
+import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.profile.User;
@@ -17,6 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PotService {
@@ -68,11 +74,45 @@ public class PotService {
         }
     }
 
-    @Transactional
-    public Pot findPotById(Long potId) {
-        return potRepository.findById(potId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 POT이 존재하지 않습니다.: " + potId));
+//    @Transactional
+//    public Pot findPotById(Long potId) {
+//        return potRepository.findById(potId)
+//                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 POT이 존재하지 않습니다.: " + potId));
+//    }
+
+    public PotJoinRequestDTO findPotById(Long potId) {
+        Pot pot = potRepository.findById(potId)
+                .orElseThrow(() -> new EntityNotFoundException("findPotById : 일치하는 팟을 찾을 수 없습니다."));
+
+        UserProfileDTO creatorDTO = new UserProfileDTO(
+                pot.getCreatorId().getUsername(),
+                pot.getCreatorId().getProfilePhotoUrl()
+        );
+
+        List<JoinRequestDTO> joinRequestDTOs = pot.getJoinRequests().stream()
+                .map(joinRequest -> {
+                    UserProfileDTO requesterDTO = new UserProfileDTO(
+                            joinRequest.getRequester().getUsername(),
+                            joinRequest.getRequester().getProfilePhotoUrl()
+                    );
+
+                    return new JoinRequestDTO(
+                            joinRequest.getId(),
+                            joinRequest.getPot().getId(),
+                            requesterDTO,
+                            joinRequest.getApproved()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return PotJoinRequestDTO.builder()
+                .id(pot.getId())
+                .name(pot.getName())
+                .creator(creatorDTO)
+                .joinRequests(joinRequestDTOs)
+                .build();
     }
+
 
     public void updatePot(Long potId, PotSaveRequestDto requestDto){
         try {
