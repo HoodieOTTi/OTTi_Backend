@@ -13,7 +13,6 @@ import java.util.Optional;
 public interface JoinRequestRepository extends JpaRepository<JoinRequest, Long> {
     List<JoinRequest> findByPot(Pot pot);
     List<JoinRequest> findByRequester(User requester);
-//    Optional<JoinRequest> findByPrincipalAndPot(Principal principal, Pot pot);
-    Optional<JoinRequest> findByRequesterAndPot(User id, Pot pot);
+    Optional<JoinRequest> findByRequesterAndPot(User requester, Pot pot);
 
 }

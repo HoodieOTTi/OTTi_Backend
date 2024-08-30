@@ -66,28 +66,41 @@ public class JoinRequestService {
     public void handleJoinRequest(Principal principal, Pot pot, boolean approve) {
         Long userId = Long.parseLong(principal.getName());
 
-        System.out.println("가입 신청을 한 사용자의 kakaoId(userId) : " + userId);
+        System.out.println("현재 사용자(이 계정의 주인)의 kakaoId(userId) : " + userId);
 
-        // userId를 사용하여 User 객체를 조회
-        User requester = userRepository.findByKakaoId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("가입 신청을 한 사용자를 찾을 수 없습니다."));
+        // Pot 객체에서 requester를 가져옴
+        User requester = pot.getJoinRequests().stream()
+                .filter(joinRequest -> joinRequest.getPot().equals(pot))
+                .findFirst()
+                .map(JoinRequest::getRequester)
+                .orElseThrow(() -> new EntityNotFoundException("handleJoinRequest : Pot에서 가입 신청을 한 사용자를 찾을 수 없습니다."));
+
+        System.out.println("requester(요청자) ID: " + requester.getId());
+
 
         // Principal을 사용하여 JoinRequest를 조회
         JoinRequest joinRequest = joinRequestRepository.findByRequesterAndPot(requester, pot)
-                .orElseThrow(() -> new EntityNotFoundException("가입 신청(JoinRequest)이 조회되지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("handleJoinRequest : 가입 신청(JoinRequest)이 조회되지 않습니다."));
+
 
         // 현재 사용자가 해당 Pot에 대한 권한을 가지고 있는지 확인
         if (!potMembershipService.userHasPermission(principal, pot)) {
-            throw new SecurityException("권한을 가진 사용자만 승인과 거절을 선택할 수 있습니다.");
+            throw new SecurityException("handleJoinRequest : 권한을 가진 사용자만 승인과 거절을 선택할 수 있습니다.");
         }
 
         // 승인 또는 거절 처리
         if (approve) {
+            joinRequest.setApproved(true); // JoinRequest의 승인 상태를 true로 설정
             potMembershipService.addUserToPot(requester.getKakaoId(), pot); // 요청자를 Pot에 추가
             notificationService.sendJoinApprovalNotification(requester, pot); // 승인 알림 전송
         } else {
+            joinRequest.setApproved(false); // JoinRequest의 승인 상태를 false로 설정
             notificationService.sendJoinRejectionNotification(requester, pot); // 거절 알림 전송
         }
+
+        joinRequestRepository.save(joinRequest);
+
+        System.out.println("joinRequest 상태 저장 완료: approved = " + joinRequest.isApproved());
     }
 
 

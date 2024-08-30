@@ -7,9 +7,11 @@ import com.hoodie.otti.dto.pot.PotSaveRequestDto;
 import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.pot.Pot;
+import com.hoodie.otti.model.pot.PotMembership;
 import com.hoodie.otti.model.profile.User;
 import com.hoodie.otti.repository.ott.OttRepository;
 import com.hoodie.otti.repository.ott.SubscriptionRepository;
+import com.hoodie.otti.repository.pot.PotMembershipRepository;
 import com.hoodie.otti.repository.pot.PotRepository;
 import com.hoodie.otti.repository.profile.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,16 +36,19 @@ public class PotService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final OttRepository ottRepository;
+    private final PotMembershipRepository potMembershipRepository;
 
     @Autowired
     public PotService(PotRepository potRepository,
                       SubscriptionRepository subscriptionRepository,
                       UserRepository userRepository,
-                      OttRepository ottRepository) {
+                      OttRepository ottRepository,
+                      PotMembershipRepository potMembershipRepository) {
         this.potRepository = potRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
         this.ottRepository = ottRepository;
+        this.potMembershipRepository = potMembershipRepository;
     }
 
     public Pot findById(Long potId) {
@@ -65,9 +70,19 @@ public class PotService {
             Pot pot = requestDto.toEntity(user, ott, user);
 
             // 팟 저장
-            potRepository.save(pot);
+//            potRepository.save(pot);
+            Pot savedPot = potRepository.save(pot);
 
-            return pot.getId();
+            // 생성자를 pot_membership에 추가
+            PotMembership membership = new PotMembership();
+            membership.setUser(user); // 생성자 설정
+            membership.setPot(savedPot);
+            membership.setApproved(true); // 권한 부여
+            membership.setHasPermission(true); // 권한 부여 확인
+
+            potMembershipRepository.save(membership); // membership 저장
+
+            return savedPot.getId();
         } catch (Exception e) {
             log.error("Error saving pot: {}", e.getMessage(), e);
             throw e;

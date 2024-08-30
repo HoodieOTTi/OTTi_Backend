@@ -82,7 +82,7 @@ public class PotController {
     @PostMapping("/application/approve")
     public ResponseEntity<Void> approveJoinRequest(Principal principal, @RequestParam Long potId) {
         Pot pot = potService.findById(potId);
-        joinRequestService.handleJoinRequest(principal, pot, true); // requestId 없이 처리
+        joinRequestService.handleJoinRequest(principal, pot, true);
         return ResponseEntity.ok().build();
     }
 
@@ -90,7 +90,7 @@ public class PotController {
     @PostMapping("/application/reject")
     public ResponseEntity<Void> rejectJoinRequest(Principal principal, @RequestParam Long potId) {
         Pot pot = potService.findById(potId);
-        joinRequestService.handleJoinRequest(principal, pot, false); // requestId 없이 처리
+        joinRequestService.handleJoinRequest(principal, pot, false);
         return ResponseEntity.ok().build();
     }
 
