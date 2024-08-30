@@ -24,6 +24,9 @@ public interface PotMembershipRepository extends JpaRepository<PotMembership, Lo
     // user에 해당하며 승인된 pot 목록을 조회
     List<PotMembership> findByUserAndApproved(User user, boolean approved);
 
+    // user에 해당하면 권한을 지닌 pot 목록을 조회
+    List<PotMembership> findByUserAndHasPermission(User user, boolean hasPermission);
+
     // potId로 Pot을 찾는 메서드 추가
     Optional<Pot> findPotById(Long potId);
 

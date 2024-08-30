@@ -1,5 +1,6 @@
 package com.hoodie.otti.service.pot;
 
+import com.hoodie.otti.dto.pot.PotMembershipDTO;
 import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.pot.PotMembership;
 import com.hoodie.otti.model.profile.User;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -78,7 +80,7 @@ public class PotMembershipService {
     }
 
     // 권한을 갖고있는 사용자가 특정 유저의 권한 제거
-    public void removeUserFromPotByCreator(Principal principal, Long requesterId, Pot pot){
+    public void removeUserFromPotByCreator(Principal principal, Long requesterId, Pot pot) {
         Long userId = Long.parseLong(principal.getName());
 
         // 현재 사용자(principal)를 데이터베이스에서 조회
@@ -105,16 +107,88 @@ public class PotMembershipService {
     }
 
     // potId에 해당하는 승인된 멤버 목록을 조회
-    public List<PotMembership> getApprovedMembersByPotId(Long potId) {
-        return potMembershipRepository.findByPotIdAndApproved(potId, true);
+    public List<PotMembershipDTO> getApprovedMembersByPotId(Long potId) {
+        // potId에 해당하며 승인된 멤버를 조회
+        List<PotMembership> potMemberships = potMembershipRepository.findByPotIdAndApproved(potId, true);
+
+        // 결과를 담을 리스트 생성
+        List<PotMembershipDTO> membershipDTOs = new ArrayList<>();
+
+        // 각 PotMembership을 PotMembershipDTO로 변환하여 리스트에 추가
+        for (PotMembership membership : potMemberships) {
+            User user = membership.getUser();
+            Pot pot = membership.getPot();
+
+            membershipDTOs.add(new PotMembershipDTO(
+                    membership.getId(),
+                    pot.getId(),
+                    pot.getName(),
+                    user.getId(),
+                    user.getUsername(),
+                    membership.getApproved(),
+                    membership.hasPermission()
+            ));
+        }
+
+        return membershipDTOs; // 최종 DTO 리스트 반환
     }
 
-    // 특정 userId에 해당하는 승인된 pot 목록을 조회
-    public List<PotMembership> getApprovedPotsByUserId(Long userId) {
+    // 현재 유저의 승인된 pot 목록을 조회
+    public List<PotMembershipDTO> getApprovedPotsByUserId(Long userId) {
         User user = userRepository.findByKakaoId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("getApprovedPotsByUserId : 사용자를 찾을 수 없습니다."));
 
         // user와 승인된 상태(true)인 pot 목록을 조회
-        return potMembershipRepository.findByUserAndApproved(user, true); // 수정된 부분
+        List<PotMembership> potMemberships = potMembershipRepository.findByUserAndApproved(user, true);
+
+        // 결과를 담을 리스트 생성
+        List<PotMembershipDTO> membershipDTOs = new ArrayList<>();
+
+        // 각 PotMembership을 PotMembershipDTO로 변환하여 리스트에 추가
+        for (PotMembership membership : potMemberships) {
+            Pot pot = membership.getPot();
+
+            membershipDTOs.add(new PotMembershipDTO(
+                    membership.getId(),
+                    pot.getId(),
+                    pot.getName(),
+                    user.getId(),
+                    user.getUsername(),
+                    membership.getApproved(),
+                    membership.hasPermission()
+            ));
+        }
+
+        return membershipDTOs; // 최종 DTO 리스트 반환
     }
+
+    // 현재 유저의 권한을 가진 pot 목록을 조회
+    public List<PotMembershipDTO> hasPermissionPotsByUserId(Long userId) {
+        User user = userRepository.findByKakaoId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("getApprovedPotsByUserId : 사용자를 찾을 수 없습니다."));
+
+        // user와 승인된 상태(true)인 pot 목록을 조회
+        List<PotMembership> potMemberships = potMembershipRepository.findByUserAndHasPermission(user, true);
+
+        // 결과를 담을 리스트 생성
+        List<PotMembershipDTO> membershipDTOs = new ArrayList<>();
+
+        // 각 PotMembership을 PotMembershipDTO로 변환하여 리스트에 추가
+        for (PotMembership membership : potMemberships) {
+            Pot pot = membership.getPot();
+
+            membershipDTOs.add(new PotMembershipDTO(
+                    membership.getId(),
+                    pot.getId(),
+                    pot.getName(),
+                    user.getId(),
+                    user.getUsername(),
+                    membership.getApproved(),
+                    membership.hasPermission()
+            ));
+        }
+
+        return membershipDTOs; // 최종 DTO 리스트 반환
+    }
+
 }

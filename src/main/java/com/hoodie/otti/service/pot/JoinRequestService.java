@@ -129,11 +129,10 @@ public class JoinRequestService {
                                 joinRequest.getRequester().getUsername(),
                                 joinRequest.getRequester().getProfilePhotoUrl()
                         ),
-                        joinRequest.getApproved() // 승인 여부 추가
+                        joinRequest.getApproved()
                 ))
                 .collect(Collectors.toList());
     }
-
 
 
 }

@@ -2,9 +2,9 @@ package com.hoodie.otti.controller.pot;
 
 import com.hoodie.otti.dto.pot.JoinRequestDTO;
 import com.hoodie.otti.dto.pot.PotJoinRequestDTO;
+import com.hoodie.otti.dto.pot.PotMembershipDTO;
 import com.hoodie.otti.dto.pot.PotSaveRequestDto;
 import com.hoodie.otti.model.pot.Pot;
-import com.hoodie.otti.model.pot.PotMembership;
 import com.hoodie.otti.repository.pot.PotMembershipRepository;
 import com.hoodie.otti.repository.pot.PotRepository;
 import com.hoodie.otti.service.pot.JoinRequestService;
@@ -131,18 +131,26 @@ public class PotController {
     }
 
 
-    // 특정 pot에 포함된 전체 user 목록 조회 API
+    // 특정 pot에 승인된 전체 user 목록 조회 API
     @GetMapping("/application/pot/{potId}/users/approve")
-    public ResponseEntity<List<PotMembership>> getApproveJoinRequestsByPot(@PathVariable Long potId) {
-        List<PotMembership> potMemberships = potMembershipService.getApprovedMembersByPotId(potId);
+    public ResponseEntity<List<PotMembershipDTO>> getApproveJoinRequestsByPot(@PathVariable Long potId) {
+        List<PotMembershipDTO> potMemberships = potMembershipService.getApprovedMembersByPotId(potId);
         return ResponseEntity.ok(potMemberships);
     }
 
-    // 인증된 사용자가 권한을 지닌 전체 pot 목록 조회 API
+    // 현재 사용자가 승인된 전체 pot 목록 조회 API
     @GetMapping("/application/user/pots/approve")
-    public ResponseEntity<List<PotMembership>> getApproveJoinRequestsByUser(Principal principal) {
+    public ResponseEntity<List<PotMembershipDTO>> getApproveJoinRequestsByUser(Principal principal) {
         Long userId = Long.parseLong(principal.getName());
-        List<PotMembership> potMemberships = potMembershipService.getApprovedPotsByUserId(userId);
+        List<PotMembershipDTO> potMemberships = potMembershipService.getApprovedPotsByUserId(userId);
+        return ResponseEntity.ok(potMemberships);
+    }
+
+    // 현재 사용자가 권한을 가진 전체 pot 목록 조회 API
+    @GetMapping("/application/user/pots/permission")
+    public ResponseEntity<List<PotMembershipDTO>> hasPermissionJoinRequestsByUser(Principal principal) {
+        Long userId = Long.parseLong(principal.getName());
+        List<PotMembershipDTO> potMemberships = potMembershipService.hasPermissionPotsByUserId(userId);
         return ResponseEntity.ok(potMemberships);
     }
 
