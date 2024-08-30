@@ -89,12 +89,6 @@ public class PotService {
         }
     }
 
-//    @Transactional
-//    public Pot findPotById(Long potId) {
-//        return potRepository.findById(potId)
-//                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 POT이 존재하지 않습니다.: " + potId));
-//    }
-
     public PotJoinRequestDTO findPotById(Long potId) {
         Pot pot = potRepository.findById(potId)
                 .orElseThrow(() -> new EntityNotFoundException("findPotById : 일치하는 팟을 찾을 수 없습니다."));

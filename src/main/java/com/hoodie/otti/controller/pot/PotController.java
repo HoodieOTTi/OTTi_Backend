@@ -106,6 +106,14 @@ public class PotController {
         return ResponseEntity.ok().build();
     }
 
+    // 팟 퇴출
+    @DeleteMapping("/user/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId, @RequestParam Long potId, Principal principal) {
+        Pot pot = potService.findById(potId);
+        potMembershipService.removeUserFromPotByCreator(principal, userId, pot);
+        return ResponseEntity.ok().build();
+    }
+
 
     // 특정 pot에 대한 모든 가입 신청 목록
     @GetMapping("/applications/member/{potId}")

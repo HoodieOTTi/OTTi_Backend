@@ -61,7 +61,7 @@ public class PotMembershipService {
         User user = userRepository.findByKakaoId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("removeUserFromPot : 사용자를 찾을 수 없습니다."));
 
-        PotMembership membership = potMembershipRepository.findByUserAndPot(user, pot) // 수정된 부분
+        PotMembership membership = potMembershipRepository.findByUserAndPot(user, pot)
                 .orElseThrow(() -> new EntityNotFoundException("Membership not found"));
         membership.setApproved(false);
         potMembershipRepository.save(membership);
@@ -75,6 +75,33 @@ public class PotMembershipService {
 
         return potMembershipRepository.findByUserAndPot(user, pot)
                 .orElseThrow(() -> new EntityNotFoundException("Membership not found"));
+    }
+
+    // 권한을 갖고있는 사용자가 특정 유저의 권한 제거
+    public void removeUserFromPotByCreator(Principal principal, Long requesterId, Pot pot){
+        Long userId = Long.parseLong(principal.getName());
+
+        // 현재 사용자(principal)를 데이터베이스에서 조회
+        User currentUser = userRepository.findByKakaoId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("removeUserFromPot : 현재 사용자를 찾을 수 없습니다."));
+
+        // 현재 사용자가 해당 Pot에 권한이 있는지 확인
+        boolean hasPermission = potMembershipRepository.existsByUserAndPotAndHasPermission(currentUser, pot, true);
+        if (!hasPermission) {
+            throw new SecurityException("removeUserFromPot : 권한이 없습니다.");
+        }
+
+        // 권한을 제거할 사용자를 조회
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new EntityNotFoundException("removeUserFromPot : 권한을 제거할 사용자를 찾을 수 없습니다."));
+
+        // 해당 Pot에 대한 사용자의 PotMembership을 조회
+        PotMembership membership = potMembershipRepository.findByUserAndPot(requester, pot)
+                .orElseThrow(() -> new EntityNotFoundException("Membership not found"));
+
+        // 승인 상태를 false로 설정
+        membership.setApproved(false);
+        potMembershipRepository.save(membership);
     }
 
     // potId에 해당하는 승인된 멤버 목록을 조회
