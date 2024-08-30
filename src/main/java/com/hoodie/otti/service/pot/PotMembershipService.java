@@ -63,7 +63,7 @@ public class PotMembershipService {
 
         PotMembership membership = potMembershipRepository.findByUserAndPot(user, pot) // 수정된 부분
                 .orElseThrow(() -> new EntityNotFoundException("Membership not found"));
-        membership.setHasPermission(false);
+        membership.setApproved(false);
         potMembershipRepository.save(membership);
     }
 

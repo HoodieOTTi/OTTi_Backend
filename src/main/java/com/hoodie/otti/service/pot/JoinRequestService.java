@@ -105,11 +105,6 @@ public class JoinRequestService {
 
 
     // 특정 pot에 대한 모든 가입 신청 목록을 조회
-//    public List<JoinRequest> getJoinRequestsByPot(Long potId) {
-//        Pot pot = potRepository.findById(potId).orElseThrow(() -> new EntityNotFoundException("Pot not found"));
-//        return joinRequestRepository.findByPot(pot);
-//    }
-    // 특정 pot에 대한 모든 가입 신청 목록을 조회
     public List<JoinRequestDTO> getJoinRequestsByPot(Long potId) {
         Pot pot = potRepository.findById(potId)
                 .orElseThrow(() -> new EntityNotFoundException("getJoinRequestsByPot : PotId가 없습니다."));
@@ -118,7 +113,6 @@ public class JoinRequestService {
                 .map(JoinRequestDTO::fromEntity) // JoinRequest를 JoinRequestDTO로 변환
                 .collect(Collectors.toList());
     }
-
 
 
     // 특정 유저가 제출한 모든 가입 신청 목록을 조회

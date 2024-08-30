@@ -98,6 +98,15 @@ public class PotController {
         return ResponseEntity.ok().build();
     }
 
+    // 스스로 팟 나가기
+    @DeleteMapping("/user")
+    public ResponseEntity<Void> deleteUser(Principal principal, @RequestParam Long potId) {
+        Pot pot = potService.findById(potId);
+        potMembershipService.removeUserFromPot(principal, pot);
+        return ResponseEntity.ok().build();
+    }
+
+
     // 특정 pot에 대한 모든 가입 신청 목록
     @GetMapping("/applications/member/{potId}")
     public ResponseEntity<List<JoinRequestDTO>> getJoinRequestsByPot(@PathVariable Long potId) {
