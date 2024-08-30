@@ -32,7 +32,7 @@ public class PotMembershipService {
         // User 객체를 설정
         membership.setUser(user);
         membership.setPot(pot);
-        membership.setHasPermission(true);
+        membership.setApproved(true);
         potMembershipRepository.save(membership);
     }
 

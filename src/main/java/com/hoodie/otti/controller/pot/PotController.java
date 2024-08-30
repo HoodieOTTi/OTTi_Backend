@@ -5,6 +5,7 @@ import com.hoodie.otti.dto.pot.PotJoinRequestDTO;
 import com.hoodie.otti.dto.pot.PotSaveRequestDto;
 import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.pot.PotMembership;
+import com.hoodie.otti.repository.pot.PotMembershipRepository;
 import com.hoodie.otti.repository.pot.PotRepository;
 import com.hoodie.otti.service.pot.JoinRequestService;
 import com.hoodie.otti.service.pot.PotMembershipService;
@@ -36,6 +37,9 @@ public class PotController {
 
     @Autowired
     private PotRepository potRepository;
+
+    @Autowired
+    private PotMembershipRepository potMembershipRepository;
 
     @Autowired
     private PotMembershipService potMembershipService;

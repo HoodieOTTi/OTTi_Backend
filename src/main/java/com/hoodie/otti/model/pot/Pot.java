@@ -57,6 +57,9 @@ public class Pot {
     @JsonManagedReference
     private List<JoinRequest> joinRequests;
 
+    @OneToMany(mappedBy = "pot", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PotMembership> potMemberships;
+
 
     @Builder
     public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan) {

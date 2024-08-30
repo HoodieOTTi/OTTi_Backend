@@ -27,6 +27,8 @@ public interface PotMembershipRepository extends JpaRepository<PotMembership, Lo
     // potId로 Pot을 찾는 메서드 추가
     Optional<Pot> findPotById(Long potId);
 
+
+
 }
 
 

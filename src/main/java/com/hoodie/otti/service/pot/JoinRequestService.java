@@ -82,11 +82,11 @@ public class JoinRequestService {
         JoinRequest joinRequest = joinRequestRepository.findByRequesterAndPot(requester, pot)
                 .orElseThrow(() -> new EntityNotFoundException("handleJoinRequest : 가입 신청(JoinRequest)이 조회되지 않습니다."));
 
-
         // 현재 사용자가 해당 Pot에 대한 권한을 가지고 있는지 확인
         if (!potMembershipService.userHasPermission(principal, pot)) {
             throw new SecurityException("handleJoinRequest : 권한을 가진 사용자만 승인과 거절을 선택할 수 있습니다.");
         }
+
 
         // 승인 또는 거절 처리
         if (approve) {
