@@ -130,6 +130,13 @@ public class PotController {
         return ResponseEntity.ok(joinRequestDTOs);
     }
 
+    // 현재 사용자가 제출한 모든 팟 가입 신청 목록 조회
+    @GetMapping("/applications/user")
+    public ResponseEntity<List<JoinRequestDTO>>getJoinRequestsByPrincipal(Principal principal) {
+        List<JoinRequestDTO> joinRequestDTOs = joinRequestService.getJoinRequestsByPrincipal(principal);
+        return ResponseEntity.ok(joinRequestDTOs);
+    }
+
 
     // 특정 pot에 승인된 전체 user 목록 조회 API
     @GetMapping("/application/pot/{potId}/users/approve")

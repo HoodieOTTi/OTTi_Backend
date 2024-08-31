@@ -134,6 +134,31 @@ public class JoinRequestService {
                 .collect(Collectors.toList());
     }
 
+    // 현재 사용자가 제출한 모든 팟 가입 신청 목록 조회
+    public List<JoinRequestDTO> getJoinRequestsByPrincipal(Principal principal) {
+        // Principal 객체에서 현재 사용자의 정보를 가져옴
+        User user = userProfileService.getUserProfileByPrincipal(principal);
+
+        // 현재 사용자가 요청한 모든 가입 신청 목록을 가져옴
+        List<JoinRequest> joinRequests = joinRequestRepository.findByRequester(user);
+
+        // JoinRequest 엔티티 리스트를 JoinRequestDTO 리스트로 변환
+        return joinRequests.stream()
+                .map(joinRequest -> {
+                    // JoinRequestDTO로 변환할 때 User를 직접 전달
+                    return new JoinRequestDTO(
+                            joinRequest.getId(),
+                            joinRequest.getPot().getId(),
+                            new UserProfileDTO(
+                                    joinRequest.getRequester().getUsername(),
+                                    joinRequest.getRequester().getProfilePhotoUrl()
+                            ),
+                            joinRequest.getApproved()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 
 }
 
