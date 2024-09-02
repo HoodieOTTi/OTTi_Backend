@@ -1,11 +1,9 @@
 package com.hoodie.otti.model.profile;
 
-import com.hoodie.otti.model.community.Likes;
 import com.hoodie.otti.model.community.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,9 +27,6 @@ public class User {
     private Long kakaoId;
 
     private String profilePhotoUrl;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Likes> likes;
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;

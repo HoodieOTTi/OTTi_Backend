@@ -1,6 +1,5 @@
 package com.hoodie.otti.dto.community;
 
-import java.util.Date;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,17 +10,19 @@ public class PostResponseDto {
     private String title;
     private String content;
     private Integer viewCount;
+    private Integer commentCount;
     private String userName;
     private String ottImage;
-    private Date createdDate;
+    private String createdDate;
 
     @Builder
-    public PostResponseDto(Long id, String title, String content, Integer viewCount,
-                           String userName, String ottImage, Date createdDate) {
+    public PostResponseDto(Long id, String title, String content, Integer viewCount, Integer commentCount,
+                           String userName, String ottImage, String createdDate) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
+        this.commentCount = commentCount;
         this.userName = userName;
         this.ottImage = ottImage;
         this.createdDate = createdDate;

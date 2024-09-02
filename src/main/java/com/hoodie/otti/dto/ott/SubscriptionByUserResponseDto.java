@@ -1,7 +1,7 @@
 package com.hoodie.otti.dto.ott;
 
 import com.hoodie.otti.model.ott.Subscription;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,8 +14,8 @@ public class SubscriptionByUserResponseDto {
     private String memo;
     private Integer paymentDate;
     private OttResponseDto ott;
-    private Date createdDate;
-    private Date modifiedDate;
+    private String createdDate;
+    private String modifiedDate;
 
     @Builder
     public SubscriptionByUserResponseDto(Subscription subscription) {
@@ -25,7 +25,7 @@ public class SubscriptionByUserResponseDto {
         this.memo = subscription.getMemo();
         this.paymentDate = subscription.getPaymentDate();
         this.ott = new OttResponseDto(subscription.getOttId());
-        this.createdDate = subscription.getCreatedDate();
-        this.modifiedDate = subscription.getModifiedDate();
+        this.createdDate = subscription.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
+        this.modifiedDate = subscription.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
     }
 }

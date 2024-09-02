@@ -1,6 +1,5 @@
 package com.hoodie.otti.model.community;
 
-import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.profile.User;
 import jakarta.persistence.CascadeType;
@@ -14,9 +13,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.AccessLevel;
@@ -47,19 +47,16 @@ public class Post {
     @Column(columnDefinition = "integer default 0", name = "VIEW_COUNT", nullable = false)
     private Integer viewCount;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Likes> likesCounts;
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Image> images;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
-    private Date createdDate;
+    private LocalDateTime createdDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate
-    private Date modifiedDate;
+    private LocalDateTime modifiedDate;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
@@ -69,9 +66,13 @@ public class Post {
     @JoinColumn(name = "POT_ID", nullable = false)
     private Pot pot;
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OrderBy("id asc")
+    private List<Comment> comments;
+
     @Builder
     public Post(String title, String content, Integer viewCount,
-                Date createdDate, Date modifiedDate, User user, Pot pot) {
+                LocalDateTime createdDate, LocalDateTime modifiedDate, User user, Pot pot) {
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
@@ -88,8 +89,8 @@ public class Post {
         if (!isNullAndBlank(content)) {
             this.content = content;
         }
-
         pot.ifPresent(p -> this.pot = p);
+        this.modifiedDate = LocalDateTime.now();
     }
 
     private <T> boolean isNullAndBlank(T argument) {

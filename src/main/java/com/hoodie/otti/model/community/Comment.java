@@ -1,4 +1,4 @@
-package com.hoodie.otti.model.ott;
+package com.hoodie.otti.model.community;
 
 import com.hoodie.otti.model.profile.User;
 import jakarta.persistence.Column;
@@ -13,33 +13,28 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
+@AllArgsConstructor
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class Subscription {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "subscription_id")
     private Long id;
 
-    @Column(length = 40, nullable = false)
-    private String name;
-
-    private Integer payment;
-
-    @Column(columnDefinition = "TEXT")
-    private String memo;
-
-    private Integer paymentDate;
+    @Column(nullable = false)
+    private String text;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
@@ -50,41 +45,25 @@ public class Subscription {
     private LocalDateTime modifiedDate;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID", nullable = false)
-    private User userId;
+    @JoinColumn(name = "POST_ID")
+    private Post post;
 
     @ManyToOne
-    @JoinColumn(name = "OTT_ID", nullable = false)
-    private Ott ottId;
+    @JoinColumn(name = "USER_ID")
+    private User user;
 
     @Builder
-    public Subscription(String name, Integer payment, String memo, Integer paymentDate, LocalDateTime createdDate,
-                        LocalDateTime modifiedDate, User userId, Ott ottId) {
-        this.name = name;
-        this.payment = payment;
-        this.memo = memo;
-        this.paymentDate = paymentDate;
+    public Comment(String text, LocalDateTime createdDate, LocalDateTime modifiedDate, Post post, User user) {
+        this.text = text;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.userId = userId;
-        this.ottId = ottId;
+        this.post = post;
+        this.user = user;
     }
 
-    public void update(String name, Integer payment, String memo, Integer paymentDate, Ott ottId) {
-        if (!isNullAndBlank(name)) {
-            this.name = name;
-        }
-        if (!isNullAndBlank(payment)) {
-            this.payment = payment;
-        }
-        if (!isNullAndBlank(memo)) {
-            this.memo = memo;
-        }
-        if (!isNullAndBlank(paymentDate)) {
-            this.paymentDate = paymentDate;
-        }
-        if (!isNullAndBlank(ottId)) {
-            this.ottId = ottId;
+    public void update(String text) {
+        if (!isNullAndBlank(text)) {
+            this.text = text;
         }
         this.modifiedDate = LocalDateTime.now();
     }
