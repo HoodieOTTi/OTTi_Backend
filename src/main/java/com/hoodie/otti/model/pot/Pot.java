@@ -1,17 +1,22 @@
 package com.hoodie.otti.model.pot;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.profile.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class Pot {
 
     @Id
@@ -34,8 +39,9 @@ public class Pot {
     @JoinColumn(name = "user_id", nullable = false)
     private User userId;
 
-    @Column(name = "ott_id", nullable = false)
-    private Long ottId;
+    @ManyToOne
+    @JoinColumn(name = "ott_id", nullable = false)
+    private Ott ottId;
 
     @Column(name = "pot_depositAccount")
     private String depositAccount;  // 입금계좌
@@ -47,9 +53,16 @@ public class Pot {
     @JoinColumn(name = "creator_id", nullable = true)
     private User creatorId;
 
+    @OneToMany(mappedBy = "pot", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<JoinRequest> joinRequests;
+
+    @OneToMany(mappedBy = "pot", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PotMembership> potMemberships;
+
 
     @Builder
-    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Long ott, User creator, String depositAccount, String ratePlan) {
+    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;

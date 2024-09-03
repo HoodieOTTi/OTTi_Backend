@@ -43,7 +43,7 @@ public class UserProfileController {
 
     @GetMapping("/user")
     public ResponseEntity<UserProfileDTO> getProfile(Principal principal) {
-        return ResponseEntity.ok().body(userProfileService.getUserProfileByPrincipal(principal));
+        return ResponseEntity.ok().body(userProfileService.getUserProfileDTOByPrincipal(principal));
     }
 
     @GetMapping("/userid")
