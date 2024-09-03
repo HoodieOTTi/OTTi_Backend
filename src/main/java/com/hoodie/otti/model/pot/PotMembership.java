@@ -15,10 +15,22 @@ public class PotMembership {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
     private Pot pot;
 
-    private boolean hasPermission; // 사용자가 'pot'에 대한 권한을 가지고 있는지 여부
+    private boolean approved;
+
+    private boolean hasPermission;
+
+    public boolean getApproved() {
+        return approved;
+    }
+
+    // hasPermission 접근자 추가
+    public boolean hasPermission() {
+        return hasPermission;
+    }
 }

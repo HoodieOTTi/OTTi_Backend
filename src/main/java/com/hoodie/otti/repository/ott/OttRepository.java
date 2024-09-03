@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface OttRepository extends JpaRepository<Ott, Long> {
 
-    Optional<Ott> findOttByNameAndAndRatePlan(String ottName, String ottRatePlan);
+    Optional<Ott> findOttByNameAndRatePlan(String ottName, String ottRatePlan);
     Optional<Ott> findById(Long id); // ID로 OTT 조회// 이름으로 OTT 조회
 }
