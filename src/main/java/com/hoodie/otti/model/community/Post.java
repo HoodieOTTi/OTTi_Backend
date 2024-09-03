@@ -1,17 +1,24 @@
-package com.hoodie.otti.model.ott;
+package com.hoodie.otti.model.community;
 
+import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.profile.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,22 +31,24 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class Subscription {
+public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "subscription_id")
+    @Column(name = "POST_ID")
     private Long id;
 
     @Column(length = 40, nullable = false)
-    private String name;
+    private String title;
 
-    private Integer payment;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
 
-    @Column(columnDefinition = "TEXT")
-    private String memo;
+    @Column(columnDefinition = "integer default 0", name = "VIEW_COUNT", nullable = false)
+    private Integer viewCount;
 
-    private Integer paymentDate;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Image> images;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
@@ -51,41 +60,36 @@ public class Subscription {
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
-    private User userId;
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "OTT_ID", nullable = false)
-    private Ott ottId;
+    @JoinColumn(name = "POT_ID", nullable = false)
+    private Pot pot;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OrderBy("id asc")
+    private List<Comment> comments;
 
     @Builder
-    public Subscription(String name, Integer payment, String memo, Integer paymentDate, LocalDateTime createdDate,
-                        LocalDateTime modifiedDate, User userId, Ott ottId) {
-        this.name = name;
-        this.payment = payment;
-        this.memo = memo;
-        this.paymentDate = paymentDate;
+    public Post(String title, String content, Integer viewCount,
+                LocalDateTime createdDate, LocalDateTime modifiedDate, User user, Pot pot) {
+        this.title = title;
+        this.content = content;
+        this.viewCount = viewCount;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
-        this.userId = userId;
-        this.ottId = ottId;
+        this.user = user;
+        this.pot = pot;
     }
 
-    public void update(String name, Integer payment, String memo, Integer paymentDate, Ott ottId) {
-        if (!isNullAndBlank(name)) {
-            this.name = name;
+    public void update(String title, String content, Optional<Pot> pot) {
+        if (!isNullAndBlank(title)) {
+            this.title = title;
         }
-        if (!isNullAndBlank(payment)) {
-            this.payment = payment;
+        if (!isNullAndBlank(content)) {
+            this.content = content;
         }
-        if (!isNullAndBlank(memo)) {
-            this.memo = memo;
-        }
-        if (!isNullAndBlank(paymentDate)) {
-            this.paymentDate = paymentDate;
-        }
-        if (!isNullAndBlank(ottId)) {
-            this.ottId = ottId;
-        }
+        pot.ifPresent(p -> this.pot = p);
         this.modifiedDate = LocalDateTime.now();
     }
 
