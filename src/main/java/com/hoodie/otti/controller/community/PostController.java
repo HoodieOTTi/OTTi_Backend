@@ -6,9 +6,10 @@ import com.hoodie.otti.dto.community.ImageResponseDto;
 import com.hoodie.otti.dto.community.PostDetailResponseDto;
 import com.hoodie.otti.dto.community.PostRequestDto;
 import com.hoodie.otti.dto.community.PostResponsePageDto;
+import com.hoodie.otti.dto.community.ProfileImageResponseDto;
 import com.hoodie.otti.dto.community.UploadImageRequestDto;
 import com.hoodie.otti.service.community.CommentService;
-import com.hoodie.otti.service.community.PostImageService;
+import com.hoodie.otti.service.community.ImageService;
 import com.hoodie.otti.service.community.PostService;
 import jakarta.validation.constraints.Positive;
 import java.io.IOException;
@@ -33,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
     private final PostService postService;
-    private final PostImageService postImageService;
+    private final ImageService imageService;
     private final CommentService commentService;
 
     @PostMapping
@@ -43,9 +44,13 @@ public class PostController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity<ImageResponseDto> uploadImage(@ModelAttribute UploadImageRequestDto requestDto)
-            throws IOException {
-        return ResponseEntity.ok().body(postImageService.saveImage(requestDto));
+    public ResponseEntity<ImageResponseDto> uploadImage(@ModelAttribute UploadImageRequestDto requestDto) throws IOException {
+        return ResponseEntity.ok().body(imageService.savePostImage(requestDto));
+    }
+
+    @PostMapping("/profile/image")
+    public ResponseEntity<ProfileImageResponseDto> uploadProfileImage(@ModelAttribute UploadImageRequestDto requestDto) throws IOException {
+        return ResponseEntity.ok().body(imageService.saveProfileImage(requestDto));
     }
 
     @PostMapping("/comment")

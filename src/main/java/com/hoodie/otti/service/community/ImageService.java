@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.hoodie.otti.dto.community.ImageResponseDto;
+import com.hoodie.otti.dto.community.ProfileImageResponseDto;
 import com.hoodie.otti.dto.community.UploadImageRequestDto;
 import com.hoodie.otti.model.community.Image;
 import com.hoodie.otti.repository.community.ImageRepository;
@@ -21,21 +22,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
-public class PostImageService {
+public class ImageService {
 
     private final AmazonS3 amazonS3;
     private final ImageRepository imageRepository;
     private final String bucket;
 
-    public PostImageService(AmazonS3 amazonS3, ImageRepository imageRepository,
-                            @Value("${cloud.aws.s3.bucket}") String bucket) {
+    public ImageService(AmazonS3 amazonS3, ImageRepository imageRepository,
+                        @Value("${cloud.aws.s3.bucket}") String bucket) {
         this.amazonS3 = amazonS3;
         this.imageRepository = imageRepository;
         this.bucket = bucket;
     }
 
     @Transactional
-    public ImageResponseDto saveImage(final UploadImageRequestDto requestDto) throws IOException {
+    public ImageResponseDto savePostImage(final UploadImageRequestDto requestDto) throws IOException {
         final String originName = requestDto.getImage().getOriginalFilename();
         final String ext = originName.substring(originName.lastIndexOf("."));
         final String changedImageName = changeImageName(ext);
@@ -51,6 +52,18 @@ public class PostImageService {
         return new ImageResponseDto(image.getId(), image.getImageUrl());
     }
 
+    @Transactional
+    public ProfileImageResponseDto saveProfileImage(final UploadImageRequestDto requestDto) throws IOException {
+        // Controller + 프로필 이미지 수정 시 기존 이미지 삭제할 수 있는 로직 구현(하는 과정에서 필요하면 DB 추가 구현하기)
+        final String originName = requestDto.getImage().getOriginalFilename();
+        final String ext = originName.substring(originName.lastIndexOf("."));
+        final String changedImageName = changeImageName(ext);
+
+        final String storeImagePath = uploadImage(requestDto.getImage(), ext, "profile/" + changedImageName);
+
+        return new ProfileImageResponseDto(storeImagePath);
+    }
+
     @Scheduled(cron = "${cloud.aws.cron}")
     @Transactional
     public void deleteUnNecessaryImage() {
@@ -60,13 +73,19 @@ public class PostImageService {
         images.stream()
                 .filter(image -> new LocalDateTime(image.getCreatedDate()).plusHours(24).isBefore(LocalDateTime.now()))
                 .forEach(image -> {
-                    deleteImage(image.getImageName());
+                    deletePostImage(image.getImageName());
                     imageRepository.delete(image);
                 });
     }
 
-    private void deleteImage(String imageName) {
+    private void deletePostImage(String imageName) {
         String fullPath = "post/" + imageName;
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fullPath));
+    }
+
+    // 프로필 이미지 삭제, 수정 시 기존 이미지는 삭제하는 방식으로 구현 바람.
+    private void deleteProfileImage(String imageName) {
+        String fullPath = "profile/" + imageName;
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fullPath));
     }
 
