@@ -100,6 +100,13 @@ public class PostController {
         return ResponseEntity.ok().body(postService.searchByTitle(title, page, size));
     }
 
+    @GetMapping("/filtering/{ott-name}")
+    public ResponseEntity<PostResponsePageDto> findPostsByOttName(@PathVariable("ott-name") String ottName,
+                                                                  @RequestParam(defaultValue = "1") @Positive int page,
+                                                                  @RequestParam(defaultValue = "10") @Positive int size) {
+        return ResponseEntity.ok().body(postService.findPostsByOttName(ottName, page, size));
+    }
+
     @GetMapping("/{postId}/check-writer")
     public ResponseEntity<Boolean> checkAuthorizedPostWriter(@PathVariable Long postId, Principal principal) {
         return ResponseEntity.ok().body(postService.checkAuthorizedPostWriter(postId, principal));

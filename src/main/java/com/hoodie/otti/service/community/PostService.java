@@ -104,6 +104,11 @@ public class PostService {
         return convertToPostResponsePage(byTitleContaining);
     }
 
+    public PostResponsePageDto findPostsByOttName(String ottName, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by("id").descending());
+        return convertToPostResponsePage(postRepository.findByOttName(ottName, pageRequest));
+    }
+
     @Transactional
     public Integer updateViewCount(Long id) {
         return postRepository.updateView(id);

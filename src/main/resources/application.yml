@@ -56,7 +56,6 @@ cloud:
       auto: false
     cron: ${CRON_TIME}
 
-
 server:
   port: 8443
   ssl:
