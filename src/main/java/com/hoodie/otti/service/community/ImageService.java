@@ -10,15 +10,16 @@ import com.hoodie.otti.dto.community.ProfileImageResponseDto;
 import com.hoodie.otti.dto.community.UploadImageRequestDto;
 import com.hoodie.otti.model.community.Image;
 import com.hoodie.otti.repository.community.ImageRepository;
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -84,9 +85,9 @@ public class ImageService {
     }
 
     // 프로필 이미지 삭제, 수정 시 기존 이미지는 삭제하는 방식으로 구현 바람.
-    private void deleteProfileImage(String imageName) {
-        String fullPath = "profile/" + imageName;
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fullPath));
+    public void deleteProfileImage(String imageUrl) {
+        String filePath = imageUrl.substring(imageUrl.indexOf("profile/"));
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, filePath));
     }
 
     private String uploadImage(final MultipartFile image,

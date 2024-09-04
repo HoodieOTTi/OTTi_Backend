@@ -1,5 +1,6 @@
 package com.hoodie.otti.controller.profile;
 
+import com.hoodie.otti.dto.community.UploadImageRequestDto;
 import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.exception.profile.ErrorResponse;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
@@ -30,9 +31,10 @@ public class UserProfileController {
     @PutMapping("/update")
     public ResponseEntity<Void> updateProfile(
             Principal principal,
-            @RequestBody @Valid UserProfileDTO userProfileDTO) {
+            @ModelAttribute @Valid UserProfileDTO userProfileDTO,
+            @ModelAttribute UploadImageRequestDto requestDto) {
         try {
-            userProfileService.updateUserProfile(principal, userProfileDTO);
+            userProfileService.updateUserProfile(principal, userProfileDTO, requestDto);
             return ResponseEntity.ok().build();
         } catch (UserProfileNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 프로필을 찾을 수 없습니다", ex);
