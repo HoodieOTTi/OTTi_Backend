@@ -14,6 +14,10 @@ public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
+    private Long id;
+
+    @Column(nullable = false)
     @JsonProperty("userId")
     private Long userId;
 

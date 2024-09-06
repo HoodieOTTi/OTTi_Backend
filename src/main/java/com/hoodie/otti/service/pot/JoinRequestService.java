@@ -53,6 +53,8 @@ public class JoinRequestService {
         joinRequest.setApproved(null);
 
         joinRequestRepository.save(joinRequest);
+
+        notificationService.sendPotJoinRequestNotification(pot, joinRequest);
     }
 
 
