@@ -5,12 +5,9 @@ import com.hoodie.otti.dto.pot.PotJoinRequestDTO;
 import com.hoodie.otti.dto.pot.PotMembershipDTO;
 import com.hoodie.otti.dto.pot.PotSaveRequestDto;
 import com.hoodie.otti.model.pot.Pot;
-import com.hoodie.otti.repository.pot.PotMembershipRepository;
-import com.hoodie.otti.repository.pot.PotRepository;
 import com.hoodie.otti.service.pot.JoinRequestService;
 import com.hoodie.otti.service.pot.PotMembershipService;
 import com.hoodie.otti.service.pot.PotService;
-import com.hoodie.otti.service.profile.UserProfileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,16 +27,7 @@ public class PotController {
     private JoinRequestService joinRequestService;
 
     @Autowired
-    private UserProfileService userProfileService;
-
-    @Autowired
     private PotService potService;
-
-    @Autowired
-    private PotRepository potRepository;
-
-    @Autowired
-    private PotMembershipRepository potMembershipRepository;
 
     @Autowired
     private PotMembershipService potMembershipService;
@@ -74,7 +62,6 @@ public class PotController {
         return ResponseEntity.noContent().build();
     }
 
-    // 특정 pot에 가입 신청 처리
     @PostMapping("/application/joinrequest")
     public ResponseEntity<Void> requestJoin(Principal principal, @RequestParam Long potId) {
         Pot pot = potService.findById(potId);
@@ -82,7 +69,6 @@ public class PotController {
         return ResponseEntity.ok().build();
     }
 
-    // 가입 신청 승인
     @PostMapping("/application/approve")
     public ResponseEntity<Void> approveJoinRequest(Principal principal, @RequestParam Long potId) {
         Pot pot = potService.findById(potId);
@@ -90,7 +76,6 @@ public class PotController {
         return ResponseEntity.ok().build();
     }
 
-    // 가입 신청 거절
     @PostMapping("/application/reject")
     public ResponseEntity<Void> rejectJoinRequest(Principal principal, @RequestParam Long potId) {
         Pot pot = potService.findById(potId);
@@ -98,7 +83,6 @@ public class PotController {
         return ResponseEntity.ok().build();
     }
 
-    // 스스로 팟 나가기
     @DeleteMapping("/user")
     public ResponseEntity<Void> deleteUser(Principal principal, @RequestParam Long potId) {
         Pot pot = potService.findById(potId);
@@ -106,7 +90,6 @@ public class PotController {
         return ResponseEntity.ok().build();
     }
 
-    // 팟 퇴출
     @DeleteMapping("/user/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId, @RequestParam Long potId, Principal principal) {
         Pot pot = potService.findById(potId);
@@ -114,38 +97,30 @@ public class PotController {
         return ResponseEntity.ok().build();
     }
 
-
-    // 특정 pot에 대한 모든 가입 신청 목록
     @GetMapping("/applications/member/{potId}")
     public ResponseEntity<List<JoinRequestDTO>> getJoinRequestsByPot(@PathVariable Long potId) {
         List<JoinRequestDTO> joinRequestDTOs = joinRequestService.getJoinRequestsByPot(potId);
         return ResponseEntity.ok(joinRequestDTOs);
     }
 
-
-    // 특정 user에 대한 모든 팟 가입 신청 목록
     @GetMapping("/applications/user/{userId}")
     public ResponseEntity<List<JoinRequestDTO>> getJoinRequestsByUser(@PathVariable Long userId) {
         List<JoinRequestDTO> joinRequestDTOs = joinRequestService.getJoinRequestsByUser(userId);
         return ResponseEntity.ok(joinRequestDTOs);
     }
 
-    // 현재 사용자가 제출한 모든 팟 가입 신청 목록 조회
     @GetMapping("/applications/user")
     public ResponseEntity<List<JoinRequestDTO>>getJoinRequestsByPrincipal(Principal principal) {
         List<JoinRequestDTO> joinRequestDTOs = joinRequestService.getJoinRequestsByPrincipal(principal);
         return ResponseEntity.ok(joinRequestDTOs);
     }
 
-
-    // 특정 pot에 승인된 전체 user 목록 조회 API
     @GetMapping("/application/pot/{potId}/users/approve")
     public ResponseEntity<List<PotMembershipDTO>> getApproveJoinRequestsByPot(@PathVariable Long potId) {
         List<PotMembershipDTO> potMemberships = potMembershipService.getApprovedMembersByPotId(potId);
         return ResponseEntity.ok(potMemberships);
     }
 
-    // 현재 사용자가 승인된 전체 pot 목록 조회 API
     @GetMapping("/application/user/pots/approve")
     public ResponseEntity<List<PotMembershipDTO>> getApproveJoinRequestsByUser(Principal principal) {
         Long userId = Long.parseLong(principal.getName());
@@ -153,7 +128,6 @@ public class PotController {
         return ResponseEntity.ok(potMemberships);
     }
 
-    // 현재 사용자가 권한을 가진 전체 pot 목록 조회 API
     @GetMapping("/application/user/pots/permission")
     public ResponseEntity<List<PotMembershipDTO>> hasPermissionJoinRequestsByUser(Principal principal) {
         Long userId = Long.parseLong(principal.getName());

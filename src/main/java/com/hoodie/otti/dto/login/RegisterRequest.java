@@ -11,7 +11,6 @@ public class RegisterRequest {
     private String nickname;
     private String email;
 
-    // Constructors
     public RegisterRequest() {
     }
 

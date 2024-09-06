@@ -39,11 +39,9 @@ public class UserProfileController {
         } catch (UserProfileNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 프로필을 찾을 수 없습니다", ex);
         } catch (Exception ex) {
-            System.out.println("유저프로필을 업데이트하는데 문제가 발생했습니다. : " + ex.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 프로필 업데이트에 실패했습니다", ex);
         }
     }
-
 
     @GetMapping("/user")
     public ResponseEntity<UserProfileDTO> getProfile(Principal principal) {
@@ -53,13 +51,12 @@ public class UserProfileController {
     @GetMapping("/userid")
     public ResponseEntity<Long> getUserId(Principal principal) {
         try {
-            Long userId = Long.parseLong(principal.getName()); // Principal에서 사용자 ID를 가져옵니다.
+            Long userId = Long.parseLong(principal.getName());
             return ResponseEntity.ok(userId);
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 ID를 가져오는 데 실패했습니다", ex);
         }
     }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {

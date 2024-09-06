@@ -55,7 +55,6 @@ public class ImageService {
 
     @Transactional
     public ProfileImageResponseDto saveProfileImage(final UploadImageRequestDto requestDto) throws IOException {
-        // Controller + 프로필 이미지 수정 시 기존 이미지 삭제할 수 있는 로직 구현(하는 과정에서 필요하면 DB 추가 구현하기)
         final String originName = requestDto.getImage().getOriginalFilename();
         final String ext = originName.substring(originName.lastIndexOf("."));
         final String changedImageName = changeImageName(ext);
@@ -84,7 +83,6 @@ public class ImageService {
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fullPath));
     }
 
-    // 프로필 이미지 삭제, 수정 시 기존 이미지는 삭제하는 방식으로 구현 바람.
     public void deleteProfileImage(String imageUrl) {
         String filePath = imageUrl.substring(imageUrl.indexOf("profile/"));
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, filePath));

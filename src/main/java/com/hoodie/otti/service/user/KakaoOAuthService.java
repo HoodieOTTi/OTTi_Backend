@@ -90,7 +90,6 @@ public class KakaoOAuthService {
 
         if (!responseEntity.getStatusCode().is2xxSuccessful()) throw new IllegalArgumentException("응답 실패");
 
-        // 응답 본문을 JSON으로 파싱
         String responseBody = responseEntity.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
@@ -124,7 +123,6 @@ public class KakaoOAuthService {
         try {
             ResponseEntity<String> response = restTemplate.exchange("https://kapi.kakao.com/v1/user/unlink", HttpMethod.POST, entity, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                // Success
                 System.out.println("Successfully unlinked user: " + response.getBody());
             } else {
                 throw new RuntimeException("Failed to unlink user: " + response.getBody());

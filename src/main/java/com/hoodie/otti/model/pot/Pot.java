@@ -44,10 +44,10 @@ public class Pot {
     private Ott ottId;
 
     @Column(name = "pot_depositAccount")
-    private String depositAccount;  // 입금계좌
+    private String depositAccount;
 
     @Column(name = "pot_ratePlan")
-    private String ratePlan;  // 결제일
+    private String ratePlan;
 
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = true)
@@ -70,18 +70,7 @@ public class Pot {
         this.userId = user;
         this.ottId = ott;
         this.creatorId = creator;
-        this.depositAccount = depositAccount;  // 입금계좌
-        this.ratePlan = ratePlan;  // 결제일
+        this.depositAccount = depositAccount;
+        this.ratePlan = ratePlan;
     }
-
-//    @Builder
-//    public Pot(Long id, String name, Date createdDate, Date modifiedDate, Ott ott, String depositAccount, String ratePlan) {
-//        this.id = id;
-//        this.name = name;
-//        this.createdDate = createdDate;
-//        this.modifiedDate = modifiedDate;
-//        this.ottId = ott;
-//        this.depositAccount = depositAccount;  // 입금계좌
-//        this.ratePlan = ratePlan;  // 결제일
-//    }
 }

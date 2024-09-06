@@ -25,10 +25,10 @@ public class JoinRequest {
     @JoinColumn(name = "pot_id", nullable = false)
     private Pot pot;
 
-    private Boolean approved;// null이면 대기 중, true이면 승인, false이면 거절
+    private Boolean approved;
 
     // 승인 여부를 반환하는 메서드 추가
     public boolean isApproved() {
-        return Boolean.TRUE.equals(approved); // approved가 true이면 true 반환, 그렇지 않으면 false 반환
+        return Boolean.TRUE.equals(approved);
     }
 }

@@ -24,9 +24,9 @@ public class JoinRequestDTO {
 
     public static JoinRequestDTO fromEntity(JoinRequest joinRequest) {
         return JoinRequestDTO.builder()
-                .id(joinRequest.getId()) // 가입 신청 ID
-                .potId(joinRequest.getPot().getId()) // 팟 ID
-                .requester(new UserProfileDTO( // 요청자 정보
+                .id(joinRequest.getId())
+                .potId(joinRequest.getPot().getId())
+                .requester(new UserProfileDTO(
                         joinRequest.getRequester().getUsername(),
                         joinRequest.getRequester().getProfilePhotoUrl()))
                 .approved(joinRequest.getApproved())

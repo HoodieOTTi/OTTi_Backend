@@ -10,7 +10,6 @@ import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.pot.PotMembership;
 import com.hoodie.otti.model.profile.User;
 import com.hoodie.otti.repository.ott.OttRepository;
-import com.hoodie.otti.repository.ott.SubscriptionRepository;
 import com.hoodie.otti.repository.pot.PotMembershipRepository;
 import com.hoodie.otti.repository.pot.PotRepository;
 import com.hoodie.otti.repository.profile.UserRepository;
@@ -33,19 +32,16 @@ public class PotService {
     private static final Logger log = LoggerFactory.getLogger(PotService.class);
 
     private final PotRepository potRepository;
-    private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
     private final OttRepository ottRepository;
     private final PotMembershipRepository potMembershipRepository;
 
     @Autowired
     public PotService(PotRepository potRepository,
-                      SubscriptionRepository subscriptionRepository,
                       UserRepository userRepository,
                       OttRepository ottRepository,
                       PotMembershipRepository potMembershipRepository) {
         this.potRepository = potRepository;
-        this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
         this.ottRepository = ottRepository;
         this.potMembershipRepository = potMembershipRepository;
@@ -58,33 +54,26 @@ public class PotService {
     @Transactional
     public Long save(PotSaveRequestDto requestDto) {
         try {
-            // 사용자 조회
             User user = userRepository.findById(requestDto.getUserId())
                     .orElseThrow(() -> new IllegalArgumentException("유효한 user ID가 아닙니다."));
 
-            // OTT 조회 (이름과 요금제에 따라)
             Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
                     .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
 
-            // Pot 엔티티 생성
             Pot pot = requestDto.toEntity(user, ott, user);
 
-            // 팟 저장
-//            potRepository.save(pot);
             Pot savedPot = potRepository.save(pot);
 
-            // 생성자를 pot_membership에 추가
             PotMembership membership = new PotMembership();
-            membership.setUser(user); // 생성자 설정
+            membership.setUser(user);
             membership.setPot(savedPot);
-            membership.setApproved(true); // 권한 부여
-            membership.setHasPermission(true); // 권한 부여 확인
+            membership.setApproved(true);
+            membership.setHasPermission(true);
 
-            potMembershipRepository.save(membership); // membership 저장
+            potMembershipRepository.save(membership);
 
             return savedPot.getId();
         } catch (Exception e) {
-            log.error("Error saving pot: {}", e.getMessage(), e);
             throw e;
         }
     }
@@ -128,20 +117,10 @@ public class PotService {
             Pot pot = potRepository.findById(potId)
                     .orElseThrow(() -> new IllegalArgumentException("해당 팟이 존재하지 않습니다."));
 
-            System.out.println("Pot ID: " + pot.getId());
-            System.out.println("Pot 이름: " + pot.getName());
-            System.out.println("requestDto Pot 이름: " + requestDto.getName());
-            System.out.println("requestDto OttName 이름: " + requestDto.getOttName());
-            System.out.println("requestDto OttRatePlan 이름: " + requestDto.getOttRatePlan());
-
             if (requestDto.getOttName() != null && requestDto.getOttRatePlan() != null) {
-                // OTT 조회 (이름과 요금제에 따라)
                 Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
                         .orElseThrow(() -> new EntityNotFoundException("해당 OTT 정보를 찾을 수 없습니다."));
                 pot.setOttId(ott);
-            } else {
-                // OTT 정보는 변경하지 않음
-                System.out.println("OTT 이름과 요금제가 null로 설정되어 있어, 기존 OTT 정보를 유지합니다.");
             }
 
             if (requestDto.getName() != null) {
@@ -158,7 +137,6 @@ public class PotService {
 
             potRepository.save(pot);
         } catch (Exception e) {
-            log.error("Error updating pot: {}", e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "팟 업데이트에 실패했습니다", e);
         }
     }
