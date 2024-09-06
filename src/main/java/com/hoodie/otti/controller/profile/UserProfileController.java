@@ -39,9 +39,11 @@ public class UserProfileController {
         } catch (UserProfileNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 프로필을 찾을 수 없습니다", ex);
         } catch (Exception ex) {
+            System.out.println("유저프로필을 업데이트하는데 문제가 발생했습니다. : " + ex.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 프로필 업데이트에 실패했습니다", ex);
         }
     }
+
 
     @GetMapping("/user")
     public ResponseEntity<UserProfileDTO> getProfile(Principal principal) {

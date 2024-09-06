@@ -64,22 +64,36 @@ public class UserProfileService {
         String oldImageUrl = user.getProfilePhotoUrl();
         if (oldImageUrl != null && !oldImageUrl.isEmpty() && requestDto.getImage() != null) {
             // 새로운 이미지가 있을 경우에만 기존 이미지 삭제
-            imageService.deleteProfileImage(oldImageUrl);
+            try {
+                imageService.deleteProfileImage(oldImageUrl);
+            } catch (Exception e) {
+                throw new RuntimeException("기존 이미지 삭제에 실패했습니다: " + e.getMessage());
+            }
         }
 
         // 새로운 이미지 저장
         if (requestDto.getImage() != null && !requestDto.getImage().isEmpty()) {
-            ProfileImageResponseDto responseDto = imageService.saveProfileImage(requestDto);
-            user.setProfilePhotoUrl(responseDto.getImageUrl());
+            try {
+                ProfileImageResponseDto responseDto = imageService.saveProfileImage(requestDto);
+                user.setProfilePhotoUrl(responseDto.getImageUrl());
+                System.out.println("새로운 프로필 이미지 URL: " + responseDto.getImageUrl());
+            } catch (IOException e) {
+                throw new RuntimeException("새로운 이미지 저장에 실패했습니다: " + e.getMessage());
+            }
         }
 
-        // 사용자 이름 업데이트 (이름이 비어있지 않은 경우에만 업데이트)
-        if (userProfileDTO.getUsername() != null && !userProfileDTO.getUsername().isEmpty()) {
+        if (userProfileDTO.getUsername() != null && !userProfileDTO.getUsername().equals(user.getUsername())) {
             user.setUsername(userProfileDTO.getUsername());
         }
 
         // 변경된 사용자 정보 저장
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+            System.out.println("유저의 프로필이 업데이트 되었습니다. : " + user.getProfilePhotoUrl());
+        } catch (Exception e) {
+            throw new RuntimeException("사용자 프로필 업데이트에 실패했습니다: " + e.getMessage());
+        }
+
     }
 
 
