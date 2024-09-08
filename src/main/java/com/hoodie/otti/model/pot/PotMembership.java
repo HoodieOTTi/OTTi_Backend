@@ -29,7 +29,6 @@ public class PotMembership {
         return approved;
     }
 
-    // hasPermission 접근자 추가
     public boolean hasPermission() {
         return hasPermission;
     }

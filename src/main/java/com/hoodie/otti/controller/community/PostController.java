@@ -1,32 +1,17 @@
 package com.hoodie.otti.controller.community;
 
-import com.hoodie.otti.dto.community.CommentSaveRequestDto;
-import com.hoodie.otti.dto.community.CommentUpdateRequestDto;
-import com.hoodie.otti.dto.community.ImageResponseDto;
-import com.hoodie.otti.dto.community.PostDetailResponseDto;
-import com.hoodie.otti.dto.community.PostRequestDto;
-import com.hoodie.otti.dto.community.PostResponsePageDto;
-import com.hoodie.otti.dto.community.ProfileImageResponseDto;
-import com.hoodie.otti.dto.community.UploadImageRequestDto;
+import com.hoodie.otti.dto.community.*;
 import com.hoodie.otti.service.community.CommentService;
 import com.hoodie.otti.service.community.ImageService;
 import com.hoodie.otti.service.community.PostService;
 import jakarta.validation.constraints.Positive;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.io.IOException;
 import java.net.URI;
 import java.security.Principal;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
@@ -46,11 +31,6 @@ public class PostController {
     @PostMapping("/image")
     public ResponseEntity<ImageResponseDto> uploadImage(@ModelAttribute UploadImageRequestDto requestDto) throws IOException {
         return ResponseEntity.ok().body(imageService.savePostImage(requestDto));
-    }
-
-    @PostMapping("/profile/image")
-    public ResponseEntity<ProfileImageResponseDto> uploadProfileImage(@ModelAttribute UploadImageRequestDto requestDto) throws IOException {
-        return ResponseEntity.ok().body(imageService.saveProfileImage(requestDto));
     }
 
     @PostMapping("/comment")

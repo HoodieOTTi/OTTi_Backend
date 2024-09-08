@@ -37,28 +37,25 @@ public class NotificationController {
         if (notification != null) {
             return ResponseEntity.ok(notification);
         } else {
-            return ResponseEntity.notFound().build(); // 404 Not Found
+            return ResponseEntity.notFound().build();
         }
     }
 
-    // 특정 ID의 알림을 읽음으로 표시하는 엔드포인트
     @PostMapping("/{id}/mark-as-read")
     public ResponseEntity<Notification> markNotificationAsRead(@PathVariable Long id) {
         try {
             Notification notification = notificationService.markNotificationAsRead(id);
             return ResponseEntity.ok(notification);
         } catch (NotificationNotFoundException e) {
-            return ResponseEntity.notFound().build(); // 404 Not Found
+            return ResponseEntity.notFound().build();
         }
     }
 
-    // 읽지 않은 모든 알림을 조회하는 엔드포인트
     @GetMapping("/unread/{id}")
     public List<Notification> getUnreadNotifications(@PathVariable Long id) {
         return notificationService.getUnreadNotifications(id);
     }
 
-    // 특정 사용자의 알림 수를 조회하는 엔드포인트
     @GetMapping("/user/{id}/count")
     public long countNotificationsByUserId(@PathVariable Long id) {
         return notificationService.countNotificationsByUserId(id);
@@ -68,9 +65,9 @@ public class NotificationController {
     public ResponseEntity<Void> deleteNotification(@PathVariable Long id) {
         if (notificationService.existsById(id)) {
             notificationService.deleteNotification(id);
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.notFound().build(); // 404 Not Found
+            return ResponseEntity.notFound().build();
         }
     }
 }

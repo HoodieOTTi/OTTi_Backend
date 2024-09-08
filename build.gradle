@@ -25,22 +25,22 @@ repositories {
 
 dependencies {
 	// Spring Boot 기본 의존성
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
-	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
-	implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Web MVC
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	// OAuth2 클라이언트 의존성 추가
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth2 클라이언트 기능
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 	// 데이터베이스 연결 및 런타임 도구
-	runtimeOnly 'mysql:mysql-connector-java:8.0.28' // MySQL 커넥터
+	runtimeOnly 'mysql:mysql-connector-java:8.0.28'
 
 	// Lombok을 통한 코드 간소화
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// 개발 도구
-	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	// JSON Web Token (JWT) 라이브러리
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
@@ -82,6 +82,10 @@ dependencies {
 
 	// aws S3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// JAXB
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
 }
 
 tasks.withType(JavaCompile) {

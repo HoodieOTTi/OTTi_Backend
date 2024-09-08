@@ -1,5 +1,6 @@
 package com.hoodie.otti.controller.profile;
 
+import com.hoodie.otti.dto.community.UploadImageRequestDto;
 import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.exception.profile.ErrorResponse;
 import com.hoodie.otti.exception.profile.UserProfileNotFoundException;
@@ -30,9 +31,10 @@ public class UserProfileController {
     @PutMapping("/update")
     public ResponseEntity<Void> updateProfile(
             Principal principal,
-            @RequestBody @Valid UserProfileDTO userProfileDTO) {
+            @ModelAttribute @Valid UserProfileDTO userProfileDTO,
+            @ModelAttribute UploadImageRequestDto requestDto) {
         try {
-            userProfileService.updateUserProfile(principal, userProfileDTO);
+            userProfileService.updateUserProfile(principal, userProfileDTO, requestDto);
             return ResponseEntity.ok().build();
         } catch (UserProfileNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 프로필을 찾을 수 없습니다", ex);
@@ -49,13 +51,12 @@ public class UserProfileController {
     @GetMapping("/userid")
     public ResponseEntity<Long> getUserId(Principal principal) {
         try {
-            Long userId = Long.parseLong(principal.getName()); // Principal에서 사용자 ID를 가져옵니다.
+            Long userId = Long.parseLong(principal.getName());
             return ResponseEntity.ok(userId);
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 ID를 가져오는 데 실패했습니다", ex);
         }
     }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {

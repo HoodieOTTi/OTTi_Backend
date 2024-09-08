@@ -42,10 +42,9 @@ public class KakaoOAuthController {
 
     @GetMapping("/unlink")
     public ResponseEntity<String> unlink(HttpServletRequest request) {
-        // Authorization 헤더에서 액세스 토큰을 추출
         String accessToken = request.getHeader("Authorization");
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
-            accessToken = accessToken.substring(7); // "Bearer "를 제거하여 토큰만 추출
+            accessToken = accessToken.substring(7);
         } else {
             return ResponseEntity.badRequest().body("Error: access_token is required");
         }

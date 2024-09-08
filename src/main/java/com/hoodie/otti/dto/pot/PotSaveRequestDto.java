@@ -13,13 +13,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PotSaveRequestDto {
 
-    private String name;  // 팟 이름
-    private Long userId;  // 사용자 ID
-    private String ottName;   // OTT 이름
-    private String ottRatePlan; // OTT 요금제
-    private String depositAccount;  // 입금계좌
-    private String ratePlan;  // 결제일
-    private Long creatorId;  // 생성자 ID
+    private String name;
+    private Long userId;
+    private String ottName;
+    private String ottRatePlan;
+    private String depositAccount;
+    private String ratePlan;
+    private Long creatorId;
 
     @Builder
     public PotSaveRequestDto(String name, Long userId, String ottName, String ottRatePlan,
@@ -33,8 +33,7 @@ public class PotSaveRequestDto {
         this.creatorId = creatorId;
     }
 
-    // Pot 엔티티로 변환하는 메서드
-    public Pot toEntity(User user, Ott ott, User creator) {  // creator 추가
+    public Pot toEntity(User user, Ott ott, User creator) {
         return Pot.builder()
                 .name(name)
                 .user(user)
