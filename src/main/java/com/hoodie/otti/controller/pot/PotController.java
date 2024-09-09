@@ -20,7 +20,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/api/pot")
 public class PotController {
     @Autowired
