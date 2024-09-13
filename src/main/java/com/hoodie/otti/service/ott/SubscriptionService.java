@@ -86,8 +86,7 @@ public class SubscriptionService {
     }
 
     public SubscriptionTotalPaymentResponseDto calculateTotalPayment(Principal principal) {
-        return new SubscriptionTotalPaymentResponseDto(
-                findAllByUserId(principal).stream()
+        return new SubscriptionTotalPaymentResponseDto(findAllByUserId(principal).stream()
                 .mapToInt(Subscription::getPayment)
                 .sum());
     }
