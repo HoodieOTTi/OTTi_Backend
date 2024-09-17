@@ -58,7 +58,7 @@ public class UserProfileService {
         User user = userOptional.get();
 
         String oldImageUrl = user.getProfilePhotoUrl();
-        if (oldImageUrl != null && !oldImageUrl.isEmpty() && requestDto.getImage() != null) {
+        if (requestDto.getImage() != null) {
             try {
                 imageService.deleteProfileImage(oldImageUrl);
             } catch (Exception e) {

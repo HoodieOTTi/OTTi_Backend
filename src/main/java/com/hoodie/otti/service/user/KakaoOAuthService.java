@@ -97,7 +97,7 @@ public class KakaoOAuthService {
         Long id = jsonNode.get("id").asLong();
         String userName = jsonNode.path("properties").path("nickname").asText();
         String userEmail = jsonNode.path("kakao_account").path("email").asText();
-        String profile_photo_url = "https://otti-bucket-2024.s3.ap-northeast-2.amazonaws.com/otti-image/otti.png";
+        String profile_photo_url = "https://otti-bucket-2024.s3.ap-northeast-2.amazonaws.com/profile/otti.png";
 
 
         if (userRepository.findByKakaoId(id).isEmpty()) {
