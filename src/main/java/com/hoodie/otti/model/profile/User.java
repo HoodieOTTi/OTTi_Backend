@@ -42,14 +42,21 @@ public class User {
 
     public User(String username, String profilePhotoUrl, String userEmail) {
         this.username = username;
-        this.profilePhotoUrl = profilePhotoUrl;
         this.userEmail = userEmail;
+        this.profilePhotoUrl = profilePhotoUrl;
     }
 
     public User(Long kakaoId, String username, String userEmail) {
         this.kakaoId = kakaoId;
         this.username = username;
         this.userEmail = userEmail;
+    }
+
+    public User(Long kakaoId, String username, String userEmail, String profilePhotoUrl) {
+        this.kakaoId = kakaoId;
+        this.username = username;
+        this.userEmail = userEmail;
+        this.profilePhotoUrl = profilePhotoUrl;
     }
 
     public User(Long id){

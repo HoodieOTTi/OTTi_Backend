@@ -97,10 +97,11 @@ public class KakaoOAuthService {
         Long id = jsonNode.get("id").asLong();
         String userName = jsonNode.path("properties").path("nickname").asText();
         String userEmail = jsonNode.path("kakao_account").path("email").asText();
+        String profile_photo_url = "https://otti-bucket-2024.s3.ap-northeast-2.amazonaws.com/otti-image/otti.png";
 
 
         if (userRepository.findByKakaoId(id).isEmpty()) {
-            User user = new User(id, userName, userEmail);
+            User user = new User(id, userName, userEmail, profile_photo_url);
             userRepository.save(user);
         }
         ServiceTokenDto tokenDTO = jwtTokenProvider.createToken(id);
