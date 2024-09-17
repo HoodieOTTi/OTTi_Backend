@@ -58,12 +58,10 @@ public class UserProfileService {
         User user = userOptional.get();
 
         String oldImageUrl = user.getProfilePhotoUrl();
-        if (oldImageUrl != null && !oldImageUrl.isEmpty() && requestDto.getImage() != null) {
-            try {
-                imageService.deleteProfileImage(oldImageUrl);
-            } catch (Exception e) {
-                throw new RuntimeException("기존 이미지 삭제에 실패했습니다: " + e.getMessage());
-            }
+        try {
+            imageService.deleteProfileImage(oldImageUrl);
+        } catch (Exception e) {
+            throw new RuntimeException("기존 이미지 삭제에 실패했습니다: " + e.getMessage());
         }
 
         if (requestDto.getImage() != null && !requestDto.getImage().isEmpty()) {
