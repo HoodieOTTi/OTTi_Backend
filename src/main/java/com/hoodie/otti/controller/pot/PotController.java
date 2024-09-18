@@ -134,13 +134,13 @@ public class PotController {
         return ResponseEntity.ok(potMemberships);
     }
 
-    @GetMapping("/application/user/pots/permission/member")
+    @GetMapping("/application/joinrequest/pots/permission")
     public ResponseEntity<List<JoinRequestDTO>> getJoinRequestsForUserPots(Principal principal) {
         List<JoinRequestDTO> joinRequests = potMembershipService.getJoinRequestsForUserPots(principal);
         return ResponseEntity.ok(joinRequests);
     }
 
-    @GetMapping("/user/pots/approve/permission")
+    @GetMapping("/application/user/pots/approve/permission")
     public ResponseEntity<List<PotMembershipDTO>> getApproveOrPermissionJoinRequestsByUser(Principal principal) {
         List<PotMembershipDTO> pots = potMembershipService.getApproveOrPermissionJoinRequestsByUser(principal);
         return ResponseEntity.ok(pots);
