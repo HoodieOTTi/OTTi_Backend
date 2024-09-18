@@ -20,10 +20,11 @@ public class PotSaveRequestDto {
     private String depositAccount;
     private String ratePlan;
     private Long creatorId;
+    private String potDescription;
 
     @Builder
     public PotSaveRequestDto(String name, Long userId, String ottName, String ottRatePlan,
-                             String depositAccount, String ratePlan, Long creatorId) {
+                             String depositAccount, String ratePlan, Long creatorId, String potDescription) {
         this.name = name;
         this.userId = userId;
         this.ottName = ottName;
@@ -31,6 +32,7 @@ public class PotSaveRequestDto {
         this.depositAccount = depositAccount;
         this.ratePlan = ratePlan;
         this.creatorId = creatorId;
+        this.potDescription = potDescription;
     }
 
     public Pot toEntity(User user, Ott ott, User creator) {
@@ -41,6 +43,7 @@ public class PotSaveRequestDto {
                 .depositAccount(depositAccount)
                 .ratePlan(ratePlan)
                 .creator(creator)
+                .potDescription(potDescription)
                 .build();
     }
 }

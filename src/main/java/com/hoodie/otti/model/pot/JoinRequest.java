@@ -25,9 +25,11 @@ public class JoinRequest {
     @JoinColumn(name = "pot_id", nullable = false)
     private Pot pot;
 
+    @Column(name = "joinrequest_description", length = 1000)
+    private String joinrequestDescription;
+
     private Boolean approved;
 
-    // 승인 여부를 반환하는 메서드 추가
     public boolean isApproved() {
         return Boolean.TRUE.equals(approved);
     }

@@ -1,6 +1,5 @@
 package com.hoodie.otti.dto.pot;
 
-import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.model.pot.JoinRequest;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,14 +9,16 @@ import lombok.Setter;
 @Setter
 public class JoinRequestDTO {
     private Long id;
-    private Long potId;
-    private UserProfileDTO requester;
+    private String potName;
+    private String potDescription;
+    private RequesterDTO requester;
     private Boolean approved;
 
     @Builder
-    public JoinRequestDTO(Long id, Long potId, UserProfileDTO requester, Boolean approved) {
+    public JoinRequestDTO(Long id, String potName,String potDescription, RequesterDTO requester, Boolean approved) {
         this.id = id;
-        this.potId = potId;
+        this.potName = potName;
+        this.potDescription = potDescription;
         this.requester = requester;
         this.approved = approved;
     }
@@ -25,10 +26,12 @@ public class JoinRequestDTO {
     public static JoinRequestDTO fromEntity(JoinRequest joinRequest) {
         return JoinRequestDTO.builder()
                 .id(joinRequest.getId())
-                .potId(joinRequest.getPot().getId())
-                .requester(new UserProfileDTO(
+                .potName(joinRequest.getPot().getName())
+                .potDescription(joinRequest.getPot().getPotDescription())
+                .requester(new RequesterDTO(
                         joinRequest.getRequester().getUsername(),
-                        joinRequest.getRequester().getProfilePhotoUrl()))
+                        joinRequest.getRequester().getProfilePhotoUrl(),
+                        joinRequest.getJoinrequestDescription()))
                 .approved(joinRequest.getApproved())
                 .build();
     }

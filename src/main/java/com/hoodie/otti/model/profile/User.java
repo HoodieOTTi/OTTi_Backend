@@ -1,7 +1,7 @@
 package com.hoodie.otti.model.profile;
 
-import com.hoodie.otti.model.pot.JoinRequest;
 import com.hoodie.otti.model.community.Post;
+import com.hoodie.otti.model.pot.JoinRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

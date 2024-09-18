@@ -1,20 +1,28 @@
 package com.hoodie.otti.dto.pot;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 public class PotMembershipDTO {
     private Long id;
     private Long potId;
     private String potName;
-    private Long user;
-    private String username;
+    private String potDescription;
+    private PotMembershipUserDTO user;
     private Boolean approved;
     private Boolean hasPermission;
+
+    public PotMembershipDTO(Long id, Long potId, String potName, String potDescription, PotMembershipUserDTO user, boolean approved, boolean hasPermission) {
+        this.id = id;
+        this.potId = potId;
+        this.potName = potName;
+        this.potDescription = potDescription;
+        this.user = user;
+        this.approved = approved;
+        this.hasPermission = hasPermission;
+    }
 }

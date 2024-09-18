@@ -10,9 +10,7 @@ import lombok.Setter;
 public class UserProfileDTO {
 
     private String username;
-
     private String profilePhotoUrl;
-
 
     @JsonCreator
     public UserProfileDTO(
