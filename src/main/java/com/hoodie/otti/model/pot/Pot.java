@@ -60,9 +60,15 @@ public class Pot {
     @OneToMany(mappedBy = "pot", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PotMembership> potMemberships;
 
+    @Column(name = "pot_identifier", unique = true)
+    private String potId;
+
+    @Column(name = "pot_password")
+    private String password;
+
 
     @Builder
-    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan) {
+    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan, String potId, String password) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;
@@ -72,5 +78,7 @@ public class Pot {
         this.creatorId = creator;
         this.depositAccount = depositAccount;
         this.ratePlan = ratePlan;
+        this.potId = potId;
+        this.password = password;
     }
 }
