@@ -14,5 +14,4 @@ public interface JoinRequestRepository extends JpaRepository<JoinRequest, Long> 
     List<JoinRequest> findByPot(Pot pot);
     List<JoinRequest> findByRequester(User requester);
     Optional<JoinRequest> findByRequesterAndPot(User requester, Pot pot);
-
 }

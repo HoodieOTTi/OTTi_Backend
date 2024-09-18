@@ -140,6 +140,12 @@ public class PotController {
         return ResponseEntity.ok(joinRequests);
     }
 
+    @GetMapping("/user/pots/approve/permission")
+    public ResponseEntity<List<PotMembershipDTO>> getApproveOrPermissionJoinRequestsByUser(Principal principal) {
+        List<PotMembershipDTO> pots = potMembershipService.getApproveOrPermissionJoinRequestsByUser(principal);
+        return ResponseEntity.ok(pots);
+    }
+
 
 }
 

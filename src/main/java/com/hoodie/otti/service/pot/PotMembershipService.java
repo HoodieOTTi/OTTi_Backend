@@ -227,4 +227,37 @@ public class PotMembershipService {
         return joinRequestDTOs;
     }
 
+    public List<PotMembershipDTO> getApproveOrPermissionJoinRequestsByUser(Principal principal) {
+        Long userId = Long.parseLong(principal.getName());
+
+        User user = userRepository.findByKakaoId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<PotMembership> potMemberships = potMembershipRepository.findByUserAndApprovedOrUserAndHasPermission(user, true, true);
+
+        List<PotMembershipDTO> membershipDTOs = new ArrayList<>();
+
+        for (PotMembership membership : potMemberships) {
+            Pot pot = membership.getPot();
+
+            PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .profilePhotoUrl(user.getProfilePhotoUrl())
+                    .build();
+
+            membershipDTOs.add(PotMembershipDTO.builder()
+                    .id(membership.getId())
+                    .potId(pot.getId())
+                    .potName(pot.getName())
+                    .potDescription(pot.getPotDescription())
+                    .user(membershipUserDTO)
+                    .approved(membership.getApproved())
+                    .hasPermission(membership.hasPermission())
+                    .build());
+        }
+
+        return membershipDTOs;
+    }
+
 }
