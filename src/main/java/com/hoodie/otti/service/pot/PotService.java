@@ -85,10 +85,14 @@ public class PotService {
         Pot pot = potRepository.findById(potId)
                 .orElseThrow(() -> new EntityNotFoundException("findPotById : 일치하는 팟을 찾을 수 없습니다."));
 
+        Ott ott = pot.getOttId();
+
         UserProfileDTO creatorDTO = new UserProfileDTO(
                 pot.getCreatorId().getUsername(),
                 pot.getCreatorId().getProfilePhotoUrl()
         );
+
+        int memberCount = potMembershipRepository.countByPot(pot);
 
         List<JoinRequestDTO> joinRequestDTOs = pot.getJoinRequests().stream()
                 .map(joinRequest -> {
@@ -110,9 +114,12 @@ public class PotService {
         return PotJoinRequestDTO.builder()
                 .id(pot.getId())
                 .potName(pot.getName())
+                .ott(ott)
+                .ratePlan(pot.getRatePlan())
                 .potDescription(pot.getPotDescription())
                 .creator(creatorDTO)
                 .joinRequests(joinRequestDTOs)
+                .memberCount(memberCount)
                 .build();
     }
 

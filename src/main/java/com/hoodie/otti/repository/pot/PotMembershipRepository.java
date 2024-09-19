@@ -30,7 +30,7 @@ public interface PotMembershipRepository extends JpaRepository<PotMembership, Lo
         return approvedMemberships;
     }
 
-
+    int countByPot(Pot pot);
 
 }
 
