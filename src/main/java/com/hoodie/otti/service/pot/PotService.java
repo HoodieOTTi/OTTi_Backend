@@ -4,6 +4,7 @@ package com.hoodie.otti.service.pot;
 import com.hoodie.otti.dto.pot.JoinRequestDTO;
 import com.hoodie.otti.dto.pot.PotJoinRequestDTO;
 import com.hoodie.otti.dto.pot.PotSaveRequestDto;
+import com.hoodie.otti.dto.pot.RequesterDTO;
 import com.hoodie.otti.dto.profile.UserProfileDTO;
 import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.pot.Pot;
@@ -35,16 +36,18 @@ public class PotService {
     private final UserRepository userRepository;
     private final OttRepository ottRepository;
     private final PotMembershipRepository potMembershipRepository;
+    private final JoinRequestService joinRequestService;
 
     @Autowired
     public PotService(PotRepository potRepository,
                       UserRepository userRepository,
                       OttRepository ottRepository,
-                      PotMembershipRepository potMembershipRepository) {
+                      PotMembershipRepository potMembershipRepository, JoinRequestService joinRequestService) {
         this.potRepository = potRepository;
         this.userRepository = userRepository;
         this.ottRepository = ottRepository;
         this.potMembershipRepository = potMembershipRepository;
+        this.joinRequestService = joinRequestService;
     }
 
     public Pot findById(Long potId) {
@@ -89,27 +92,30 @@ public class PotService {
 
         List<JoinRequestDTO> joinRequestDTOs = pot.getJoinRequests().stream()
                 .map(joinRequest -> {
-                    UserProfileDTO requesterDTO = new UserProfileDTO(
+                    RequesterDTO requesterDTO = new RequesterDTO(
                             joinRequest.getRequester().getUsername(),
-                            joinRequest.getRequester().getProfilePhotoUrl()
+                            joinRequest.getRequester().getProfilePhotoUrl(),
+                            joinRequest.getJoinrequestDescription()
                     );
 
-                    return new JoinRequestDTO(
-                            joinRequest.getId(),
-                            joinRequest.getPot().getId(),
-                            requesterDTO,
-                            joinRequest.getApproved()
-                    );
+                    return JoinRequestDTO.builder()
+                            .id(joinRequest.getId())
+                            .potName(joinRequest.getPot().getName())
+                            .requester(requesterDTO)
+                            .approved(joinRequest.getApproved())
+                            .build();
                 })
                 .collect(Collectors.toList());
 
         return PotJoinRequestDTO.builder()
                 .id(pot.getId())
-                .name(pot.getName())
+                .potName(pot.getName())
+                .potDescription(pot.getPotDescription())
                 .creator(creatorDTO)
                 .joinRequests(joinRequestDTOs)
                 .build();
     }
+
 
 
     public void updatePot(Long potId, PotSaveRequestDto requestDto){

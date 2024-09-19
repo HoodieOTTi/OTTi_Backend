@@ -1,7 +1,7 @@
 package com.hoodie.otti.service.pot;
 
 import com.hoodie.otti.dto.pot.JoinRequestDTO;
-import com.hoodie.otti.dto.profile.UserProfileDTO;
+import com.hoodie.otti.dto.pot.JoinRequestDescriptionDTO;
 import com.hoodie.otti.model.pot.JoinRequest;
 import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.profile.User;
@@ -40,8 +40,7 @@ public class JoinRequestService {
     @Autowired
     private UserRepository userRepository;
 
-    public void createJoinRequest(Principal principal, Pot pot) {
-
+    public void createJoinRequest(Principal principal, Pot pot, JoinRequestDescriptionDTO joinRequestDescriptionDTO) {
         Long userId = Long.parseLong(principal.getName());
 
         User requester = userRepository.findByKakaoId(userId)
@@ -50,6 +49,7 @@ public class JoinRequestService {
         JoinRequest joinRequest = new JoinRequest();
         joinRequest.setRequester(requester);
         joinRequest.setPot(pot);
+        joinRequest.setJoinrequestDescription(joinRequestDescriptionDTO.getJoinrequestDescription());
         joinRequest.setApproved(null);
 
         joinRequestRepository.save(joinRequest);
@@ -59,7 +59,6 @@ public class JoinRequestService {
 
 
     public void handleJoinRequest(Principal principal, Pot pot, boolean approve) {
-        Long userId = Long.parseLong(principal.getName());
 
         User requester = pot.getJoinRequests().stream()
                 .filter(joinRequest -> joinRequest.getPot().equals(pot))
@@ -103,15 +102,7 @@ public class JoinRequestService {
         List<JoinRequest> joinRequests = joinRequestRepository.findByRequester(user);
 
         return joinRequests.stream()
-                .map(joinRequest -> new JoinRequestDTO(
-                        joinRequest.getId(),
-                        joinRequest.getPot().getId(),
-                        new UserProfileDTO(
-                                joinRequest.getRequester().getUsername(),
-                                joinRequest.getRequester().getProfilePhotoUrl()
-                        ),
-                        joinRequest.getApproved()
-                ))
+                .map(JoinRequestDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -121,18 +112,9 @@ public class JoinRequestService {
         List<JoinRequest> joinRequests = joinRequestRepository.findByRequester(user);
 
         return joinRequests.stream()
-                .map(joinRequest -> new JoinRequestDTO(
-                        joinRequest.getId(),
-                        joinRequest.getPot().getId(),
-                        new UserProfileDTO(
-                                joinRequest.getRequester().getUsername(),
-                                joinRequest.getRequester().getProfilePhotoUrl()
-                        ),
-                        joinRequest.getApproved()
-                ))
+                .map(JoinRequestDTO::fromEntity)
                 .collect(Collectors.toList());
     }
-
 
 
 }

@@ -1,9 +1,6 @@
 package com.hoodie.otti.controller.pot;
 
-import com.hoodie.otti.dto.pot.JoinRequestDTO;
-import com.hoodie.otti.dto.pot.PotJoinRequestDTO;
-import com.hoodie.otti.dto.pot.PotMembershipDTO;
-import com.hoodie.otti.dto.pot.PotSaveRequestDto;
+import com.hoodie.otti.dto.pot.*;
 import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.service.pot.JoinRequestService;
 import com.hoodie.otti.service.pot.PotMembershipService;
@@ -63,11 +60,13 @@ public class PotController {
     }
 
     @PostMapping("/application/joinrequest")
-    public ResponseEntity<Void> requestJoin(Principal principal, @RequestParam Long potId) {
+    public ResponseEntity<Void> requestJoin(Principal principal, @RequestParam Long potId, @RequestBody JoinRequestDescriptionDTO joinRequestDescriptionDTO) {
         Pot pot = potService.findById(potId);
-        joinRequestService.createJoinRequest(principal, pot);
+        String joinrequestDescription = joinRequestDescriptionDTO.getJoinrequestDescription();
+        joinRequestService.createJoinRequest(principal, pot, joinRequestDescriptionDTO);
         return ResponseEntity.ok().build();
     }
+
 
     @PostMapping("/application/approve")
     public ResponseEntity<Void> approveJoinRequest(Principal principal, @RequestParam Long potId) {
@@ -134,6 +133,19 @@ public class PotController {
         List<PotMembershipDTO> potMemberships = potMembershipService.hasPermissionPotsByUserId(userId);
         return ResponseEntity.ok(potMemberships);
     }
+
+    @GetMapping("/application/joinrequest/pots/permission")
+    public ResponseEntity<List<JoinRequestDTO>> getJoinRequestsForUserPots(Principal principal) {
+        List<JoinRequestDTO> joinRequests = potMembershipService.getJoinRequestsForUserPots(principal);
+        return ResponseEntity.ok(joinRequests);
+    }
+
+    @GetMapping("/application/user/pots/approve/permission")
+    public ResponseEntity<List<PotMembershipDTO>> getApproveOrPermissionJoinRequestsByUser(Principal principal) {
+        List<PotMembershipDTO> pots = potMembershipService.getApproveOrPermissionJoinRequestsByUser(principal);
+        return ResponseEntity.ok(pots);
+    }
+
 
 }
 

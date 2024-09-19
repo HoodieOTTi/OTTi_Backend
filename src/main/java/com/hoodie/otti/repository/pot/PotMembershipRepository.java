@@ -22,7 +22,13 @@ public interface PotMembershipRepository extends JpaRepository<PotMembership, Lo
 
     List<PotMembership> findByUserAndHasPermission(User user, boolean hasPermission);
 
-    Optional<Pot> findPotById(Long potId);
+    default List<PotMembership> findByUserAndApprovedOrUserAndHasPermission(User user, boolean approved,boolean hasPermission) {
+        List<PotMembership> approvedMemberships = findByUserAndApproved(user, approved);
+        List<PotMembership> permissionMemberships = findByUserAndHasPermission(user, hasPermission);
+
+        approvedMemberships.addAll(permissionMemberships);
+        return approvedMemberships;
+    }
 
 
 

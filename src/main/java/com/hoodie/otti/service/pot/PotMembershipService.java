@@ -1,9 +1,13 @@
 package com.hoodie.otti.service.pot;
 
+import com.hoodie.otti.dto.pot.JoinRequestDTO;
 import com.hoodie.otti.dto.pot.PotMembershipDTO;
+import com.hoodie.otti.dto.pot.PotMembershipUserDTO;
+import com.hoodie.otti.model.pot.JoinRequest;
 import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.pot.PotMembership;
 import com.hoodie.otti.model.profile.User;
+import com.hoodie.otti.repository.pot.JoinRequestRepository;
 import com.hoodie.otti.repository.pot.PotMembershipRepository;
 import com.hoodie.otti.repository.profile.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PotMembershipService {
@@ -22,6 +27,9 @@ public class PotMembershipService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JoinRequestRepository joinRequestRepository;
 
     public void addUserToPot(Long userId, Pot pot) {
         PotMembership membership = new PotMembership();
@@ -41,6 +49,18 @@ public class PotMembershipService {
                 .orElseThrow(() -> new EntityNotFoundException("userHasPermission : 사용자를 찾을 수 없습니다."));
         return potMembershipRepository.existsByUserAndPotAndHasPermission(user, pot, true);
     }
+
+    public List<Pot> getPotsWithPermissionByUserId(Long userId) {
+        User user = userRepository.findByKakaoId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<PotMembership> memberships = potMembershipRepository.findByUserAndHasPermission(user, true);
+
+        return memberships.stream()
+                .map(PotMembership::getPot)
+                .collect(Collectors.toList());
+    }
+
 
     public boolean requesterHasPermission(User user, Pot pot) {
         Long userId = user.getId();
@@ -101,15 +121,21 @@ public class PotMembershipService {
             User user = membership.getUser();
             Pot pot = membership.getPot();
 
-            membershipDTOs.add(new PotMembershipDTO(
-                    membership.getId(),
-                    pot.getId(),
-                    pot.getName(),
-                    user.getId(),
-                    user.getUsername(),
-                    membership.getApproved(),
-                    membership.hasPermission()
-            ));
+            PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .profilePhotoUrl(user.getProfilePhotoUrl())
+                    .build();
+
+            membershipDTOs.add(PotMembershipDTO.builder()
+                    .id(membership.getId())
+                    .potId(pot.getId())
+                    .potName(pot.getName())
+                    .potDescription(pot.getPotDescription())
+                    .user(membershipUserDTO)
+                    .approved(membership.getApproved())
+                    .hasPermission(membership.hasPermission())
+                    .build());
         }
 
         return membershipDTOs;
@@ -126,15 +152,21 @@ public class PotMembershipService {
         for (PotMembership membership : potMemberships) {
             Pot pot = membership.getPot();
 
-            membershipDTOs.add(new PotMembershipDTO(
-                    membership.getId(),
-                    pot.getId(),
-                    pot.getName(),
-                    user.getId(),
-                    user.getUsername(),
-                    membership.getApproved(),
-                    membership.hasPermission()
-            ));
+            PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .profilePhotoUrl(user.getProfilePhotoUrl())
+                    .build();
+
+            membershipDTOs.add(PotMembershipDTO.builder()
+                    .id(membership.getId())
+                    .potId(pot.getId())
+                    .potName(pot.getName())
+                    .potDescription(pot.getPotDescription())
+                    .user(membershipUserDTO)
+                    .approved(membership.getApproved())
+                    .hasPermission(membership.hasPermission())
+                    .build());
         }
 
         return membershipDTOs;
@@ -142,7 +174,7 @@ public class PotMembershipService {
 
     public List<PotMembershipDTO> hasPermissionPotsByUserId(Long userId) {
         User user = userRepository.findByKakaoId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("getApprovedPotsByUserId : 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("hasPermissionPotsByUserId : 사용자를 찾을 수 없습니다."));
 
         List<PotMembership> potMemberships = potMembershipRepository.findByUserAndHasPermission(user, true);
 
@@ -151,15 +183,78 @@ public class PotMembershipService {
         for (PotMembership membership : potMemberships) {
             Pot pot = membership.getPot();
 
-            membershipDTOs.add(new PotMembershipDTO(
-                    membership.getId(),
-                    pot.getId(),
-                    pot.getName(),
-                    user.getId(),
-                    user.getUsername(),
-                    membership.getApproved(),
-                    membership.hasPermission()
-            ));
+            PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .profilePhotoUrl(user.getProfilePhotoUrl())
+                    .build();
+
+            membershipDTOs.add(PotMembershipDTO.builder()
+                    .id(membership.getId())
+                    .potId(pot.getId())
+                    .potName(pot.getName())
+                    .potDescription(pot.getPotDescription())
+                    .user(membershipUserDTO)
+                    .approved(membership.getApproved())
+                    .hasPermission(membership.hasPermission())
+                    .build());
+        }
+
+        return membershipDTOs;
+    }
+
+
+    public List<JoinRequestDTO> getJoinRequestsForUserPots(Principal principal) {
+        Long userId = Long.parseLong(principal.getName());
+
+        User user = userRepository.findByKakaoId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<PotMembership> potMemberships = potMembershipRepository.findByUserAndHasPermission(user, true);
+
+        List<JoinRequestDTO> joinRequestDTOs = new ArrayList<>();
+
+        for (PotMembership membership : potMemberships) {
+            Pot pot = membership.getPot();
+            List<JoinRequest> joinRequests = joinRequestRepository.findByPot(pot);
+
+            for (JoinRequest joinRequest : joinRequests) {
+                JoinRequestDTO joinRequestDTO = JoinRequestDTO.fromEntity(joinRequest);
+                joinRequestDTOs.add(joinRequestDTO);
+            }
+        }
+
+        return joinRequestDTOs;
+    }
+
+    public List<PotMembershipDTO> getApproveOrPermissionJoinRequestsByUser(Principal principal) {
+        Long userId = Long.parseLong(principal.getName());
+
+        User user = userRepository.findByKakaoId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<PotMembership> potMemberships = potMembershipRepository.findByUserAndApprovedOrUserAndHasPermission(user, true, true);
+
+        List<PotMembershipDTO> membershipDTOs = new ArrayList<>();
+
+        for (PotMembership membership : potMemberships) {
+            Pot pot = membership.getPot();
+
+            PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .profilePhotoUrl(user.getProfilePhotoUrl())
+                    .build();
+
+            membershipDTOs.add(PotMembershipDTO.builder()
+                    .id(membership.getId())
+                    .potId(pot.getId())
+                    .potName(pot.getName())
+                    .potDescription(pot.getPotDescription())
+                    .user(membershipUserDTO)
+                    .approved(membership.getApproved())
+                    .hasPermission(membership.hasPermission())
+                    .build());
         }
 
         return membershipDTOs;

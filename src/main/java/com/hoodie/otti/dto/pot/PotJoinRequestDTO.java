@@ -12,7 +12,8 @@ import java.util.List;
 @Builder
 public class PotJoinRequestDTO {
     private Long id;
-    private String name;
+    private String potName;
+    private String potDescription;
     private UserProfileDTO creator;
     private List<JoinRequestDTO> joinRequests;
 }
