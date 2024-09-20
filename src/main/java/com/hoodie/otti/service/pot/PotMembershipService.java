@@ -158,23 +158,25 @@ public class PotMembershipService {
             Pot pot = membership.getPot();
             Ott ott = pot.getOttId();
 
-            OttResponseDto ottResponseDto = OttResponseDto.fromEntity(ott);
+            if (!membership.hasPermission()) {
+                OttResponseDto ottResponseDto = OttResponseDto.fromEntity(ott);
 
-            PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
-                    .id(user.getId())
-                    .username(user.getUsername())
-                    .profilePhotoUrl(user.getProfilePhotoUrl())
-                    .build();
+                PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .profilePhotoUrl(user.getProfilePhotoUrl())
+                        .build();
 
-            membershipDTOs.add(PotMembershipDTO.builder()
-                    .id(membership.getId())
-                    .potId(pot.getId())
-                    .potName(pot.getName())
-                    .ott(ottResponseDto)
-                    .user(membershipUserDTO)
-                    .approved(membership.getApproved())
-                    .hasPermission(membership.hasPermission())
-                    .build());
+                membershipDTOs.add(PotMembershipDTO.builder()
+                        .id(membership.getId())
+                        .potId(pot.getId())
+                        .potName(pot.getName())
+                        .ott(ottResponseDto)
+                        .user(membershipUserDTO)
+                        .approved(membership.getApproved())
+                        .hasPermission(membership.hasPermission())
+                        .build());
+            }
         }
 
         return membershipDTOs;
@@ -255,15 +257,29 @@ public class PotMembershipService {
                     .profilePhotoUrl(user.getProfilePhotoUrl())
                     .build();
 
-            membershipDTOs.add(PotMembershipDTO.builder()
-                    .id(membership.getId())
-                    .potId(pot.getId())
-                    .potName(pot.getName())
-                    .ott(ottResponseDto)
-                    .user(membershipUserDTO)
-                    .approved(membership.getApproved())
-                    .hasPermission(membership.hasPermission())
-                    .build());
+            if (membership.getApproved() && membership.hasPermission()) {
+                if (membershipDTOs.isEmpty()) {
+                    membershipDTOs.add(PotMembershipDTO.builder()
+                            .id(membership.getId())
+                            .potId(pot.getId())
+                            .potName(pot.getName())
+                            .ott(ottResponseDto)
+                            .user(membershipUserDTO)
+                            .approved(membership.getApproved())
+                            .hasPermission(membership.hasPermission())
+                            .build());
+                }
+            } else {
+                membershipDTOs.add(PotMembershipDTO.builder()
+                        .id(membership.getId())
+                        .potId(pot.getId())
+                        .potName(pot.getName())
+                        .ott(ottResponseDto)
+                        .user(membershipUserDTO)
+                        .approved(membership.getApproved())
+                        .hasPermission(membership.hasPermission())
+                        .build());
+            }
         }
 
         return membershipDTOs;
