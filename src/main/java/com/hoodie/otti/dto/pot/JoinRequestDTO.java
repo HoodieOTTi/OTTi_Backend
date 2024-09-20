@@ -10,14 +10,16 @@ import lombok.Setter;
 @Setter
 public class JoinRequestDTO {
     private Long id;
+    private Long potId;
     private String potName;
     private OttResponseDto ott;
     private RequesterDTO requester;
     private Boolean approved;
 
     @Builder
-    public JoinRequestDTO(Long id, String potName, OttResponseDto ott, RequesterDTO requester, Boolean approved) {
+    public JoinRequestDTO(Long id, Long potId, String potName, OttResponseDto ott, RequesterDTO requester, Boolean approved) {
         this.id = id;
+        this.potId = potId;
         this.potName = potName;
         this.ott = ott;
         this.requester = requester;
@@ -29,6 +31,7 @@ public class JoinRequestDTO {
 
         return JoinRequestDTO.builder()
                 .id(joinRequest.getId())
+                .potId(joinRequest.getPot().getId())
                 .potName(joinRequest.getPot().getName())
                 .ott(ottResponseDto)
                 .requester(new RequesterDTO(
