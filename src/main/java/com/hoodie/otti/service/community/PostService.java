@@ -54,7 +54,6 @@ public class PostService {
         Post post = Post.builder()
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
-                .viewCount(0)
                 .user(user)
                 .pot(pot)
                 .build();
@@ -107,11 +106,6 @@ public class PostService {
     public PostResponsePageDto findPostsByOttName(String ottName, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by("id").descending());
         return convertToPostResponsePage(postRepository.findByOttName(ottName, pageRequest));
-    }
-
-    @Transactional
-    public Integer updateViewCount(Long id) {
-        return postRepository.updateView(id);
     }
 
     public Boolean checkAuthorizedPostWriter(Long postId, Principal principal) {
@@ -187,7 +181,6 @@ public class PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .viewCount(post.getViewCount())
                 .commentCount(commentCount)
                 .userName(post.getUser().getUsername())
                 .ottImage(post.getPot().getOttId().getImage())
@@ -201,7 +194,6 @@ public class PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .viewCount(post.getViewCount())
                 .images(convertToImageResponseDto(post.getImages()))
                 .comments(convertToCommentResponseDto(post.getComments()))
                 .userInfo(convertToUserResponseDto(post.getUser()))

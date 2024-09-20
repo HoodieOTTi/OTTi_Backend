@@ -69,7 +69,6 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostDetailResponseDto> findById(@PathVariable Long postId) {
-        postService.updateViewCount(postId);
         return ResponseEntity.ok().body(postService.findById(postId));
     }
 

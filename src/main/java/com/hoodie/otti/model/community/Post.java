@@ -44,9 +44,6 @@ public class Post {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(columnDefinition = "integer default 0", name = "VIEW_COUNT", nullable = false)
-    private Integer viewCount;
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Image> images;
 
@@ -71,11 +68,10 @@ public class Post {
     private List<Comment> comments;
 
     @Builder
-    public Post(String title, String content, Integer viewCount,
-                LocalDateTime createdDate, LocalDateTime modifiedDate, User user, Pot pot) {
+    public Post(String title, String content, LocalDateTime createdDate,
+                LocalDateTime modifiedDate, User user, Pot pot) {
         this.title = title;
         this.content = content;
-        this.viewCount = viewCount;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
         this.user = user;

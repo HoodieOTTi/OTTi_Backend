@@ -10,12 +10,12 @@ public class CommentResponseDto {
     private String text;
     private String createdDate;
     private String modifiedDate;
-    private UserResponseDto userName;
+    private UserResponseDto userInfo;
 
-    public CommentResponseDto(Long id, String text, UserResponseDto userName, String createdDate, String modifiedDate) {
+    public CommentResponseDto(Long id, String text, UserResponseDto userInfo, String createdDate, String modifiedDate) {
         this.id = id;
         this.text = text;
-        this.userName = userName;
+        this.userInfo = userInfo;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate; // 형식 변환
     }
