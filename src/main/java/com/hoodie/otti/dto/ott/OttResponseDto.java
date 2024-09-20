@@ -1,9 +1,10 @@
 package com.hoodie.otti.dto.ott;
 
 import com.hoodie.otti.model.ott.Ott;
-import java.util.Date;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.Date;
 
 @Getter
 public class OttResponseDto {
@@ -17,13 +18,25 @@ public class OttResponseDto {
     private Date modifiedDate;
 
     @Builder
-    public OttResponseDto(Ott entity) {
-        this.id = entity.getId();
-        this.name = entity.getName();
-        this.ratePlan = entity.getRatePlan();
-        this.price = entity.getPrice();
-        this.image = entity.getImage();
-        this.createdDate = entity.getCreatedDate();
-        this.modifiedDate = entity.getModifiedDate();
+    public OttResponseDto(Long id, String name, String ratePlan, Integer price, String image, Date createdDate, Date modifiedDate) {
+        this.id = id;
+        this.name = name;
+        this.ratePlan = ratePlan;
+        this.price = price;
+        this.image = image;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+    }
+
+    public static OttResponseDto fromEntity(Ott entity) {
+        return OttResponseDto.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .ratePlan(entity.getRatePlan())
+                .price(entity.getPrice())
+                .image(entity.getImage())
+                .createdDate(entity.getCreatedDate())
+                .modifiedDate(entity.getModifiedDate())
+                .build();
     }
 }

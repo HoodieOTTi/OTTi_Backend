@@ -117,6 +117,7 @@ public class PotService {
                 .id(pot.getId())
                 .potName(pot.getName())
                 .ott(ott)
+                .depositAccount(pot.getDepositAccount())
                 .ratePlan(pot.getRatePlan())
                 .creator(creatorDTO)
                 .joinRequests(joinRequestDTOs)

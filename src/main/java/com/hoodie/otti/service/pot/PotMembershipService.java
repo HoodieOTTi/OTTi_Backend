@@ -1,8 +1,10 @@
 package com.hoodie.otti.service.pot;
 
+import com.hoodie.otti.dto.ott.OttResponseDto;
 import com.hoodie.otti.dto.pot.JoinRequestDTO;
 import com.hoodie.otti.dto.pot.PotMembershipDTO;
 import com.hoodie.otti.dto.pot.PotMembershipUserDTO;
+import com.hoodie.otti.model.ott.Ott;
 import com.hoodie.otti.model.pot.JoinRequest;
 import com.hoodie.otti.model.pot.Pot;
 import com.hoodie.otti.model.pot.PotMembership;
@@ -120,6 +122,9 @@ public class PotMembershipService {
         for (PotMembership membership : potMemberships) {
             User user = membership.getUser();
             Pot pot = membership.getPot();
+            Ott ott = pot.getOttId();
+
+            OttResponseDto ottResponseDto = OttResponseDto.fromEntity(ott);
 
             PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
                     .id(user.getId())
@@ -131,6 +136,7 @@ public class PotMembershipService {
                     .id(membership.getId())
                     .potId(pot.getId())
                     .potName(pot.getName())
+                    .ott(ottResponseDto)
                     .user(membershipUserDTO)
                     .approved(membership.getApproved())
                     .hasPermission(membership.hasPermission())
@@ -150,6 +156,9 @@ public class PotMembershipService {
 
         for (PotMembership membership : potMemberships) {
             Pot pot = membership.getPot();
+            Ott ott = pot.getOttId();
+
+            OttResponseDto ottResponseDto = OttResponseDto.fromEntity(ott);
 
             PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
                     .id(user.getId())
@@ -161,6 +170,7 @@ public class PotMembershipService {
                     .id(membership.getId())
                     .potId(pot.getId())
                     .potName(pot.getName())
+                    .ott(ottResponseDto)
                     .user(membershipUserDTO)
                     .approved(membership.getApproved())
                     .hasPermission(membership.hasPermission())
@@ -180,6 +190,9 @@ public class PotMembershipService {
 
         for (PotMembership membership : potMemberships) {
             Pot pot = membership.getPot();
+            Ott ott = pot.getOttId();
+
+            OttResponseDto ottResponseDto = OttResponseDto.fromEntity(ott);
 
             PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
                     .id(user.getId())
@@ -191,6 +204,7 @@ public class PotMembershipService {
                     .id(membership.getId())
                     .potId(pot.getId())
                     .potName(pot.getName())
+                    .ott(ottResponseDto)
                     .user(membershipUserDTO)
                     .approved(membership.getApproved())
                     .hasPermission(membership.hasPermission())
@@ -209,19 +223,14 @@ public class PotMembershipService {
 
         List<PotMembership> potMemberships = potMembershipRepository.findByUserAndHasPermission(user, true);
 
-        List<JoinRequestDTO> joinRequestDTOs = new ArrayList<>();
-
-        for (PotMembership membership : potMemberships) {
-            Pot pot = membership.getPot();
-            List<JoinRequest> joinRequests = joinRequestRepository.findByPot(pot);
-
-            for (JoinRequest joinRequest : joinRequests) {
-                JoinRequestDTO joinRequestDTO = JoinRequestDTO.fromEntity(joinRequest);
-                joinRequestDTOs.add(joinRequestDTO);
-            }
-        }
-
-        return joinRequestDTOs;
+        return potMemberships.stream()
+                .flatMap(membership -> {
+                    Pot pot = membership.getPot();
+                    List<JoinRequest> joinRequests = joinRequestRepository.findByPot(pot);
+                    return joinRequests.stream()
+                            .map(JoinRequestDTO::fromEntity);
+                })
+                .collect(Collectors.toList());
     }
 
     public List<PotMembershipDTO> getApproveOrPermissionJoinRequestsByUser(Principal principal) {
@@ -236,6 +245,9 @@ public class PotMembershipService {
 
         for (PotMembership membership : potMemberships) {
             Pot pot = membership.getPot();
+            Ott ott = pot.getOttId();
+
+            OttResponseDto ottResponseDto = OttResponseDto.fromEntity(ott);
 
             PotMembershipUserDTO membershipUserDTO = PotMembershipUserDTO.builder()
                     .id(user.getId())
@@ -247,6 +259,7 @@ public class PotMembershipService {
                     .id(membership.getId())
                     .potId(pot.getId())
                     .potName(pot.getName())
+                    .ott(ottResponseDto)
                     .user(membershipUserDTO)
                     .approved(membership.getApproved())
                     .hasPermission(membership.hasPermission())
