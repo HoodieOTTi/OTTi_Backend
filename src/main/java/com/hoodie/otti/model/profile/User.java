@@ -23,8 +23,6 @@ public class User {
     @Size(min = 2, max = 50, message = "닉네임은 최소 2자에서 최대 50자여야 합니다.")
     private String username;
 
-    private String userEmail;
-
     @Column(unique = true)
     private Long kakaoId;
 
@@ -40,22 +38,19 @@ public class User {
     public User() {
     }
 
-    public User(String username, String profilePhotoUrl, String userEmail) {
+    public User(String username, String profilePhotoUrl) {
         this.username = username;
-        this.userEmail = userEmail;
         this.profilePhotoUrl = profilePhotoUrl;
     }
 
-    public User(Long kakaoId, String username, String userEmail) {
+    public User(Long kakaoId, String username) {
         this.kakaoId = kakaoId;
         this.username = username;
-        this.userEmail = userEmail;
     }
 
-    public User(Long kakaoId, String username, String userEmail, String profilePhotoUrl) {
+    public User(Long kakaoId, String username, String profilePhotoUrl) {
         this.kakaoId = kakaoId;
         this.username = username;
-        this.userEmail = userEmail;
         this.profilePhotoUrl = profilePhotoUrl;
     }
 

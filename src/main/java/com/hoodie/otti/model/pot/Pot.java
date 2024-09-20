@@ -36,7 +36,7 @@ public class Pot {
     private Date modifiedDate;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User userId;
 
     @ManyToOne
@@ -60,12 +60,9 @@ public class Pot {
     @OneToMany(mappedBy = "pot", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PotMembership> potMemberships;
 
-    @Column(name = "pot_description", length = 1000)
-    private String potDescription;
-
 
     @Builder
-    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan, String potDescription) {
+    public Pot(Long id, String name, Date createdDate, Date modifiedDate, User user, Ott ott, User creator, String depositAccount, String ratePlan) {
         this.id = id;
         this.name = name;
         this.createdDate = createdDate;
@@ -75,6 +72,5 @@ public class Pot {
         this.creatorId = creator;
         this.depositAccount = depositAccount;
         this.ratePlan = ratePlan;
-        this.potDescription = potDescription;
     }
 }

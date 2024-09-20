@@ -10,15 +10,13 @@ import lombok.Setter;
 public class JoinRequestDTO {
     private Long id;
     private String potName;
-    private String potDescription;
     private RequesterDTO requester;
     private Boolean approved;
 
     @Builder
-    public JoinRequestDTO(Long id, String potName,String potDescription, RequesterDTO requester, Boolean approved) {
+    public JoinRequestDTO(Long id, String potName, RequesterDTO requester, Boolean approved) {
         this.id = id;
         this.potName = potName;
-        this.potDescription = potDescription;
         this.requester = requester;
         this.approved = approved;
     }
@@ -27,7 +25,6 @@ public class JoinRequestDTO {
         return JoinRequestDTO.builder()
                 .id(joinRequest.getId())
                 .potName(joinRequest.getPot().getName())
-                .potDescription(joinRequest.getPot().getPotDescription())
                 .requester(new RequesterDTO(
                         joinRequest.getRequester().getUsername(),
                         joinRequest.getRequester().getProfilePhotoUrl(),

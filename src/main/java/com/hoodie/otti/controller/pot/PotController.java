@@ -30,8 +30,8 @@ public class PotController {
     private PotMembershipService potMembershipService;
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createPot(@RequestBody PotSaveRequestDto requestDto) {
-        Long id = potService.save(requestDto);
+    public ResponseEntity<Void> createPot(@RequestBody PotSaveRequestDto requestDto, Principal principal) {
+        Long id = potService.save(requestDto, principal);
         return ResponseEntity.created(URI.create("/api/pot/create/" + id)).build();
     }
 

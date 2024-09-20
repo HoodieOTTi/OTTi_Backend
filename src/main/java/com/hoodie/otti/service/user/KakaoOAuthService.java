@@ -101,7 +101,7 @@ public class KakaoOAuthService {
 
 
         if (userRepository.findByKakaoId(id).isEmpty()) {
-            User user = new User(id, userName, userEmail, profile_photo_url);
+            User user = new User(id, userName, profile_photo_url);
             userRepository.save(user);
         }
         ServiceTokenDto tokenDTO = jwtTokenProvider.createToken(id);

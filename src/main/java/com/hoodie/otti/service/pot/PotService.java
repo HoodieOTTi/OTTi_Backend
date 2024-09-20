@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,9 +56,10 @@ public class PotService {
     }
 
     @Transactional
-    public Long save(PotSaveRequestDto requestDto) {
+    public Long save(PotSaveRequestDto requestDto, Principal principal) {
         try {
-            User user = userRepository.findById(requestDto.getUserId())
+            Long userId = Long.parseLong(principal.getName());
+            User user = userRepository.findByKakaoId(userId)
                     .orElseThrow(() -> new IllegalArgumentException("유효한 user ID가 아닙니다."));
 
             Ott ott = ottRepository.findOttByNameAndRatePlan(requestDto.getOttName(), requestDto.getOttRatePlan())
@@ -116,7 +118,6 @@ public class PotService {
                 .potName(pot.getName())
                 .ott(ott)
                 .ratePlan(pot.getRatePlan())
-                .potDescription(pot.getPotDescription())
                 .creator(creatorDTO)
                 .joinRequests(joinRequestDTOs)
                 .memberCount(memberCount)
