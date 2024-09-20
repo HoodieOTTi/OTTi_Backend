@@ -99,6 +99,7 @@ public class PotService {
         List<JoinRequestDTO> joinRequestDTOs = pot.getJoinRequests().stream()
                 .map(joinRequest -> {
                     RequesterDTO requesterDTO = new RequesterDTO(
+                            joinRequest.getRequester().getId(),
                             joinRequest.getRequester().getUsername(),
                             joinRequest.getRequester().getProfilePhotoUrl(),
                             joinRequest.getJoinrequestDescription()

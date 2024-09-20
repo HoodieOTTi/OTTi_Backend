@@ -35,6 +35,7 @@ public class JoinRequestDTO {
                 .potName(joinRequest.getPot().getName())
                 .ott(ottResponseDto)
                 .requester(new RequesterDTO(
+                        joinRequest.getRequester().getId(),
                         joinRequest.getRequester().getUsername(),
                         joinRequest.getRequester().getProfilePhotoUrl(),
                         joinRequest.getJoinrequestDescription()))
