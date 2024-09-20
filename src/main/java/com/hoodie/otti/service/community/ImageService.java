@@ -84,8 +84,12 @@ public class ImageService {
     }
 
     public void deleteProfileImage(String imageUrl) {
+        String defaultImage ="profile/otti.png";
         String filePath = imageUrl.substring(imageUrl.indexOf("profile/"));
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket, filePath));
+
+        if (!defaultImage.equals(filePath)) {
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, filePath));
+        }
     }
 
     private String uploadImage(final MultipartFile image,
