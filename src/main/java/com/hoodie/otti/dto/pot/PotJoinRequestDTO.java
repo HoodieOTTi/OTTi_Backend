@@ -17,7 +17,6 @@ public class PotJoinRequestDTO {
     private Ott ott;
     private String depositAccount;
     private String ratePlan;
-    private String potDescription;
     private int memberCount;
     private UserProfileDTO creator;
     private List<JoinRequestDTO> joinRequests;
