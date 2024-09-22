@@ -255,19 +255,20 @@ public class PotMembershipService {
                     .profilePhotoUrl(user.getProfilePhotoUrl())
                     .build();
 
-            if (membership.getApproved() && membership.hasPermission()) {
-                if (membershipDTOs.isEmpty()) {
-                    membershipDTOs.add(PotMembershipDTO.builder()
-                            .id(membership.getId())
-                            .potId(pot.getId())
-                            .potName(pot.getName())
-                            .ott(ottResponseDto)
-                            .user(membershipUserDTO)
-                            .approved(membership.getApproved())
-                            .hasPermission(membership.hasPermission())
-                            .build());
-                }
-            } else {
+            boolean alreadyExists = membershipDTOs.stream()
+                    .anyMatch(dto -> dto.getPotId().equals(pot.getId()));
+
+            if (membership.getApproved() && !alreadyExists) {
+                membershipDTOs.add(PotMembershipDTO.builder()
+                        .id(membership.getId())
+                        .potId(pot.getId())
+                        .potName(pot.getName())
+                        .ott(ottResponseDto)
+                        .user(membershipUserDTO)
+                        .approved(membership.getApproved())
+                        .hasPermission(membership.hasPermission())
+                        .build());
+            } else if (membership.hasPermission() && !alreadyExists) {
                 membershipDTOs.add(PotMembershipDTO.builder()
                         .id(membership.getId())
                         .potId(pot.getId())
