@@ -80,8 +80,7 @@ public class PotMembershipService {
 
         PotMembership membership = potMembershipRepository.findByUserAndPot(user, pot)
                 .orElseThrow(() -> new EntityNotFoundException("Membership not found"));
-        membership.setApproved(false);
-        potMembershipRepository.save(membership);
+        potMembershipRepository.delete(membership);
     }
 
     public PotMembership getMembership(Principal principal, Pot pot) {
@@ -110,8 +109,7 @@ public class PotMembershipService {
         PotMembership membership = potMembershipRepository.findByUserAndPot(requester, pot)
                 .orElseThrow(() -> new EntityNotFoundException("Membership not found"));
 
-        membership.setApproved(false);
-        potMembershipRepository.save(membership);
+        potMembershipRepository.delete(membership);
     }
 
     public List<PotMembershipDTO> getApprovedMembersByPotId(Long potId) {
