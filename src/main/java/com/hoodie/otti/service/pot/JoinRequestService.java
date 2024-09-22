@@ -58,12 +58,11 @@ public class JoinRequestService {
     }
 
 
-    public void handleJoinRequest(Principal principal, Pot pot, boolean approve) {
-
+    public void handleJoinRequest(Principal principal, Pot pot, Long requesterId, boolean approve) {
         User requester = pot.getJoinRequests().stream()
-                .filter(joinRequest -> joinRequest.getPot().equals(pot))
-                .findFirst()
+                .filter(joinRequest -> joinRequest.getRequester().getId().equals(requesterId))
                 .map(JoinRequest::getRequester)
+                .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("handleJoinRequest : Pot에서 가입 신청을 한 사용자를 찾을 수 없습니다."));
 
         JoinRequest joinRequest = joinRequestRepository.findByRequesterAndPot(requester, pot)
@@ -83,7 +82,6 @@ public class JoinRequestService {
         }
 
         joinRequestRepository.save(joinRequest);
-
         System.out.println("joinRequest 상태 저장 완료: approved = " + joinRequest.isApproved());
     }
 
