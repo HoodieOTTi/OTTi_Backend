@@ -312,19 +312,19 @@
       <td colspan="4" align="center"><h4>FE</h4></td>
     </tr>
     <tr>
-      <td rowspan="2">&nbsp&nbsp김주하&nbsp&nbsp</td>
+      <td rowspan="2">김주하</td>
       <td align="center">
         <strong><mark>커뮤니티 댓글 작성</mark></strong><br/><br/>
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         <img src="https://github.com/user-attachments/assets/321f06a0-9364-43ef-9c03-e22594f7c728" width="230">
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
       </td>
-      <td rowspan="2">&nbsp&nbsp박예은&nbsp&nbsp</td>
+      <td rowspan="2">박예은</td>
       <td align="center">
         <strong><mark>ott 추가, 삭제, 구독 정보 리스트</mark></strong><br/><br/>
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         <img src="https://github.com/user-attachments/assets/1fbdfde6-180e-4459-8fd6-96723b08c7a1" width="230">
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
       </td>
     </tr>
     <tr>
@@ -369,19 +369,19 @@
       <td colspan="4"  align="center"><h4>BE</h4></td>
     </tr>
     <tr>
-      <td rowspan="2" align="center">&nbsp&nbsp박세은&nbsp&nbsp</td>
+      <td rowspan="2" align="center">박세은</td>
       <td align="center">
         <strong><mark>팟 가입 요청 처리</mark></strong><br/><br/>
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         <img src="https://github.com/user-attachments/assets/a5bc1d1f-fd0c-4144-ac86-a6caa3518821" width="230">
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
       </td>
-      <td rowspan="2" align="center">&nbsp&nbsp박소정&nbsp&nbsp</td>
+      <td rowspan="2" align="center">박소정</td>
       <td align="center">
         <strong><mark>미사용 이미지 삭제 스케줄링</mark></strong><br/><br/>
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         <img src="https://github.com/user-attachments/assets/fd78a8cb-ca07-49c9-b02f-53d7ea912655" width="230">
-        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
       </td>
     </tr>
     <tr>
