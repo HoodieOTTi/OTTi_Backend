@@ -10,7 +10,7 @@ import com.hoodie.otti.dto.community.ProfileImageResponseDto;
 import com.hoodie.otti.dto.community.UploadImageRequestDto;
 import com.hoodie.otti.model.community.Image;
 import com.hoodie.otti.repository.community.ImageRepository;
-import org.joda.time.LocalDateTime;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -71,7 +71,7 @@ public class ImageService {
         List<Image> images = imageRepository.findAllByPostIsNull();
 
         images.stream()
-                .filter(image -> new LocalDateTime(image.getCreatedDate()).plusHours(24).isBefore(LocalDateTime.now()))
+                .filter(image -> image.getCreatedDate().plusHours(24).isBefore(LocalDateTime.now()))
                 .forEach(image -> {
                     deletePostImage(image.getImageName());
                     imageRepository.delete(image);
