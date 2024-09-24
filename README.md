@@ -414,7 +414,7 @@
         <details>
           <summary>상세 코드</summary>
           <div markdown="1">
-            <img src="https://github.com/user-attachments/assets/0dac01fb-66ec-478c-b1bb-0eba445a9859" width="80%">
+            <img src="https://github.com/user-attachments/assets/127f6b25-feb7-4ab5-819e-458c2e555410" width="80%">
           </div>
         </details>
       </td>
