@@ -247,7 +247,7 @@
                 <td><img src="https://img.shields.io/badge/axios-5A29E4?style=flat-square&logo=axios&logoColor=white"/></td>
               </tr>
               <tr>
-                <td><img src="https://img.shields.io/badge/vercel-000000?style=flat-square&logo=typescript&logoColor=white"/></td>
+                <td><img src="https://img.shields.io/badge/vercel-000000?style=flat-square&logo=vercel&logoColor=white"/></td>
               </tr>
               <tr>
                 <td rowspan="4">BE</td>
