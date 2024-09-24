@@ -35,6 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
-
 .DS_Store
-gradle/.DS_Store
+FETCH_HEAD
+Task
