@@ -225,7 +225,7 @@
     <tr>
       <td>
         <div align="center">
-          <table style="width: 100%; table-layout: fixed;">
+          <table>
             <thead>
               <tr>
                 <th>Role</th>
@@ -281,7 +281,7 @@
         </div>
       </td>
       <td align="center">
-        <img src="https://github.com/user-attachments/assets/69946724-28a9-4ca8-91f0-3a5f8e655d9a" width="90%">
+        <img src="https://github.com/user-attachments/assets/69946724-28a9-4ca8-91f0-3a5f8e655d9a" width="95%">
       </td>
     </tr>
   </tbody>
