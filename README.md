@@ -47,7 +47,7 @@
       </td>
     </tr>
     <tr>
-      <td align="center" rowspan=2><a href="">Download mobile app</a></td>
+      <td align="center" rowspan=2><a href="https://expo.dev/artifacts/eas/6t4S1ymr3ReDciXJe3BDzW.apk">Download mobile app</a></td>
       <td align="center">
         <a href="#%EF%B8%8F-기술-스택">기술 스택 & 서버 아키텍쳐</a> <br/>
       </td>
