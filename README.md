@@ -1,6 +1,6 @@
 <div align="center">
 
-# OTTI_Backend
+# OTTi_Backend
 
 <table>
   <tbody>
@@ -118,93 +118,64 @@
     </thead>
     <tbody>
         <tr>
-            <td><strong>소셜 로그인</strong></td>
-            <td>카카오 OAuth를 활용한 간편한 소셜 로그인 기능</td>
-            <td>사용자가 손쉽게 계정을 생성하고 로그인할 수 있음</td>
+            <td align="center"><strong>소셜 로그인</strong></td>
+            <td align="center">•</td>
+            <td>카카오 OAuth를 활용한 간편한 소셜 로그인 기능을 제공하여<br/> 사용자가 손쉽게 계정을 생성하고 로그인할 수 있음</td>
         </tr>
         <tr>
+            <td rowspan="2" align="center"><strong>OTT 구독료 관리</strong></td>
+            <td align="center">총 구독료 확인</td>
+            <td>이번 달 기준으로 사용자가 지출한 OTT 구독료를 한눈에 볼 수 있도록 표시,<br/> 
+		클릭 시 총 구독료를 각 OTT 결제 비율로 나눈 파이차트를 통해 시각적으로 확인할 수 있음
+	    </td>
         </tr>
         <tr>
-            <td rowspan="2"><strong>구독료 관리</strong></td>
-            <td>총 구독료 확인</td>
-            <td>이번 달 기준으로 사용자가 지출한 OTT 구독료를 한눈에 볼 수 있도록 표시</td>
-        </tr>
-        <tr>
-            <td>한 번에 보기</td>
+            <td align="center">한 번에 보기</td>
             <td>구독 중인 OTT 서비스들의 결제 날짜를 캘린더로 시각화하여 쉽게 파악할 수 있도록 함</td>
         </tr>
         <tr>
-            <td rowspan="2"><strong>캘린더 기능</strong></td>
-            <td>결제 날짜 표시</td>
-            <td>달력에 구독 서비스의 결제 날짜를 표시하고, 특정 날짜를 클릭하면 해당 OTT 서비스의 구독 정보를 상세히 확인할 수 있는 모달창이 뜸</td>
+            <td align="center"><strong>캘린더 기능</strong></td>
+            <td align="center">•</td>
+            <td>달력에 구독 서비스의 결제 날짜를 표시하고,<br/> 특정 날짜를 클릭하면 해당 OTT 서비스의 구독 정보를 상세히 확인할 수 있는 모달창이 뜸</td>
         </tr>
         <tr>
+            <td align="center"><strong>구독 OTT 추가 및 <br/> 관리 기능</strong></td>
+            <td align="center">•</td>
+            <td>넷플릭스, 웨이브, 티빙, 쿠팡플레이, 디즈니플러스, 왓챠의<br/> 요금제, 결제 금액, 결제일 등을 입력 및 수정할 수 있음</td>
         </tr>
         <tr>
-            <td rowspan="2"><strong>구독 OTT 추가 및 <br/> 관리 기능</strong></td>
-            <td>사용자가 구독 중인 OTT 서비스 추가</td>
-            <td>넷플릭스, 웨이브, 티빙, 쿠팡플레이, 디즈니플러스, 왓챠의 요금제, 결제 금액, 결제일 등을 입력 및 수정할 수 있음</td>
+            <td align="center"><strong>구독 정보 관리</strong></td>
+            <td align="center">구독 정보 전체 확인</td>
+            <td>사용자의 구독 정보 전체를 한눈에 확인할 수 있으며,<br/> 요금제, 결제 금액, 결제일, 메모 등을 수정하거나 삭제 가능</td>
         </tr>
-        <tr>
-        </tr>
-        <tr>
-            <td rowspan="2"><strong>구독 정보 관리</strong></td>
-            <td>구독 정보 전체 확인</td>
-            <td>사용자의 구독 정보 전체를 한눈에 확인할 수 있으며, 요금제, 결제 금액, 결제일, 메모 등을 수정하거나 삭제 가능</td>
-        </tr>
-        <tr>
-        </tr>
-        <tr>
-            <td rowspan="4"><strong>알림 기능</strong></td>
-            <td>OTT 구독료 납부일 알림</td>
-            <td>3일 전에 알람을 보내 구독료 납부를 잊지 않도록 도와줌</td>
-        </tr>
-        <tr>
-            <td>읽지 않은 알림 확인</td>
-            <td>사용자는 읽지 않은 알림을 한눈에 확인할 수 있으며, 팟 기능 관련 알림도 포함됨</td>
-        </tr>
-        <tr>
-            <td>팟 신청 알림</td>
-            <td>팟을 생성한 사용자에게는 팟 신청 알림이 전송되며, 팟 신청이 승인되거나 거절될 경우 해당 내용에 대한 알림이 신청자에게 전달됨</td>
-        </tr>
-        <tr>
-        </tr>
-        <tr>
-            <td rowspan="3"><strong>프로필 관리</strong></td>
-            <td>프로필 사진, 닉네임 수정</td>
+            <td align="center"><strong>프로필 관리</strong></td>
+            <td align="center">•</td>
             <td>사용자는 프로필 사진, 닉네임을 수정할 수 있으며, 기본 프로필 사진은 오띠 로고로 설정됨</td>
         </tr>
         <tr>
-            <td>로그아웃 및 계정 탈퇴 기능</td>
-            <td>로그아웃, 계정 탈퇴 기능도 제공</td>
-        </tr>
-        <tr>
-        </tr>
-        <tr>
-            <td rowspan="4"><strong>팟(Pot) 기능</strong></td>
-            <td>팀원 모집 및 구독료 공동 분담</td>
-            <td>사용자가 팀원을 모집해 구독료를 공동으로 분담할 수 있는 기능</td>
-        </tr>
-        <tr>
-            <td>팟 만들기</td>
+	    <td rowspan="4" align="center"><strong>팟(Pot) 기능</strong></td>
+            <td align="center">팟 만들기</td>
             <td>사용자가 원하는 OTT 서비스 및 요금제를 선택하고, 입금 계좌 및 결제일을 설정할 수 있음</td>
         </tr>
         <tr>
-            <td>팟 신청 리스트</td>
+            <td align="center">팟 신청 리스트</td>
             <td>팟에 지원한 사용자 목록을 확인하고, 각 지원자의 프로필 사진, 닉네임, 한 줄 소개를 볼 수 있음</td>
         </tr>
         <tr>
-            <td>팟 관리</td>
-            <td>팟 멤버 목록 확인, 방장의 멤버 관리(강퇴 가능), 공지 사항 작성 등의 기능을 제공</td>
+            <td align="center">팟 관리</td>
+            <td>팟 멤버 목록 확인, 방장의 멤버 관리(강퇴 가능)의 기능을 제공</td>
+        </tr>
+	<tr>
+            <td align="center">팟 커뮤니티</td>
+            <td>팟 멤버들 간의 소통을 위한 게시판 기능을 제공하고, 원하는 글을 검색할 수 있음<br/> 
+		게시판에서 멤버들은 자유롭게 글을 작성하거나 댓글을 달 수 있으며, 원하는 팟 게시글에서 바로 팟 가입 신청도 가능함</td>
         </tr>
         <tr>
-            <td rowspan="2"><strong>게시글 관리</strong></td>
-            <td>작성한 글 목록 확인</td>
-            <td>사용자가 작성한 글 목록을 확인하고, 글 제목, 내용 미리보기, 댓글 개수 등의 정보를 확인할 수 있음</td>
-        </tr>
-        <tr>
-            <td>글 작성, 수정, 삭제 및 <br> 사진 추가</td>
-            <td>글을 작성하거나 수정, 삭제할 수 있으며, 글에 사진을 추가할 수 있음</td>
+            <td align="center"><strong>게시글 관리</strong></td>
+            <td align="center">•</td>
+            <td>사용자가 작성한 글 목록을 확인하고, 글 제목, 내용 미리보기, 댓글 개수 등의 정보를 확인할 수 있음<br/>
+		커뮤니티 탭에 수록될 게시글을 작성할 수 있으며, 글에 사진을 추가할 수 있음
+	    </td>
         </tr>
     </tbody>
 </table>
